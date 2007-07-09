@@ -12,13 +12,24 @@ import java.util.logging.LogRecord;
    *
    * @author Philip Johnson
    */
-class OneLineFormatter extends Formatter {
+public class OneLineFormatter extends Formatter {
   
+  /** Whether or not to include the date stamp in the format string. */
+  private boolean enableDateStamp = true;
+
   /**
-   * Default constructor that does nothing. 
+   * Default constructor that enables the date stamp.
    */
   public OneLineFormatter () {
-    // Do nothing. 
+    this(true);
+  }
+
+  /**
+   * One line format string with optional date stamp.
+   * @param enableDateStamp If true, a date stamp is inserted. 
+   */
+  public OneLineFormatter(boolean enableDateStamp) {
+    this.enableDateStamp = enableDateStamp;
   }
 
     /**
@@ -28,15 +39,17 @@ class OneLineFormatter extends Formatter {
      * @return The message string.
      */
   @Override
-    public String format(LogRecord record) {
+  public String format(LogRecord record) {
+    StringBuffer  buff = new StringBuffer();
+    if (this.enableDateStamp) {
       SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd HH:mm:ss", Locale.US);
-      StringBuffer buff = new StringBuffer();
       buff.append(dateFormat.format(new Date()));
       buff.append("  ");
-      buff.append(record.getMessage());
-      buff.append(System.getProperty("line.separator"));
-      return buff.toString();
     }
+    buff.append(record.getMessage());
+    buff.append(System.getProperty("line.separator"));
+    return buff.toString();
+  }
   }
   
 
