@@ -8,7 +8,7 @@ import java.util.logging.LogRecord;
 
   /**
    * Provides a one line formatter for use with Hackystat logging. Supports optional date stamp
-   * prefix. If the date stamp prefix is enabled, then a cr is also added.
+   * prefix and optional appending of a newline.
    *
    * @author Philip Johnson
    */
@@ -16,24 +16,38 @@ public class OneLineFormatter extends Formatter {
   
   /** Whether or not to include the date stamp in the format string. */
   private boolean enableDateStamp = true;
+  
+  /** Whether or not to add a newline. */
+  private boolean enableNewline = true;
 
   /**
-   * Default constructor that enables the date stamp.
+   * Default constructor that enables the date stamp and new line.
    */
   public OneLineFormatter () {
-    this(true);
+    this(true, true);
   }
 
   /**
-   * One line format string with optional date stamp.
-   * @param enableDateStamp If true, a date stamp is inserted. 
+   * One line format string with optional date stamp. Always adds a newline.
+   * @param enableDateStamp If true, a date stamp is inserted.
    */
   public OneLineFormatter(boolean enableDateStamp) {
+    this(enableDateStamp, true);
+  }
+
+  /**
+   * One line format string with optional date stamp and optional newline.
+   * @param enableDateStamp If true, a date stamp is inserted.
+   * @param enableNewline If true, a newline is always inserted.
+   */
+  public OneLineFormatter(boolean enableDateStamp, boolean enableNewline) {
     this.enableDateStamp = enableDateStamp;
+    this.enableNewline = enableNewline;
   }
 
     /**
-     * Formats the passed log string as a single line. Prefixes the log string with a date stamp.
+     * Formats the passed log string as a single line. Prefixes the log string with a date stamp
+     * if enabled, and adds a newline if enabled. 
      *
      * @param record  A log record.
      * @return The message string.
@@ -47,7 +61,9 @@ public class OneLineFormatter extends Formatter {
       buff.append("  ");
     }
     buff.append(record.getMessage());
-    buff.append(System.getProperty("line.separator"));
+    if (this.enableNewline) {
+      buff.append(System.getProperty("line.separator"));
+    }
     return buff.toString();
   }
   }
