@@ -1,0 +1,94 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    package org.hackystat.utilities.tstamp;<a name="line.1"></a>
+<FONT color="green">002</FONT>    <a name="line.2"></a>
+<FONT color="green">003</FONT>    import static org.junit.Assert.assertEquals;<a name="line.3"></a>
+<FONT color="green">004</FONT>    import org.junit.Test;<a name="line.4"></a>
+<FONT color="green">005</FONT>    <a name="line.5"></a>
+<FONT color="green">006</FONT>    /**<a name="line.6"></a>
+<FONT color="green">007</FONT>     * Tests the TstampSet class. <a name="line.7"></a>
+<FONT color="green">008</FONT>     * @author Philip Johnson<a name="line.8"></a>
+<FONT color="green">009</FONT>     */<a name="line.9"></a>
+<FONT color="green">010</FONT>    public class TestTstampSet {<a name="line.10"></a>
+<FONT color="green">011</FONT>      /**<a name="line.11"></a>
+<FONT color="green">012</FONT>       * Tests the tstampset. <a name="line.12"></a>
+<FONT color="green">013</FONT>       * Instantiates the set, adds some stuff,and checks to see if it's copacetic.<a name="line.13"></a>
+<FONT color="green">014</FONT>       */<a name="line.14"></a>
+<FONT color="green">015</FONT>      @Test public void testSet () {<a name="line.15"></a>
+<FONT color="green">016</FONT>        long tstamp = 0;<a name="line.16"></a>
+<FONT color="green">017</FONT>        TstampSet tstampSet = new TstampSet();<a name="line.17"></a>
+<FONT color="green">018</FONT>        assertEquals("Test empty set", tstamp, tstampSet.getUniqueTstamp(tstamp));<a name="line.18"></a>
+<FONT color="green">019</FONT>        assertEquals("Test addition", tstamp + 1, tstampSet.getUniqueTstamp(tstamp));<a name="line.19"></a>
+<FONT color="green">020</FONT>        tstamp = 50;<a name="line.20"></a>
+<FONT color="green">021</FONT>        assertEquals("Test missing entry", tstamp, tstampSet.getUniqueTstamp(tstamp));<a name="line.21"></a>
+<FONT color="green">022</FONT>        assertEquals("Test addition", tstamp + 1, tstampSet.getUniqueTstamp(tstamp));<a name="line.22"></a>
+<FONT color="green">023</FONT>        tstamp = 0;<a name="line.23"></a>
+<FONT color="green">024</FONT>        assertEquals("Test out of order entry", tstamp + 2, tstampSet.getUniqueTstamp(tstamp));<a name="line.24"></a>
+<FONT color="green">025</FONT>        assertEquals("Test addition", tstamp + 3, tstampSet.getUniqueTstamp(tstamp));<a name="line.25"></a>
+<FONT color="green">026</FONT>        <a name="line.26"></a>
+<FONT color="green">027</FONT>      }<a name="line.27"></a>
+<FONT color="green">028</FONT>    }<a name="line.28"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>
