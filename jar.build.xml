@@ -7,7 +7,7 @@
   <property name="tmp.dir" location="${basedir}/tmp" />
   <property name="tmp.lib.dir" location="${basedir}/tmp-lib" />
  
-  <target name="jar" depends="jar-hackystatlogger, jar-stacktrace"/>   
+  <target name="jar" depends="jar-hackystatlogger, jar-stacktrace, jar-tstamp"/>   
 
   <target name="jar-hackystatlogger" depends="compile" 
      description="Create hackystatlogger.lib.jar, containing just org.hackystat.utilities.logger code.">
@@ -48,5 +48,25 @@
       </jar>
       <delete dir="${tmp.lib.dir}" />
     </target>  
+ 
+     <target name="jar-tstamp" depends="compile" 
+          description="Create tstamp.lib.jar, containing just org.hackystat.utilities.tstamp code.">
+          <!-- Define the directories and distribution name -->
+          <mkdir dir="${tmp.lib.dir}" />
+          <copy todir="${tmp.lib.dir}">
+            <fileset dir="${basedir}/build/classes/">
+               <include name="org/hackystat/utilities/tstamp/**"/>
+            </fileset>
+          </copy>
+        
+          <jar destfile="${basedir}/tstamp.lib.jar" basedir="${tmp.lib.dir}">
+            <manifest>
+              <attribute name="Implementation-Title" value="Tstamp"/>
+              <attribute name="Implementation-Version" value="${version}"/>
+              <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii"/>
+            </manifest>
+          </jar>
+          <delete dir="${tmp.lib.dir}" />
+        </target>    
 </project>
 
