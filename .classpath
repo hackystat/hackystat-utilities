@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry path="src" kind="src"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
-	<classpathentry path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4" kind="con"/>
-	<classpathentry path="bin" kind="output"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="var" path="APACHE_JCS_HOME/jcs-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/concurrent/concurrent.jar"/>
+	<classpathentry kind="var" path="COMMONS_LANG_HOME/commons-lang-2.3.jar"/>
+	<classpathentry kind="var" path="COMMONS_LOGGING_HOME/commons-logging-1.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
