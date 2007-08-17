@@ -215,12 +215,12 @@ public class Tstamp {
   /**
    * Returns true if tstamp is equal to or between start and end.
    * @param start The start time.
-   * @param end The end time.
    * @param tstamp The timestamp to test. 
-   * @return True if between this interval.
+   * @param end The end time.
+   * @return True if tstamp is between start and end.
    */  
-  public static boolean inBetween(XMLGregorianCalendar start, XMLGregorianCalendar end, 
-      XMLGregorianCalendar tstamp) {
+  public static boolean inBetween(XMLGregorianCalendar start, XMLGregorianCalendar tstamp, 
+      XMLGregorianCalendar end) {
     if ((start.compare(tstamp) == DatatypeConstants.EQUAL) ||
         (end.compare(tstamp) == DatatypeConstants.EQUAL)) {
       return true;
@@ -278,7 +278,9 @@ public class Tstamp {
    * @return True if time1 equals time2
    */
   public static boolean equal(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
-    return time1.compare(time2) == DatatypeConstants.EQUAL;
+    long millis1 = time1.toGregorianCalendar().getTimeInMillis();
+    long millis2 = time2.toGregorianCalendar().getTimeInMillis();
+    return millis1 == millis2;
   }
   
   
