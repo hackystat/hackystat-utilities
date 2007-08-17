@@ -221,8 +221,8 @@ public class Tstamp {
    */  
   public static boolean inBetween(XMLGregorianCalendar start, XMLGregorianCalendar tstamp, 
       XMLGregorianCalendar end) {
-    if ((start.compare(tstamp) == DatatypeConstants.EQUAL) ||
-        (end.compare(tstamp) == DatatypeConstants.EQUAL)) {
+    if ((Tstamp.equal(start, tstamp)) ||
+        (Tstamp.equal(end, tstamp))) {
       return true;
     }
     if ((start.compare(tstamp) == DatatypeConstants.LESSER) &&
@@ -272,7 +272,12 @@ public class Tstamp {
   }
 
   /**
-   * Returns true if time1 equals time2
+   * Returns true if time1 equals time2. 
+   * Note that this class compares for equality by converting to millis, which is apparently not 
+   * what the built-in XMLGregorianCalendar class does, which leads to the XMLGregorianCalendar
+   * class saying that two logically equal instances are not equal. For example, 
+   * 2007-01-01 does not equal 2007-01-01T00:00:00 using XMLGregorianCalendar.equals(). 
+   * The Tstamp.equal() method does the right thing in this case. 
    * @param time1 The first time. 
    * @param time2 The second time. 
    * @return True if time1 equals time2
