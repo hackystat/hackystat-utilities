@@ -1,9 +1,6 @@
 package org.hackystat.utilities.tstamp;
 
 import java.util.GregorianCalendar;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -15,6 +12,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * @author Philip Johnson
  */
 public class Tstamp {
+  
+  private static final String factoryErrorMsg = "Bad DataTypeFactory";
   
   /**
    * Returns true if the passed string can be parsed into an XMLGregorianCalendar object.
@@ -58,11 +57,97 @@ public class Tstamp {
       return factory.newXMLGregorianCalendar(calendar);
     }
     catch (DatatypeConfigurationException e) {
-      Logger logger = LogManager.getLogManager().getLogger("org.hackystat.sensorbase");
-      logger.warning("Failed to create DatatypeFactory in makeTimestamp()");
+      throw new RuntimeException(factoryErrorMsg, e);
     }
-    return null;
   }
+  
+  /**
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp incremented by the 
+   * number of days. 
+   * @param tstamp The base date and time. 
+   * @param days The number of days to increment. This can be a negative number. 
+   * @return A new XMLGregorianCalendar instance representing the inc'd time. 
+   */
+  public static XMLGregorianCalendar incrementDays(XMLGregorianCalendar tstamp, int days) {
+    DatatypeFactory factory = null;
+    try {
+      factory = DatatypeFactory.newInstance();
+      GregorianCalendar calendar = new GregorianCalendar();
+      long millis = tstamp.toGregorianCalendar().getTimeInMillis();
+      millis += 1000L * 60 * 60 * 24 * days;
+      calendar.setTimeInMillis(millis);
+      return factory.newXMLGregorianCalendar(calendar);
+    }
+    catch (DatatypeConfigurationException e) {
+      throw new RuntimeException(factoryErrorMsg, e);
+    }
+  }
+  
+  /**
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp incremented by the 
+   * number of hours. 
+   * @param tstamp The base date and time. 
+   * @param hours The number of hours to increment. This can be a negative number. 
+   * @return A new XMLGregorianCalendar instance representing the inc'd time. 
+   */
+  public static XMLGregorianCalendar incrementHours(XMLGregorianCalendar tstamp, int hours) {
+    DatatypeFactory factory = null;
+    try {
+      factory = DatatypeFactory.newInstance();
+      GregorianCalendar calendar = new GregorianCalendar();
+      long millis = tstamp.toGregorianCalendar().getTimeInMillis();
+      millis += 1000L * 60 * 60 * hours;
+      calendar.setTimeInMillis(millis);
+      return factory.newXMLGregorianCalendar(calendar);
+    }
+    catch (DatatypeConfigurationException e) {
+      throw new RuntimeException(factoryErrorMsg, e);
+    }
+  }
+  
+  /**
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp incremented by the 
+   * number of minutes. 
+   * @param tstamp The base date and time. 
+   * @param minutes The number of minutes to increment. This can be a negative number. 
+   * @return A new XMLGregorianCalendar instance representing the inc'd time. 
+   */
+  public static XMLGregorianCalendar incrementMinutes(XMLGregorianCalendar tstamp, int minutes) {
+    DatatypeFactory factory = null;
+    try {
+      factory = DatatypeFactory.newInstance();
+      GregorianCalendar calendar = new GregorianCalendar();
+      long millis = tstamp.toGregorianCalendar().getTimeInMillis();
+      millis += 1000L * 60 * minutes;
+      calendar.setTimeInMillis(millis);
+      return factory.newXMLGregorianCalendar(calendar);
+    }
+    catch (DatatypeConfigurationException e) {
+      throw new RuntimeException(factoryErrorMsg, e);
+    }
+  }
+  
+  /**
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp incremented by the 
+   * number of seconds. 
+   * @param tstamp The base date and time. 
+   * @param seconds The number of seconds to increment. This can be a negative number. 
+   * @return A new XMLGregorianCalendar instance representing the inc'd time. 
+   */
+  public static XMLGregorianCalendar incrementSeconds(XMLGregorianCalendar tstamp, int seconds) {
+    DatatypeFactory factory = null;
+    try {
+      factory = DatatypeFactory.newInstance();
+      GregorianCalendar calendar = new GregorianCalendar();
+      long millis = tstamp.toGregorianCalendar().getTimeInMillis();
+      millis += 1000L * seconds;
+      calendar.setTimeInMillis(millis);
+      return factory.newXMLGregorianCalendar(calendar);
+    }
+    catch (DatatypeConfigurationException e) {
+      throw new RuntimeException(factoryErrorMsg, e);
+    }
+  }  
   
   /**
    * Returns a new java.sql.Timestamp created from a javax.xml.datatype.XMLGregorianCalendar.
@@ -83,7 +168,7 @@ public class Tstamp {
       return factory.newXMLGregorianCalendar(new GregorianCalendar());
     }
     catch (Exception e) {
-      throw new RuntimeException("Bad datatypeFactory", e);
+      throw new RuntimeException(factoryErrorMsg, e);
     }
   }
   
@@ -103,7 +188,7 @@ public class Tstamp {
       return startTime; 
     }
     catch (Exception e) {
-      throw new RuntimeException("Bad datatypeFactory", e);
+      throw new RuntimeException(factoryErrorMsg, e);
     }
   }
 
@@ -123,7 +208,7 @@ public class Tstamp {
       return endTime; 
     }
     catch (Exception e) {
-      throw new RuntimeException("Bad datatypeFactory", e);
+      throw new RuntimeException(factoryErrorMsg, e);
     }
   }  
   
