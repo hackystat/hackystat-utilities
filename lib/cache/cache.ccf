@@ -1,9 +1,9 @@
 # DEFAULT CACHE REGION
 
 # sets the default aux value for any non configured caches
-jcs.default=DC
+jcs.default=LRU
 jcs.default.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
-jcs.default.cacheattributes.MaxObjects=1000
+jcs.default.cacheattributes.MaxObjects=100
 jcs.default.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
 jcs.default.elementattributes.IsEternal=false
 jcs.default.elementattributes.MaxLifeSeconds=3600
@@ -16,9 +16,9 @@ jcs.default.elementattributes.IsLateral=true
 # CACHE REGIONS AVAILABLE
 
 # Regions preconfigured for caching
-jcs.region.hackyCache=DC
+jcs.region.hackyCache=LRU
 jcs.region.hackyCache.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
-jcs.region.hackyCache.cacheattributes.MaxObjects=1200
+jcs.region.hackyCache.cacheattributes.MaxObjects=120
 jcs.region.hackyCache.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
 jcs.region.hackyCache.elementattributes.IsEternal=false
 jcs.region.hackyCache.elementattributes.MaxLifeSeconds=7200

@@ -4,9 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.util.GregorianCalendar;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 
 import org.hackystat.utilities.logger.OneLineFormatter;
 import org.junit.BeforeClass;
@@ -62,7 +66,7 @@ public class TestUriCache {
    */
   @Test
   public void testGetRegionName() {
-    assertEquals("Testing region name", "hackyCache", testCache.getRegionName());
+    assertEquals("Testing region name", "uriCache", testCache.getRegionName());
   }
 
   /**
@@ -73,7 +77,18 @@ public class TestUriCache {
   public void testCache() {
 
     //
-    // caching objects first.
+    // clean the cache first
+    //
+    try {
+      testCache.clear();
+    }
+    catch (UriCacheException e) {
+      fail("Unable to remove object from the cache: "
+          + formatter.format(new LogRecord(Level.ALL, e.toString())));
+    }
+
+    //
+    // caching objects at second.
     //
     try {
       testCache.cache("string1", testString1);
@@ -131,6 +146,58 @@ public class TestUriCache {
       fail("Unable to remove object from the cache: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
+  }
+
+  /**
+   * Tests cache autodeprecation.
+   */
+  @Test
+  public void testTimedCache() {
+    // clean cache first
+    try {
+      testCache.clear();
+    }
+    catch (UriCacheException e) {
+      fail("Unable to remove object from the cache: "
+          + formatter.format(new LogRecord(Level.ALL, e.toString())));
+    }
+
+    //
+    // caching object.
+    //
+    try {
+      DatatypeFactory factory = null;
+      factory = DatatypeFactory.newInstance();
+      GregorianCalendar calendar = new GregorianCalendar();
+      calendar.setTimeInMillis(System.currentTimeMillis() + 1);
+      testCache.setMaxMemoryIdleTimeSeconds(5);
+      testCache.cache("string1", testString1, factory.newXMLGregorianCalendar(calendar));
+
+      System.out.println("Testing caching system: waiting for cache to be autocleaned.");
+      Thread.sleep(12000);
+
+      // testCache.freeMemoryElements(1);
+
+      // test that objects is within the cache
+      assertNull("Testing cache with expiration", testCache.lookup("string1"));
+
+    }
+    catch (UriCacheException e) {
+      fail("Unable to put objects into cache: "
+          + formatter.format(new LogRecord(Level.ALL, e.toString())));
+    }
+    catch (DatatypeConfigurationException e) {
+      fail("Cannot get dataFactory working: "
+          + formatter.format(new LogRecord(Level.ALL, e.toString())));
+    }
+    catch (InterruptedException e) {
+      fail("Cannot really do the sleep() stuff: "
+          + formatter.format(new LogRecord(Level.ALL, e.toString())));
+    }
+    // catch (CacheException e) {
+    // fail("Got an cache exception: " + formatter.format(new LogRecord(Level.ALL, e.toString())));
+    // }
+
   }
 
 }

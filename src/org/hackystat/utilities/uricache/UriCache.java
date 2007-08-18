@@ -1,7 +1,11 @@
 package org.hackystat.utilities.uricache;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
+import org.apache.jcs.engine.CompositeCacheAttributes;
+import org.apache.jcs.engine.ElementAttributes;
 
 /**
  * The HackyObjectCache stores all Objects loaded from HackyStat services. When the Service tries to
@@ -19,7 +23,7 @@ import org.apache.jcs.access.exception.CacheException;
 public class UriCache {
 
   /** The cache default region name. */
-  public static final String defaultRegionName = "hackyCache";
+  public static final String defaultRegionName = "uriCache";
 
   /** The cache itself */
   private JCS jcsCache;
@@ -57,6 +61,32 @@ public class UriCache {
   public void cache(String urlString, Object obj) throws UriCacheException {
     try {
       this.jcsCache.put(urlString, obj);
+    }
+    catch (CacheException e) {
+      throw new UriCacheException(e);
+    }
+  }
+
+  /**
+   * Puts object into cache and fix the objecy lifetime.
+   * 
+   * @param urlString Identity of the object to cache.
+   * @param obj The object to cache.
+   * @param expirationTime object caching expiration time.
+   * @throws UriCacheException in case of error.
+   */
+  public void cache(String urlString, Object obj, XMLGregorianCalendar expirationTime)
+      throws UriCacheException {
+
+    // first of all calculating the life time of this object from now
+    Long currTime = System.currentTimeMillis();
+    Long lifeTime = ((Integer) expirationTime.getMillisecond()).longValue() - currTime;
+
+    ElementAttributes attr = new ElementAttributes();
+    attr.setMaxLifeSeconds(lifeTime);
+
+    try {
+      this.jcsCache.put(urlString, obj, attr);
     }
     catch (CacheException e) {
       throw new UriCacheException(e);
@@ -102,6 +132,31 @@ public class UriCache {
     catch (CacheException e) {
       throw new UriCacheException(e.getMessage());
     }
+  }
+
+  /**
+   * This instructs the memory cache to remove the numberToFree according to its eviction policy.
+   * 
+   * @param numberToFree number of elements to free from memory during this sweep.
+   * @return the number that were removed. if you ask to free 5, but there are only 3, you will get
+   *         3.
+   * @throws CacheException if an error encountered.
+   */
+  public Integer freeMemoryElements(int numberToFree) throws CacheException {
+    return this.jcsCache.freeMemoryElements(numberToFree);
+  }
+
+  /**
+   * Cache should auto-expire elements after seconds to reclaim space.
+   * 
+   * @param seconds The new ShrinkerIntervalSeconds value.
+   */
+  public void setMaxMemoryIdleTimeSeconds(int seconds) {
+    CompositeCacheAttributes attr = new CompositeCacheAttributes();
+    attr.setUseMemoryShrinker(true);
+    attr.setMaxMemoryIdleTimeSeconds(seconds);
+    attr.setShrinkerIntervalSeconds(seconds);
+    this.jcsCache.setCacheAttributes(attr);
   }
 
 }
