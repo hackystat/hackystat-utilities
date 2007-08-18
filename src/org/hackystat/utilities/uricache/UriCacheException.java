@@ -5,7 +5,7 @@ package org.hackystat.utilities.uricache;
  * 
  * @author <a href="mailto:seninp@gmail.com">Pavel Senin<a>
  */
-public class RuntimeCacheException extends Exception {
+public class UriCacheException extends Exception {
 
   /**
    * Fancy eclipse serial.
@@ -15,7 +15,7 @@ public class RuntimeCacheException extends Exception {
   /**
    * An empty implementation.
    */
-  public RuntimeCacheException() {
+  public UriCacheException() {
     assert true;
     // another PMD bogus
   }
@@ -25,7 +25,7 @@ public class RuntimeCacheException extends Exception {
    * 
    * @param msg the message.
    */
-  public RuntimeCacheException(String msg) {
+  public UriCacheException(String msg) {
     super(msg);
   }
 
@@ -34,7 +34,7 @@ public class RuntimeCacheException extends Exception {
    * 
    * @param cause throwable which causes this exception.
    */
-  public RuntimeCacheException(Throwable cause) {
+  public UriCacheException(Throwable cause) {
     super(cause);
   }
 
@@ -44,7 +44,7 @@ public class RuntimeCacheException extends Exception {
    * @param msg the exception message.
    * @param cause throwable which causes this exception.
    */
-  public RuntimeCacheException(String msg, Throwable cause) {
+  public UriCacheException(String msg, Throwable cause) {
     super(msg, cause);
   }
 

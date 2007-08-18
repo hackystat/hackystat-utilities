@@ -18,10 +18,10 @@ import org.junit.Test;
  * @author <a href="mailto:seninp@gmail.com">Pavel Senin<a>
  * 
  */
-public class TestHackyObjectCacheJCSImplementation {
+public class TestUriCache {
 
   /** The cache itself */
-  private static HackyObjectCacheJCSImplementation testCache;
+  private static UriCache testCache;
 
   /**
    * Test objects we gonna use, three strings and one map.
@@ -33,7 +33,7 @@ public class TestHackyObjectCacheJCSImplementation {
   private static final String testString3 = "Test String3 zxcvbn99";
 
   private static TreeMap<Integer, String> testMap = new TreeMap<Integer, String>();
-  
+
   // PMD is killing me....
   private static final String string2Name = "string2";
 
@@ -49,9 +49,9 @@ public class TestHackyObjectCacheJCSImplementation {
     testMap.put(2, testString2);
     testMap.put(3, testString3);
     try {
-      testCache = new HackyObjectCacheJCSImplementation();
+      testCache = new UriCache();
     }
-    catch (RuntimeCacheException e) {
+    catch (UriCacheException e) {
       fail("Unable to instantiate cache: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
@@ -81,7 +81,7 @@ public class TestHackyObjectCacheJCSImplementation {
       testCache.cache("string3", testString3);
       testCache.cache("testMap", testMap);
     }
-    catch (RuntimeCacheException e) {
+    catch (UriCacheException e) {
       fail("Unable to put objects into cache: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
@@ -112,7 +112,7 @@ public class TestHackyObjectCacheJCSImplementation {
       testCache.remove(string2Name);
       assertNull("Testing .remove() method", testCache.lookup(string2Name));
     }
-    catch (RuntimeCacheException e) {
+    catch (UriCacheException e) {
       fail("Unable to remove object from the cache: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
@@ -127,7 +127,7 @@ public class TestHackyObjectCacheJCSImplementation {
       assertNull("Testing   .clear() method", testCache.lookup("string3"));
       assertNull("Testing    .clear() method", testCache.lookup("testMap"));
     }
-    catch (RuntimeCacheException e) {
+    catch (UriCacheException e) {
       fail("Unable to remove object from the cache: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
