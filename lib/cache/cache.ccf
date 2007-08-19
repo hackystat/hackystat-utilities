@@ -16,16 +16,16 @@ jcs.default.elementattributes.IsLateral=true
 # CACHE REGIONS AVAILABLE
 
 # Regions preconfigured for caching
-jcs.region.hackyCache=LRU
-jcs.region.hackyCache.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
-jcs.region.hackyCache.cacheattributes.MaxObjects=120
-jcs.region.hackyCache.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
-jcs.region.hackyCache.elementattributes.IsEternal=false
-jcs.region.hackyCache.elementattributes.MaxLifeSeconds=7200
-jcs.region.hackyCache.elementattributes.IdleTime=1800
-jcs.region.hackyCache.elementattributes.IsSpool=true
-jcs.region.hackyCache.elementattributes.IsRemote=true
-jcs.region.hackyCache.elementattributes.IsLateral=true
+jcs.region.uriCache=LRU
+jcs.region.uriCache.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
+jcs.region.uriCache.cacheattributes.MaxObjects=120
+jcs.region.uriCache.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
+jcs.region.uriCache.elementattributes.IsEternal=false
+jcs.region.uriCache.elementattributes.MaxLifeSeconds=7200
+jcs.region.uriCache.elementattributes.IdleTime=1800
+jcs.region.uriCache.elementattributes.IsSpool=true
+jcs.region.uriCache.elementattributes.IsRemote=true
+jcs.region.uriCache.elementattributes.IsLateral=true
 
 # AUXILIARY CACHES AVAILABLE
 

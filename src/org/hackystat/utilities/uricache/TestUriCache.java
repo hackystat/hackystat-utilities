@@ -62,14 +62,6 @@ public class TestUriCache {
   }
 
   /**
-   * Tests proper region name getter.
-   */
-  @Test
-  public void testGetRegionName() {
-    assertEquals("Testing region name", "uriCache", testCache.getRegionName());
-  }
-
-  /**
    * Complex cache test, tests getters, remove and clear.
    */
   @SuppressWarnings("unchecked")
@@ -149,6 +141,14 @@ public class TestUriCache {
   }
 
   /**
+   * Tests proper region name getter.
+   */
+  @Test
+  public void testGetRegionName() {
+    assertEquals("Testing region name", "uriCache", testCache.getRegionName());
+  }
+
+  /**
    * Tests cache autodeprecation.
    */
   @Test
@@ -170,10 +170,13 @@ public class TestUriCache {
       factory = DatatypeFactory.newInstance();
       GregorianCalendar calendar = new GregorianCalendar();
       calendar.setTimeInMillis(System.currentTimeMillis() + 1);
+      
       testCache.setMaxMemoryIdleTimeSeconds(5);
+      
       testCache.cache("string1", testString1, factory.newXMLGregorianCalendar(calendar));
 
       System.out.println("Testing caching system: waiting for cache to be autocleaned.");
+      
       Thread.sleep(12000);
 
       // testCache.freeMemoryElements(1);

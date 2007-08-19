@@ -43,15 +43,6 @@ public class UriCache {
   }
 
   /**
-   * Reports the JCS region name.
-   * 
-   * @return cache region name.
-   */
-  public String getRegionName() {
-    return defaultRegionName;
-  }
-
-  /**
    * Used to cache objects by it's URL.
    * 
    * @param urlString Identity of the object to cache.
@@ -110,6 +101,27 @@ public class UriCache {
   }
 
   /**
+   * This instructs the memory cache to remove the numberToFree according to its eviction policy.
+   * 
+   * @param numberToFree number of elements to free from memory during this sweep.
+   * @return the number that were removed. if you ask to free 5, but there are only 3, you will get
+   *         3.
+   * @throws CacheException if an error encountered.
+   */
+  public Integer freeMemoryElements(int numberToFree) throws CacheException {
+    return this.jcsCache.freeMemoryElements(numberToFree);
+  }
+
+  /**
+   * Reports the JCS region name.
+   * 
+   * @return cache region name.
+   */
+  public String getRegionName() {
+    return defaultRegionName;
+  }
+
+  /**
    * Lookup object with URL 'url' in cache.
    * 
    * @param url URL of the object to search for.
@@ -135,27 +147,19 @@ public class UriCache {
   }
 
   /**
-   * This instructs the memory cache to remove the numberToFree according to its eviction policy.
-   * 
-   * @param numberToFree number of elements to free from memory during this sweep.
-   * @return the number that were removed. if you ask to free 5, but there are only 3, you will get
-   *         3.
-   * @throws CacheException if an error encountered.
-   */
-  public Integer freeMemoryElements(int numberToFree) throws CacheException {
-    return this.jcsCache.freeMemoryElements(numberToFree);
-  }
-
-  /**
    * Cache should auto-expire elements after seconds to reclaim space.
    * 
    * @param seconds The new ShrinkerIntervalSeconds value.
    */
   public void setMaxMemoryIdleTimeSeconds(int seconds) {
     CompositeCacheAttributes attr = new CompositeCacheAttributes();
+
     attr.setUseMemoryShrinker(true);
+
     attr.setMaxMemoryIdleTimeSeconds(seconds);
+
     attr.setShrinkerIntervalSeconds(seconds);
+
     this.jcsCache.setCacheAttributes(attr);
   }
 
