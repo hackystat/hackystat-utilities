@@ -22,20 +22,18 @@ import org.apache.jcs.engine.ElementAttributes;
  */
 public class UriCache {
 
-  /** The cache default region name. */
-  public static final String defaultRegionName = "uriCache";
-
   /** The cache itself */
   private JCS jcsCache;
 
   /**
-   * Constructor.
+   * Constructor, returns instance of UriCache which is configured according your configuration file
+   * cache.ccf. <b>Note that this file must be in CLASSPATH environment.</b>
    * 
    * @throws UriCacheException when unable instantiate a cache.
    */
   public UriCache() throws UriCacheException {
     try {
-      this.jcsCache = JCS.getInstance(defaultRegionName);
+      this.jcsCache = JCS.getInstance(UriCacheFactory.defaultRegionName);
     }
     catch (Exception e) {
       throw new UriCacheException("Can't instantiate JCS ObjectCacheImplementation", e);
@@ -43,9 +41,57 @@ public class UriCache {
   }
 
   /**
-   * Used to cache objects by it's URL.
+   * Constructor, returns instance of UriCache which is configured according the configuration file.
    * 
-   * @param urlString Identity of the object to cache.
+   * @param path path to configuration file.
+   * @throws UriCacheException when unable instantiate a cache.
+   */
+  public UriCache(String path) throws UriCacheException {
+    try {
+      JCS.setConfigFilename(path);
+      this.jcsCache = JCS.getInstance("testCache");
+    }
+    catch (Exception e) {
+      throw new UriCacheException("Can't instantiate JCS ObjectCacheImplementation", e);
+    }
+  }
+
+  /**
+   * Constructor, returns instance of UriCache which is configured according the
+   * CompositeCacheAttributes class provided.
+   * 
+   * @param memoryCacheAttributes the cache attributes.
+   * @throws UriCacheException when unable instantiate a cache.
+   */
+  public UriCache(CompositeCacheAttributes memoryCacheAttributes) throws UriCacheException {
+    try {
+      this.jcsCache = JCS.getInstance(UriCacheFactory.defaultRegionName, memoryCacheAttributes);
+    }
+    catch (Exception e) {
+      throw new UriCacheException("Can't instantiate JCS ObjectCacheImplementation", e);
+    }
+  }
+
+  /**
+   * Clear the cache.
+   * 
+   * @throws UriCacheException in case of error.
+   */
+  public void clear() throws UriCacheException {
+    if (this.jcsCache != null) {
+      try {
+        this.jcsCache.clear();
+      }
+      catch (CacheException e) {
+        throw new UriCacheException(e);
+      }
+    }
+  }
+
+  /**
+   * Caches the object using URI string as the key for later retrieval.
+   * 
+   * @param urlString identity (URI) of the object to cache.
    * @param obj The object to cache.
    * @throws UriCacheException in case of error.
    */
@@ -59,7 +105,7 @@ public class UriCache {
   }
 
   /**
-   * Puts object into cache and fix the objecy lifetime.
+   * Puts object into cache and specifies object lifetime within the cache.
    * 
    * @param urlString Identity of the object to cache.
    * @param obj The object to cache.
@@ -85,19 +131,13 @@ public class UriCache {
   }
 
   /**
-   * Clear the cache.
+   * Lookup object with URI 'uri' in cache.
    * 
-   * @throws UriCacheException in case of error.
+   * @param urlString URL of the object to search for.
+   * @return The cached object or <em>null</em> if no matching object for specified URL is found.
    */
-  public void clear() throws UriCacheException {
-    if (this.jcsCache != null) {
-      try {
-        this.jcsCache.clear();
-      }
-      catch (CacheException e) {
-        throw new UriCacheException(e);
-      }
-    }
+  public Object lookup(String urlString) {
+    return this.jcsCache.get(urlString);
   }
 
   /**
@@ -113,33 +153,14 @@ public class UriCache {
   }
 
   /**
-   * Reports the JCS region name.
-   * 
-   * @return cache region name.
-   */
-  public String getRegionName() {
-    return defaultRegionName;
-  }
-
-  /**
-   * Lookup object with URL 'url' in cache.
-   * 
-   * @param url URL of the object to search for.
-   * @return The cached object or <em>null</em> if no matching object for specified URL is found.
-   */
-  public Object lookup(String url) {
-    return this.jcsCache.get(url);
-  }
-
-  /**
    * Removes an Object from the cache.
    * 
-   * @param url Identity of the object to be removed.
+   * @param urlString Identity of the object to be removed.
    * @throws UriCacheException in case of error.
    */
-  public void remove(String url) throws UriCacheException {
+  public void remove(String urlString) throws UriCacheException {
     try {
-      this.jcsCache.remove(url);
+      this.jcsCache.remove(urlString);
     }
     catch (CacheException e) {
       throw new UriCacheException(e.getMessage());
@@ -147,19 +168,15 @@ public class UriCache {
   }
 
   /**
-   * Cache should auto-expire elements after seconds to reclaim space.
+   * Cache should auto-expire elements after specified seconds to reclaim space.
    * 
    * @param seconds The new ShrinkerIntervalSeconds value.
    */
   public void setMaxMemoryIdleTimeSeconds(int seconds) {
     CompositeCacheAttributes attr = new CompositeCacheAttributes();
-
     attr.setUseMemoryShrinker(true);
-
     attr.setMaxMemoryIdleTimeSeconds(seconds);
-
     attr.setShrinkerIntervalSeconds(seconds);
-
     this.jcsCache.setCacheAttributes(attr);
   }
 

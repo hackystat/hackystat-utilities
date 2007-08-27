@@ -49,16 +49,20 @@ public class TestUriCache {
    */
   @BeforeClass
   public static void oneTimeSetUp() {
-    testMap.put(1, testString1);
-    testMap.put(2, testString2);
-    testMap.put(3, testString3);
+    //
+    // making cache instance first
+    //
     try {
-      testCache = new UriCache();
+      testCache = UriCacheFactory.getURICacheInstance();
     }
     catch (UriCacheException e) {
       fail("Unable to instantiate cache: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
+    // constructing "complex" object for testing purposes
+    testMap.put(1, testString1);
+    testMap.put(2, testString2);
+    testMap.put(3, testString3);
   }
 
   /**
@@ -138,14 +142,26 @@ public class TestUriCache {
       fail("Unable to remove object from the cache: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
-  }
 
-  /**
-   * Tests proper region name getter.
-   */
-  @Test
-  public void testGetRegionName() {
-    assertEquals("Testing region name", "uriCache", testCache.getRegionName());
+    // now test the load
+    // try {
+    // int cnt = 525;
+    // for (int i = 0; i < cnt; i++) {
+    // IElementAttributes eAttr = new ElementAttributes();
+    // eAttr.setIsSpool(true);
+    // testCache.cache("key:" + i, "data:" + i);
+    // }
+    //
+    // for (int i = 0; i < cnt; i++) {
+    // String element = (String) testCache.lookup("key:" + i);
+    // assertNotNull("presave, Should have recevied an element.", element);
+    // assertEquals("presave, element is wrong.", "data:" + i, element);
+    // }
+    // }
+    // catch (UriCacheException e) {
+    // fail("Unable to proceed with load test: "
+    // + formatter.format(new LogRecord(Level.ALL, e.toString())));
+    //    }
   }
 
   /**
@@ -170,13 +186,13 @@ public class TestUriCache {
       factory = DatatypeFactory.newInstance();
       GregorianCalendar calendar = new GregorianCalendar();
       calendar.setTimeInMillis(System.currentTimeMillis() + 1);
-      
+
       testCache.setMaxMemoryIdleTimeSeconds(5);
-      
+
       testCache.cache("string1", testString1, factory.newXMLGregorianCalendar(calendar));
 
       System.out.println("Testing caching system: waiting for cache to be autocleaned.");
-      
+
       Thread.sleep(12000);
 
       // testCache.freeMemoryElements(1);
@@ -197,9 +213,6 @@ public class TestUriCache {
       fail("Cannot really do the sleep() stuff: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
-    // catch (CacheException e) {
-    // fail("Got an cache exception: " + formatter.format(new LogRecord(Level.ALL, e.toString())));
-    // }
 
   }
 

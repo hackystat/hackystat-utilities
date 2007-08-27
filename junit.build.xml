@@ -19,7 +19,7 @@
       <classpath>
         <pathelement location="${build.dir}/classes" />
         <path refid="compile.classpath"/>
-      	<pathelement location="${lib.dir}/cache" />
+      	<pathelement location="${lib.dir}/uricache" />
       </classpath>
       <formatter type="xml" />
       <batchtest todir="${junit.dir}">

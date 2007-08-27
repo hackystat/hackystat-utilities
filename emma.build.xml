@@ -43,7 +43,7 @@
       <classpath path="${build.dir}/classes;${java.class.path}">
         <path refid="emma.lib.dir" />
         <path refid="compile.classpath"/>      
-      	<pathelement location="${lib.dir}/cache" />
+      	<pathelement location="${lib.dir}/uricache" />
       </classpath>
       <sysproperty key="emma.coverage.out.file" value="${build.dir}/emma/coverage.emma" />
       <sysproperty key="emma.coverage.out.merge" value="true" />
