@@ -33,7 +33,7 @@ public class UriCache {
    */
   public UriCache() throws UriCacheException {
     try {
-      this.jcsCache = JCS.getInstance(UriCacheFactory.defaultRegionName);
+      this.jcsCache = JCS.getInstance(UriCacheFactory.uriCaheRegionName);
     }
     catch (Exception e) {
       throw new UriCacheException("Can't instantiate JCS ObjectCacheImplementation", e);
@@ -65,7 +65,7 @@ public class UriCache {
    */
   public UriCache(CompositeCacheAttributes memoryCacheAttributes) throws UriCacheException {
     try {
-      this.jcsCache = JCS.getInstance(UriCacheFactory.defaultRegionName, memoryCacheAttributes);
+      this.jcsCache = JCS.getInstance(UriCacheFactory.uriCaheRegionName, memoryCacheAttributes);
     }
     catch (Exception e) {
       throw new UriCacheException("Can't instantiate JCS ObjectCacheImplementation", e);

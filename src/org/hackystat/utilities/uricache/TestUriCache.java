@@ -1,6 +1,7 @@
 package org.hackystat.utilities.uricache;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
@@ -12,6 +13,8 @@ import java.util.logging.LogRecord;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import org.apache.jcs.engine.ElementAttributes;
+import org.apache.jcs.engine.behavior.IElementAttributes;
 import org.hackystat.utilities.logger.OneLineFormatter;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -144,24 +147,24 @@ public class TestUriCache {
     }
 
     // now test the load
-    // try {
-    // int cnt = 525;
-    // for (int i = 0; i < cnt; i++) {
-    // IElementAttributes eAttr = new ElementAttributes();
-    // eAttr.setIsSpool(true);
-    // testCache.cache("key:" + i, "data:" + i);
-    // }
-    //
-    // for (int i = 0; i < cnt; i++) {
-    // String element = (String) testCache.lookup("key:" + i);
-    // assertNotNull("presave, Should have recevied an element.", element);
-    // assertEquals("presave, element is wrong.", "data:" + i, element);
-    // }
-    // }
-    // catch (UriCacheException e) {
-    // fail("Unable to proceed with load test: "
-    // + formatter.format(new LogRecord(Level.ALL, e.toString())));
-    //    }
+    try {
+      int cnt = 500;
+      for (int i = 0; i < cnt; i++) {
+        IElementAttributes eAttr = new ElementAttributes();
+        eAttr.setIsSpool(true);
+        testCache.cache("key:" + i, "data:" + i);
+      }
+
+      for (int i = 0; i < cnt; i++) {
+        String element = (String) testCache.lookup("key:" + i);
+        assertNotNull("presave, Should have recevied an element.", element);
+        assertEquals("presave, element is wrong.", "data:" + i, element);
+      }
+    }
+    catch (UriCacheException e) {
+      fail("Unable to proceed with load test: "
+          + formatter.format(new LogRecord(Level.ALL, e.toString())));
+    }
   }
 
   /**
