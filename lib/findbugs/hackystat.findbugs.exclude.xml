@@ -7,5 +7,9 @@
   <Match>
     <Bug pattern="MS_CANNOT_BE_FINAL" />
   </Match>
+  <Match>
+    <Class name="org.hackystat.utilities.uricache.UriCache" />
+    <Bug pattern="DLS_DEAD_LOCAL_STORE" />
+  </Match>
 </FindBugsFilter>
 
