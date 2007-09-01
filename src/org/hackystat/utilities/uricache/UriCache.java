@@ -12,15 +12,11 @@ import org.apache.jcs.engine.control.CompositeCache;
 import org.apache.jcs.engine.control.CompositeCacheManager;
 
 /**
- * The HackyObjectCache stores all Objects loaded from HackyStat services. When the Service tries to
- * get an Object by its URL it first lookups the cache if the object has been already loaded and
- * cached.
+ * Provides easy caching mechanism. Backed by Apache JCS (Java Caching System). Once cache
+ * configured and initialized, it caches pairs <String, Object>.
  * 
- * <br/><br/> Using an ObjectCache has several advantages: - it increases performance as it reduces
+ * <br/><br/> Using an UriCache has several advantages: - it increases performance as it reduces
  * URL lookups.
- * 
- * <br/><br/>This interface allows to have userdefined Cache implementations. The
- * ObjectCacheFactory is responsible for generating cache instances.
  * 
  * @author <a href="mailto:seninp@gmail.com">Pavel Senin<a>
  */
@@ -42,7 +38,7 @@ public class UriCache {
   public Properties uriCacheProperties = null;
 
   /**
-   * Constructs properties for the cache instantiation.
+   * Constructs configuration properties for the cache instance.
    * 
    * @return cache properties.
    */
@@ -81,10 +77,11 @@ public class UriCache {
   }
 
   /**
-   * Constructor, returns instance of UriCache which is configured according to the properties.
+   * Constructor, returns instance of UriCache.
    * 
    * @param maxCacheElements specifies cache capacity.
-   * @param cacheMemoryIdleTime specifies memory idle time for the cache elements.
+   * @param cacheMemoryIdleTime specifies memory idle time for the cache elements, once time
+   *        exceeded, cached object will be wiped and memory will be reused by cache.
    * @throws UriCacheException when unable instantiate a cache.
    */
   public UriCache(Integer maxCacheElements, Integer cacheMemoryIdleTime) throws UriCacheException {
@@ -109,7 +106,7 @@ public class UriCache {
   }
 
   /**
-   * Clear the cache.
+   * Removes all elements from the cache.
    * 
    * @throws UriCacheException in case of error.
    */
@@ -125,7 +122,8 @@ public class UriCache {
   }
 
   /**
-   * Caches the object using URI string as the key for later retrieval.
+   * Place a new object in the cache, associated with key name. If there is currently an object
+   * associated with name in the region it is replaced.
    * 
    * @param urlString identity (URI) of the object to cache.
    * @param obj The object to cache.
@@ -167,25 +165,13 @@ public class UriCache {
   }
 
   /**
-   * Lookup object with URI 'uri' in cache.
+   * Retrieves object from the cache.
    * 
    * @param urlString URL of the object to search for.
-   * @return The cached object or <em>null</em> if no matching object for specified URL is found.
+   * @return The cached object or <em>null</em> if not found.
    */
   public Object lookup(String urlString) {
     return this.uriCache.get(urlString);
-  }
-
-  /**
-   * This instructs the memory cache to remove the numberToFree according to its eviction policy.
-   * 
-   * @param numberToFree number of elements to free from memory during this sweep.
-   * @return the number that were removed. if you ask to free 5, but there are only 3, you will get
-   *         3.
-   * @throws CacheException if an error encountered.
-   */
-  public Integer freeMemoryElements(int numberToFree) throws CacheException {
-    return this.uriCache.freeMemoryElements(numberToFree);
   }
 
   /**
