@@ -77,9 +77,6 @@
       <fileset dir="${basedir}/build/classes/">
         <include name="org/hackystat/utilities/uricache/**"/>
       </fileset>
-    	<fileset dir="${basedir}/lib/uricache/">
-    	  <include name="*.ccf"/>
-    	</fileset>
     </copy>
 
     <unjar src="${lib.dir}/concurrent/concurrent.jar" dest="${tmp.lib.dir}" />
