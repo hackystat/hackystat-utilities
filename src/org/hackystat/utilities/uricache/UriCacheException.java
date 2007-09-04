@@ -17,11 +17,10 @@ public class UriCacheException extends Exception {
    */
   public UriCacheException() {
     assert true;
-    // another PMD bogus
   }
 
   /**
-   * Messaged implementatiuon.
+   * Messaged implementation.
    * 
    * @param msg the message.
    */

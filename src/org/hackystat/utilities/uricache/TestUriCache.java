@@ -27,7 +27,7 @@ public class TestUriCache {
   private static UriCache testCache;
 
   /**
-   * Test objects we gonna use, three strings and one map.
+   * Test objects we are going to use: three strings and one map.
    */
   private static final String testString1 = "Test String1 qwerty77";
 
@@ -44,7 +44,7 @@ public class TestUriCache {
   private static OneLineFormatter formatter = new OneLineFormatter();
 
   /**
-   * This one instantiates the cache and puts test strings within test map.
+   * Instantiates a test cache and puts test elements within.
    */
   @BeforeClass
   public static void oneTimeSetUp() {
@@ -211,9 +211,9 @@ public class TestUriCache {
   // }
   // catch (InterruptedException e) {
   // fail("Cannot really do the sleep() stuff: "
-  //          + formatter.format(new LogRecord(Level.ALL, e.toString())));
-  //    }
+  // + formatter.format(new LogRecord(Level.ALL, e.toString())));
+  // }
   //
-  //  }
+  // }
 
 }
