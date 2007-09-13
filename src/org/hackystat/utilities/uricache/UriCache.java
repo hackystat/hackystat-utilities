@@ -1,6 +1,7 @@
 package org.hackystat.utilities.uricache;
 
-import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -8,7 +9,6 @@ import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.apache.jcs.engine.CompositeCacheAttributes;
 import org.apache.jcs.engine.ElementAttributes;
-import org.apache.jcs.engine.control.CompositeCache;
 import org.apache.jcs.engine.control.CompositeCacheManager;
 
 /**
@@ -19,68 +19,34 @@ import org.apache.jcs.engine.control.CompositeCacheManager;
  * lookups.
  * 
  * @author <a href="mailto:seninp@gmail.com">Pavel Senin<a>
+ * 
+ * @param <K> type of the cache keys.
+ * @param <V> type of the cache items.
  */
-public class UriCache {
-
-  /** Cache default region name. */
-  private static final String uriCaheRegionName = "UriCache";
+public class UriCache<K, V> {
 
   /** JCS cache handler */
   private JCS uriCache;
 
-  /** Cache elements idle time. */
-  private Integer uriCacheIdleTime = 86400;
-
-  /** Cache default capacity. */
-  private Integer uriCacheMaxObjects = 500;
-
-  /** JCS cache configuration properties. */
-  private Properties uriCacheProperties = null;
-
   /**
    * Constructor, returns a default instance of UriCache.
    * 
+   * @param cacheProperties the cache configuration properties.
    * @throws UriCacheException when unable instantiate a cache.
    */
-  public UriCache() throws UriCacheException {
+  public UriCache(UriCacheProperties cacheProperties) throws UriCacheException {
+    // getting rid of DEBUG level log messages
+    Logger logger = Logger.getLogger("org.apache.jcs");
+    logger.setLevel(Level.OFF);
     // setup JCS
     CompositeCacheManager mgr = CompositeCacheManager.getUnconfiguredInstance();
-    uriCacheProperties = setupProperties();
-    mgr.configure(uriCacheProperties);
-    // get access to bug test cache region
-    try {
-      this.uriCache = JCS.getInstance(uriCaheRegionName);
-      @SuppressWarnings("unused")
-      CompositeCache cache = mgr.getCache(uriCaheRegionName);
-    }
-    catch (CacheException e) {
-      throw new UriCacheException(e.toString());
-    }
-  }
-
-  /**
-   * Constructor, returns a customized instance of UriCache.
-   * 
-   * @param maxCacheElements specifies the cache capacity.
-   * @param maxLifeSeconds specifies the memory idle time for the cache elements, once this time
-   *        exceeded, cached object will be removed from the cache.
-   * @throws UriCacheException when unable instantiate a cache.
-   */
-  public UriCache(Integer maxCacheElements, Integer maxLifeSeconds) throws UriCacheException {
-
-    this.uriCacheMaxObjects = maxCacheElements;
-    this.uriCacheIdleTime = maxLifeSeconds;
-
-    // setup JCS
-    CompositeCacheManager mgr = CompositeCacheManager.getUnconfiguredInstance();
-    uriCacheProperties = setupProperties();
-    mgr.configure(uriCacheProperties);
+    mgr.configure(cacheProperties.getProperties());
 
     // get access to bug test cache region
     try {
-      this.uriCache = JCS.getInstance(uriCaheRegionName);
-      @SuppressWarnings("unused")
-      CompositeCache cache = mgr.getCache(uriCaheRegionName);
+      this.uriCache = JCS.getInstance(cacheProperties.getCacheRegionName());
+      // @SuppressWarnings("unused")
+      // IndexedDiskCache cache = mgr.getCache(cacheProperties.getCacheRegionName());
     }
     catch (CacheException e) {
       throw new UriCacheException(e.toString());
@@ -95,7 +61,7 @@ public class UriCache {
    * @param obj The object to cache.
    * @throws UriCacheException in case of error.
    */
-  public void cache(String uriString, Object obj) throws UriCacheException {
+  public void cache(K uriString, V obj) throws UriCacheException {
     try {
       this.uriCache.put(uriString, obj);
     }
@@ -113,7 +79,7 @@ public class UriCache {
    *        once System time is greater than the timestamp value.
    * @throws UriCacheException in case of error.
    */
-  public void cache(String uriString, Object obj, XMLGregorianCalendar expirationTimeStamp)
+  public void cache(K uriString, V obj, XMLGregorianCalendar expirationTimeStamp)
       throws UriCacheException {
 
     // first of all calculating the life time of this object from now
@@ -153,7 +119,7 @@ public class UriCache {
    * @param uriString URI of the object to search for.
    * @return The cached object or <em>null</em> if not found.
    */
-  public Object lookup(String uriString) {
+  public Object lookup(K uriString) {
     return this.uriCache.get(uriString);
   }
 
@@ -163,7 +129,7 @@ public class UriCache {
    * @param uriString Identity of the object to be removed.
    * @throws UriCacheException in case of error.
    */
-  public void remove(String uriString) throws UriCacheException {
+  public void remove(K uriString) throws UriCacheException {
     try {
       this.uriCache.remove(uriString);
     }
@@ -184,48 +150,6 @@ public class UriCache {
     attr.setMaxMemoryIdleTimeSeconds(seconds);
     attr.setShrinkerIntervalSeconds(seconds);
     this.uriCache.setCacheAttributes(attr);
-  }
-
-  /**
-   * Constructs configuration properties for the cache instance.
-   * 
-   * @return cache properties.
-   */
-  private Properties setupProperties() {
-    Properties prop = new Properties();
-    // this is JCS required part - configuring default cache properties
-    prop.setProperty("jcs.default", "");
-    prop.setProperty("jcs.default.cacheattributes",
-        "org.apache.jcs.engine.CompositeCacheAttributes");
-    prop.setProperty("jcs.default.cacheattributes.MemoryCacheName",
-        "org.apache.jcs.engine.memory.lru.LRUMemoryCache");
-    prop.setProperty("jcs.default.cacheattributes.MaxObjects", "500");
-
-    // UriCache region - elements won't go to disk, but should be marked as expired after five
-    // seconds of non-use
-    prop.setProperty("jcs.region.UriCache", "");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.MemoryCacheName",
-        "org.apache.jcs.engine.memory.lru.LRUMemoryCache");
-
-    prop.setProperty("jcs.region.UriCache.cacheattributes",
-        "org.apache.jcs.engine.CompositeCacheAttributes");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.MaxObjects", this.uriCacheMaxObjects
-        .toString());
-    prop.setProperty("jcs.region.UriCache.cacheattributes.ShrinkerIntervalSeconds", "60");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.UseMemoryShrinker", "true");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.UseDisk", "false");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.UseRemote", "false");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.UseLateral", "false"); 
-
-    prop.setProperty("jcs.region.UriCache.elementattributes",
-        "org.apache.jcs.engine.ElementAttributes");
-    prop.setProperty("jcs.region.UriCache.elementattributes.IsEternal", "false");
-    prop.setProperty("jcs.region.UriCache.elementattributes.IsLateral", "false");
-    prop.setProperty("jcs.region.UriCache.elementattributes.MaxLifeSeconds", this.uriCacheIdleTime
-        .toString());
-    prop.setProperty("jcs.region.UriCache.elementattributes.IdleTime", this.uriCacheIdleTime
-        .toString());
-    return prop;
   }
 
 }

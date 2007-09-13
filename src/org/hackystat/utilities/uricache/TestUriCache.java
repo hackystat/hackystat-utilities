@@ -2,17 +2,15 @@ package org.hackystat.utilities.uricache;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import org.apache.jcs.engine.ElementAttributes;
-import org.apache.jcs.engine.behavior.IElementAttributes;
 import org.hackystat.utilities.logger.OneLineFormatter;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -24,7 +22,7 @@ import org.junit.Test;
 public class TestUriCache {
 
   /** The cache itself */
-  private static UriCache testCache;
+  private UriCache<String, String> testCache;
 
   /**
    * Test objects we are going to use: three strings and one map.
@@ -37,27 +35,25 @@ public class TestUriCache {
 
   private static TreeMap<Integer, String> testMap = new TreeMap<Integer, String>();
 
+  private UriCacheProperties prop;
+
   // PMD is killing me....
-  private static final String string2Name = "string2";
+  // private static final String string2Name = "string2";
+
+  private static final int cacheLoadLimit = 1000;
 
   /** The formatter to use for formatting exceptions */
   private static OneLineFormatter formatter = new OneLineFormatter();
 
   /**
-   * Instantiates a test cache and puts test elements within.
+   * Instantiates default cache properties and creates objects to be cached.
+   * 
+   * @throws Exception if error encountered.
    */
-  @BeforeClass
-  public static void oneTimeSetUp() {
-    //
-    // making cache instance first
-    //
-    try {
-      testCache = new UriCache(500, 1000);
-    }
-    catch (UriCacheException e) {
-      fail("Unable to instantiate cache: "
-          + formatter.format(new LogRecord(Level.ALL, e.toString())));
-    }
+  @Before
+  public void setUp() throws Exception {
+    prop = new UriCacheProperties();
+    prop.setCacheStorage("test/cache");
     // constructing "complex" object for testing purposes
     testMap.put(1, testString1);
     testMap.put(2, testString2);
@@ -65,97 +61,57 @@ public class TestUriCache {
   }
 
   /**
-   * Complex cache test, tests getters, remove and clear.
+   * Clears the cache and nulls it after.
+   * 
+   * @throws UriCacheException if error encountered.
    */
-  @SuppressWarnings("unchecked")
+  @After
+  public void tearDown() throws UriCacheException {
+    if (null != testCache) {
+      testCache.clear();
+    }
+  }
+
+  /**
+   * Cache instantiation test.
+   */
   @Test
-  public void testCache() {
-
-    //
-    // clean the cache first
-    //
+  public void testCacheInstance() {
     try {
-      testCache.clear();
+      testCache = new UriCache<String, String>(prop);
+      testCache.cache("1", testString1);
+      testCache.cache("2", testString2);
+      testCache.cache("3", testString3);
     }
     catch (UriCacheException e) {
-      fail("Unable to remove object from the cache: "
+      fail("Unable to create cache instance: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
+    assertEquals("Testing .lookup() method.", testString1, testCache.lookup("1"));
+    assertEquals("Testing .lookup() method.", testString2, testCache.lookup("2"));
+    assertEquals("Testing .lookup() method.", testString3, testCache.lookup("3"));
+  }
 
-    //
-    // caching objects at second.
-    //
+  /**
+   * Cache load test.
+   */
+  @Test
+  public void testCacheLoad() {
     try {
-      testCache.cache("string1", testString1);
-      testCache.cache(string2Name, testString2);
-      testCache.cache("string3", testString3);
-      testCache.cache("testMap", testMap);
-    }
-    catch (UriCacheException e) {
-      fail("Unable to put objects into cache: "
-          + formatter.format(new LogRecord(Level.ALL, e.toString())));
-    }
+      testCache = new UriCache<String, String>(prop);
 
-    // looking up for the string
-    Object object1 = testCache.lookup(string2Name);
-    if (object1 instanceof String) {
-      assertEquals("Testing .lookup() method.", testString2, (String) object1);
-    }
-    else {
-      fail("Unable to get result from .lookup() method.");
-    }
+      int cnt = TestUriCache.cacheLoadLimit;
 
-    // looking up for the map
-    Object object2 = testCache.lookup("testMap");
-    if (object2 instanceof TreeMap) {
-      TreeMap<Integer, String> cachedMap = (TreeMap<Integer, String>) object2;
-      assertEquals("Testing .lookup() method.", testString2, cachedMap.get(2));
-    }
-    else {
-      fail("Unable to get result from .lookup() method.");
-    }
-
-    //
-    // now we will try to remove one of the strings
-    //
-    try {
-      testCache.remove(string2Name);
-      assertNull("Testing .remove() method", testCache.lookup(string2Name));
-    }
-    catch (UriCacheException e) {
-      fail("Unable to remove object from the cache: "
-          + formatter.format(new LogRecord(Level.ALL, e.toString())));
-    }
-
-    //
-    // and finally clean the cache.
-    //
-    try {
-      testCache.clear();
-      assertNull("Testing .clear() method", testCache.lookup("string1"));
-      assertNull("Testing  .clear() method", testCache.lookup(string2Name));
-      assertNull("Testing   .clear() method", testCache.lookup("string3"));
-      assertNull("Testing    .clear() method", testCache.lookup("testMap"));
-    }
-    catch (UriCacheException e) {
-      fail("Unable to remove object from the cache: "
-          + formatter.format(new LogRecord(Level.ALL, e.toString())));
-    }
-
-    // now test the load
-    try {
-      testCache.clear();
-      int cnt = 499;
       for (int i = 0; i < cnt; i++) {
-        IElementAttributes eAttr = new ElementAttributes();
-        eAttr.setIsSpool(true);
         testCache.cache("key:" + i, "data:" + i);
+        // System.out.println("cached: " + i);
       }
 
       for (int i = 0; i < cnt; i++) {
         String element = (String) testCache.lookup("key:" + i);
         assertNotNull("presave, Should have recevied an element. " + i, element);
         assertEquals("presave, element is wrong.", "data:" + i, element);
+        // System.out.println("got: " + i);
       }
     }
     catch (UriCacheException e) {
@@ -165,23 +121,13 @@ public class TestUriCache {
   }
 
   // /**
-  // * Tests cache autodeprecation.
+  // * Cache shrinker test.
   // */
   // @Test
-  // public void testTimedCache() {
-  // // clean cache first
+  // public void testCacheShrinker() {
   // try {
-  // testCache.clear();
-  // }
-  // catch (UriCacheException e) {
-  // fail("Unable to remove object from the cache: "
-  // + formatter.format(new LogRecord(Level.ALL, e.toString())));
-  // }
+  // testCache = new UriCache<String, String>(prop);
   //
-  // //
-  // // caching object.
-  // //
-  // try {
   // DatatypeFactory factory = null;
   // factory = DatatypeFactory.newInstance();
   // GregorianCalendar calendar = new GregorianCalendar();
@@ -192,6 +138,8 @@ public class TestUriCache {
   // testCache.cache("string1", testString1, factory.newXMLGregorianCalendar(calendar));
   //
   // System.out.println("Testing caching system: waiting for cache to be autocleaned.");
+  //
+  // Thread.sleep(5 * 100 * 15);
   //
   // Thread.sleep(5 * 100 * 15);
   //
@@ -213,7 +161,6 @@ public class TestUriCache {
   // fail("Cannot really do the sleep() stuff: "
   // + formatter.format(new LogRecord(Level.ALL, e.toString())));
   // }
-  //
   // }
 
 }

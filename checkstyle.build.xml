@@ -29,6 +29,13 @@
       </classpath>   
     </checkstyle>
   </target>
+
+  <target name="checkstyle.report" depends="checkstyle.tool" description="Generates an HTML report for Checkstyle.">
+    <xslt in="${checkstyle.dir}/checkstyle.xml" out="${checkstyle.dir}/index.html" style="${env.CHECKSTYLE_HOME}/contrib/checkstyle-noframes.xsl">
+      <param name="title" expression="Checkstyle Report" />
+      <param name="module" expression="${system.name}" />
+    </xslt>
+  </target>
   
   <target name="checkstyle.sensor" description="Sends CodeIssue data to Hackystat using the Checkstyle Sensor.">
     <!-- Define the checkstyle sensor taskdef, failing the build if the sensor is not installed. -->

@@ -72,6 +72,20 @@
     <!-- Now delete the instrumented .class files. -->
      <delete dir="${build.dir}/classes" />
   </target>
+
+  <target name="emma.report" depends="emma.tool" description="Generates XML and HTML reports.">
+    <!-- Generate Emma reports. -->
+    <emma enabled="true">
+      <report sourcepath="${src.dir}" sort="+name" metrics="method:70,block:80,line:80,class:100">
+        <fileset dir="${emma.dir}">
+          <include name="*.emma" />
+        </fileset>
+        <xml outfile="${emma.dir}/coverage.xml" depth="method" />
+        <txt outfile="${emma.dir}/coverage.txt" depth="class" />
+        <html outfile="${emma.dir}/coverage.html" depth="method" columns="name,class,method,block,line" />
+      </report>
+    </emma>
+  </target>
   
   <target name="emma.echo" description="Sends summary of Emma results to console">
     <!-- It's ridiculous what we have to do to get a decent summary. -->
