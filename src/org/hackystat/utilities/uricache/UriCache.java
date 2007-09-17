@@ -9,11 +9,12 @@ import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.apache.jcs.engine.CompositeCacheAttributes;
 import org.apache.jcs.engine.ElementAttributes;
+import org.apache.jcs.engine.control.CompositeCache;
 import org.apache.jcs.engine.control.CompositeCacheManager;
 
 /**
  * Provides an easy caching mechanism which is backed by Apache JCS (Java Caching System). Once
- * cache configured and initialized, it caches pairs &lt;String, Object&gt;.
+ * cache configured and initialized, it caches pairs &lt;K, V&gt;.
  * 
  * <br/><br/> Using an UriCache has several advantages: it increases performance as it reduces URL
  * lookups.
@@ -41,12 +42,11 @@ public class UriCache<K, V> {
     // setup JCS
     CompositeCacheManager mgr = CompositeCacheManager.getUnconfiguredInstance();
     mgr.configure(cacheProperties.getProperties());
-
     // get access to bug test cache region
     try {
       this.uriCache = JCS.getInstance(cacheProperties.getCacheRegionName());
-      // @SuppressWarnings("unused")
-      // IndexedDiskCache cache = mgr.getCache(cacheProperties.getCacheRegionName());
+      @SuppressWarnings("unused")
+      CompositeCache cache = mgr.getCache(cacheProperties.getCacheRegionName());
     }
     catch (CacheException e) {
       throw new UriCacheException(e.toString());
@@ -110,6 +110,16 @@ public class UriCache<K, V> {
       catch (CacheException e) {
         throw new UriCacheException(e);
       }
+    }
+  }
+
+  /**
+   * ShutDowns the cache, flushes all items from the memory to cache and clears memory region.
+   * 
+   */
+  public void shutdown() {
+    if (this.uriCache != null) {
+      this.uriCache.dispose();
     }
   }
 

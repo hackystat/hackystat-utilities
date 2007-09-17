@@ -51,12 +51,12 @@
 	<property name="junit.jar" location="${env.JUNIT_HOME}/junit-${junit.version}.jar" />
 	<available file="${junit.jar}" type="file" property="junit.available" />
 	<fail message="This package requires JUNIT_HOME to be defined and ${junit.jar} available" unless="junit.available" />
-
+	
 	<!-- The compile classpath  -->
 	<path id="compile.classpath">
 		<fileset file="${env.JUNIT_HOME}/junit-${junit.version}.jar" />
 		<fileset file="${env.FINDBUGS_HOME}/lib/annotations.jar" />
-		<fileset file="${lib.dir}/jcs/jcs-1.3.jar" />
+		<fileset file="${env.APACHE_JCS_HOME}/jcs-1.3.jar" />
 		<fileset file="${env.APACHE_COMMONS_LOGGING_HOME}/commons-logging-1.1.jar" />
 		<fileset file="${lib.dir}/concurrent/concurrent.jar" />
 	</path>

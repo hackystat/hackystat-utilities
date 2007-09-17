@@ -2,6 +2,7 @@ package org.hackystat.utilities.uricache;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.TreeMap;
@@ -36,9 +37,6 @@ public class TestUriCache {
   private static TreeMap<Integer, String> testMap = new TreeMap<Integer, String>();
 
   private UriCacheProperties prop;
-
-  // PMD is killing me....
-  // private static final String string2Name = "string2";
 
   private static final int cacheLoadLimit = 1000;
 
@@ -97,6 +95,47 @@ public class TestUriCache {
    */
   @Test
   public void testCacheLoad() {
+    try {
+      // create a cache instance
+      testCache = new UriCache<String, String>(prop);
+
+      // put items in cache
+      int cnt = TestUriCache.cacheLoadLimit;
+      for (int i = 0; i < cnt; i++) {
+        testCache.cache("key:" + i, "data:" + i);
+        // System.out.println("cached: " + i);
+      }
+
+      // get items from cache
+      for (int i = 0; i < cnt; i++) {
+        String element = (String) testCache.lookup("key:" + i);
+        assertNotNull("presave, Should have recevied an element. " + i, element);
+        assertEquals("presave, element is wrong.", "data:" + i, element);
+        // System.out.println("got: " + i);
+      }
+
+      // Remove all the items
+      for (int i = 0; i <= cnt; i++) {
+        testCache.remove("key:" + i);
+      }
+
+      // Verify removal
+      for (int i = 0; i <= cnt; i++) {
+        assertNull("Removed key should be null: " + i + ":key", testCache.lookup("key:" + i));
+      }
+
+    }
+    catch (UriCacheException e) {
+      fail("Unable to proceed with load test: "
+          + formatter.format(new LogRecord(Level.ALL, e.toString())));
+    }
+  }
+
+  /**
+   * Cache shutdown, hot startup test.
+   */
+  @Test
+  public void testCacheHotStart() {
     try {
       testCache = new UriCache<String, String>(prop);
 
