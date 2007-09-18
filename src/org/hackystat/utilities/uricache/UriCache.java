@@ -37,8 +37,9 @@ public class UriCache<K, V> {
    */
   public UriCache(UriCacheProperties cacheProperties) throws UriCacheException {
     // getting rid of DEBUG level log messages
+    Level loggerLevel = cacheProperties.getLoggerLevel();
     Logger logger = Logger.getLogger("org.apache.jcs");
-    logger.setLevel(Level.OFF);
+    logger.setLevel(loggerLevel);
     // setup JCS
     CompositeCacheManager mgr = CompositeCacheManager.getUnconfiguredInstance();
     mgr.configure(cacheProperties.getProperties());

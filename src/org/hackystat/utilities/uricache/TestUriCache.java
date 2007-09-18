@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests the HackyObjectCacheJCSImplementation class.
+ * Tests the UriCache class.
  * 
  * @author <a href="mailto:seninp@gmail.com">Pavel Senin<a>
  * 
@@ -38,7 +38,7 @@ public class TestUriCache {
 
   private UriCacheProperties prop;
 
-  private static final int cacheLoadLimit = 1000;
+  private static final int cacheLoadLimit = 15000;
 
   /** The formatter to use for formatting exceptions */
   private static OneLineFormatter formatter = new OneLineFormatter();
@@ -68,6 +68,7 @@ public class TestUriCache {
   public void tearDown() throws UriCacheException {
     if (null != testCache) {
       testCache.clear();
+      testCache.shutdown();
     }
   }
 
@@ -188,53 +189,53 @@ public class TestUriCache {
   public void testCaches() {
 
     // create three properties first
-    UriCacheProperties prop1 = new UriCacheProperties();
-    prop1.setCacheStoragePath("sandbox/cache");
-    prop1.setCacheRegionName("StringsCache");
+    UriCacheProperties stringCacheProp = new UriCacheProperties();
+    stringCacheProp.setCacheStoragePath("sandbox/cache");
+    stringCacheProp.setCacheRegionName("StringsCache");
 
-    UriCacheProperties prop2 = new UriCacheProperties();
-    prop2.setCacheStoragePath("sandbox/cache");
-    prop2.setCacheRegionName("IntegerCache");
+    UriCacheProperties intCacheProp = new UriCacheProperties();
+    intCacheProp.setCacheStoragePath("sandbox/cache");
+    intCacheProp.setCacheRegionName("IntegerCache");
 
-    UriCacheProperties prop3 = new UriCacheProperties();
-    prop3.setCacheStoragePath("sandbox/cache");
-    prop3.setCacheRegionName("DoubleCache");
+    UriCacheProperties doubleCacheProp = new UriCacheProperties();
+    doubleCacheProp.setCacheStoragePath("sandbox/cache");
+    doubleCacheProp.setCacheRegionName("DoubleCache");
 
     try {
-      // create a cache instances
-      UriCache<String, String> testCache1 = new UriCache<String, String>(prop1);
-      UriCache<String, Integer> testCache2 = new UriCache<String, Integer>(prop2);
-      UriCache<String, Double> testCache3 = new UriCache<String, Double>(prop3);
+      // create cache instances
+      UriCache<String, String> stringCache = new UriCache<String, String>(stringCacheProp);
+      UriCache<String, Integer> integerCache = new UriCache<String, Integer>(intCacheProp);
+      UriCache<String, Double> doubleCache = new UriCache<String, Double>(doubleCacheProp);
 
       // put items in cache
       int cnt = TestUriCache.cacheLoadLimit;
       for (int i = 0; i < cnt; i++) {
-        testCache1.cache("key:" + i, "data:" + i);
-        testCache2.cache("key:" + i, i);
-        testCache3.cache("key:" + i, ((Integer) i).doubleValue());
+        stringCache.cache("key:" + i, "data:" + i);
+        integerCache.cache("key:" + i, i);
+        doubleCache.cache("key:" + i, ((Integer) i).doubleValue());
       }
 
       // get items from cache
       for (int i = 0; i < cnt; i++) {
-        String element = (String) testCache1.lookup("key:" + i);
+        String element = (String) stringCache.lookup("key:" + i);
         assertNotNull("presave, Should have recevied an element. " + i, element);
         assertEquals("presave, element is wrong.", "data:" + i, element);
         // System.out.println("got: " + i);
 
-        Integer element1 = (Integer) testCache2.lookup("key:" + i);
+        Integer element1 = (Integer) integerCache.lookup("key:" + i);
         assertNotNull("presave, Should have recevied an element. " + i, element1);
         assertEquals("presave, element is wrong.", ((Integer) i), element1);
 
-        Double element2 = (Double) testCache3.lookup("key:" + i);
+        Double element2 = (Double) doubleCache.lookup("key:" + i);
         assertNotNull("presave, Should have recevied an element. " + i, element2);
         assertEquals("presave, element is wrong.", ((Integer) i).doubleValue(), element2
             .doubleValue(), 0.02d);
       }
 
       // shutdown caches
-      testCache1.shutdown();
-      testCache2.shutdown();
-      testCache3.shutdown();
+      stringCache.shutdown();
+      integerCache.shutdown();
+      doubleCache.shutdown();
     }
     catch (UriCacheException e) {
       fail("Unable to proceed with load test: "

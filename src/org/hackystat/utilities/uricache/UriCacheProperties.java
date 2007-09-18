@@ -1,6 +1,7 @@
 package org.hackystat.utilities.uricache;
 
 import java.util.Properties;
+import java.util.logging.Level;
 
 /**
  * Provides configuration properties for the UriCache library.
@@ -17,7 +18,7 @@ public class UriCacheProperties {
   private Long maxIdleTime = 86400L;
 
   /** Cache default capacity. */
-  private Long maxMemoryCacheCapacity = 5000L;
+  private Long maxMemoryCacheCapacity = 50000L;
 
   /** JCS cache configuration properties. */
   private Properties cacheProperties = null;
@@ -27,6 +28,9 @@ public class UriCacheProperties {
 
   /** the internal properties handler */
   private Properties prop;
+
+  /** UriCache logging level */
+  private Level loggerLevel = Level.OFF;
 
   /**
    * Creates new instance and sets default properties.
@@ -164,10 +168,28 @@ public class UriCacheProperties {
   /**
    * Sets the cache region name.
    * 
-   * @param string name to set.
+   * @param cacheName name to set.
    */
-  public void setCacheRegionName(String string) {
-    this.uriCaheRegionName = string;
+  public void setCacheRegionName(String cacheName) {
+    this.uriCaheRegionName = cacheName;
+  }
+
+  /**
+   * Reports the logger level set in the properties.
+   * 
+   * @return logger level.
+   */
+  public Level getLoggerLevel() {
+    return this.loggerLevel;
+  }
+
+  /**
+   * Set the logger level.
+   * 
+   * @param level logger level to set.
+   */
+  public void setLoggerLevel(Level level) {
+    this.loggerLevel = level;
   }
 
   // /**
