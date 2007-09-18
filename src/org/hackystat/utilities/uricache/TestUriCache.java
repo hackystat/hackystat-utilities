@@ -51,7 +51,8 @@ public class TestUriCache {
   @Before
   public void setUp() throws Exception {
     prop = new UriCacheProperties();
-    prop.setCacheStorage("test/cache");
+    prop.setCacheRegionName("testCache");
+    prop.setCacheStoragePath("sandbox/cache");
     // constructing "complex" object for testing purposes
     testMap.put(1, testString1);
     testMap.put(2, testString2);
@@ -85,6 +86,7 @@ public class TestUriCache {
       fail("Unable to create cache instance: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
+    assertEquals("Testing .getName() method.", "testCache", testCache.getRegionName());
     assertEquals("Testing .lookup() method.", testString1, testCache.lookup("1"));
     assertEquals("Testing .lookup() method.", testString2, testCache.lookup("2"));
     assertEquals("Testing .lookup() method.", testString3, testCache.lookup("3"));
@@ -152,11 +154,87 @@ public class TestUriCache {
         assertEquals("presave, element is wrong.", "data:" + i, element);
         // System.out.println("got: " + i);
       }
+
+      // testCache.shutdown();
+      //
+      // Thread.yield();
+      // Thread.sleep(600);
+      // Thread.yield();
+      //
+      // testCache = new UriCache<String, String>(prop);
+      //
+      // for (int i = 0; i < cnt; i++) {
+      // String element = (String) testCache.lookup("key:" + i);
+      // assertNotNull("presave, Should have recevied an element. " + i, element);
+      // assertEquals("presave, element is wrong.", "data:" + i, element);
+      // // System.out.println("got: " + i);
+      // }
+
     }
     catch (UriCacheException e) {
       fail("Unable to proceed with load test: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
+    // catch (InterruptedException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+  }
+
+  /**
+   * Creates and loads three different caches simultaneously.
+   */
+  @Test
+  public void testCaches() {
+
+    // create three properties first
+    UriCacheProperties prop1 = new UriCacheProperties();
+    prop1.setCacheStoragePath("sandbox/cache");
+    prop1.setCacheRegionName("StringsCache");
+
+    UriCacheProperties prop2 = new UriCacheProperties();
+    prop2.setCacheStoragePath("sandbox/cache");
+    prop2.setCacheRegionName("IntegerCache");
+
+    UriCacheProperties prop3 = new UriCacheProperties();
+    prop3.setCacheStoragePath("sandbox/cache");
+    prop3.setCacheRegionName("DoubleCache");
+
+    try {
+      // create a cache instances
+      UriCache<String, String> testCache1 = new UriCache<String, String>(prop1);
+      UriCache<String, Integer> testCache2 = new UriCache<String, Integer>(prop2);
+      UriCache<String, Double> testCache3 = new UriCache<String, Double>(prop3);
+
+      // put items in cache
+      int cnt = TestUriCache.cacheLoadLimit;
+      for (int i = 0; i < cnt; i++) {
+        testCache1.cache("key:" + i, "data:" + i);
+        testCache2.cache("key:" + i, i);
+        testCache3.cache("key:" + i, ((Integer) i).doubleValue());
+      }
+
+      // get items from cache
+      for (int i = 0; i < cnt; i++) {
+        String element = (String) testCache1.lookup("key:" + i);
+        assertNotNull("presave, Should have recevied an element. " + i, element);
+        assertEquals("presave, element is wrong.", "data:" + i, element);
+        // System.out.println("got: " + i);
+
+        Integer element1 = (Integer) testCache2.lookup("key:" + i);
+        assertNotNull("presave, Should have recevied an element. " + i, element1);
+        assertEquals("presave, element is wrong.", i, element1);
+
+        Double element2 = (Double) testCache3.lookup("key:" + i);
+        assertNotNull("presave, Should have recevied an element. " + i, element2);
+        assertEquals("presave, element is wrong.", ((Integer) i).doubleValue(), element2);
+      }
+    }
+    catch (UriCacheException e) {
+      fail("Unable to proceed with load test: "
+          + formatter.format(new LogRecord(Level.ALL, e.toString())));
+    }
+
   }
 
   // /**

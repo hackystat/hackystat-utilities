@@ -162,4 +162,13 @@ public class UriCache<K, V> {
     this.uriCache.setCacheAttributes(attr);
   }
 
+  /**
+   * Reports the cache memory region name.
+   * 
+   * @return cache name.
+   */
+  public String getRegionName() {
+    return this.uriCache.getCacheAttributes().getCacheName();
+  }
+
 }

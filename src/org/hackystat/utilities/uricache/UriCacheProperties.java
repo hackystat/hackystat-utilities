@@ -11,7 +11,7 @@ import java.util.Properties;
 public class UriCacheProperties {
 
   /** Cache default region name. */
-  private static final String uriCaheRegionName = "UriCache";
+  private String uriCaheRegionName = "UriCache";
 
   /** Cache elements idle time. 24 hours default time. */
   private Long maxIdleTime = 86400L;
@@ -58,7 +58,7 @@ public class UriCacheProperties {
    * 
    * @param storagePath the cache storage folder.
    */
-  public void setCacheStorage(String storagePath) {
+  public void setCacheStoragePath(String storagePath) {
     this.dcStoragePath = storagePath;
     prop.setProperty("jcs.auxiliary.indexedDiskCache.attributes.DiskPath", this.dcStoragePath);
   }
@@ -84,19 +84,24 @@ public class UriCacheProperties {
     //
     // ------- UriCache region cache attributes ---------
     //
-    prop.setProperty("jcs.region.UriCache", "indexedDiskCache");
-    prop.setProperty("jcs.region.UriCache.cacheattributes",
+    prop.setProperty("jcs.region." + this.uriCaheRegionName, "indexedDiskCache");
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes",
         "org.apache.jcs.engine.CompositeCacheAttributes");
-    prop.setProperty("jcs.UriCache.cacheattributes.MaxObjects", this.maxMemoryCacheCapacity
-        .toString());
-    prop.setProperty("jcs.region.UriCache.cacheattributes.MemoryCacheName",
+    prop.setProperty("jcs." + this.uriCaheRegionName + ".cacheattributes.MaxObjects",
+        this.maxMemoryCacheCapacity.toString());
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.MemoryCacheName",
         "org.apache.jcs.engine.memory.lru.LRUMemoryCache");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.ShrinkerIntervalSeconds", "300");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.UseMemoryShrinker", "true");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.UseDisk", "true");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.UseRemote", "false");
-    prop.setProperty("jcs.region.UriCache.cacheattributes.UseLateral", "false");
-    prop.setProperty("jcs.region.testCache1.cacheattributes.MaxSpoolPerRun", "500");
+    prop.setProperty("jcs.region." + this.uriCaheRegionName
+        + ".cacheattributes.ShrinkerIntervalSeconds", "300");
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseMemoryShrinker",
+        "true");
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseDisk", "true");
+    prop
+        .setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseRemote", "false");
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseLateral",
+        "false");
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.MaxSpoolPerRun",
+        "500");
     //
     // -------- elements attributes --------
     //
@@ -153,7 +158,16 @@ public class UriCacheProperties {
    * @return this cache region name.
    */
   public String getCacheRegionName() {
-    return UriCacheProperties.uriCaheRegionName;
+    return this.uriCaheRegionName;
+  }
+
+  /**
+   * Sets the cache region name.
+   * 
+   * @param string name to set.
+   */
+  public void setCacheRegionName(String string) {
+    this.uriCaheRegionName = string;
   }
 
   // /**
