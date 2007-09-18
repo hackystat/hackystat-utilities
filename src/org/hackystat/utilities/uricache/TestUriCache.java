@@ -223,12 +223,18 @@ public class TestUriCache {
 
         Integer element1 = (Integer) testCache2.lookup("key:" + i);
         assertNotNull("presave, Should have recevied an element. " + i, element1);
-        assertEquals("presave, element is wrong.", i, element1);
+        assertEquals("presave, element is wrong.", ((Integer) i), element1);
 
         Double element2 = (Double) testCache3.lookup("key:" + i);
         assertNotNull("presave, Should have recevied an element. " + i, element2);
-        assertEquals("presave, element is wrong.", ((Integer) i).doubleValue(), element2);
+        assertEquals("presave, element is wrong.", ((Integer) i).doubleValue(), element2
+            .doubleValue(), 0.02d);
       }
+
+      // shutdown caches
+      testCache1.shutdown();
+      testCache2.shutdown();
+      testCache3.shutdown();
     }
     catch (UriCacheException e) {
       fail("Unable to proceed with load test: "

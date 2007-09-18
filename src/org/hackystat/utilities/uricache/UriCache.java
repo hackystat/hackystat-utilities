@@ -49,7 +49,7 @@ public class UriCache<K, V> {
       CompositeCache cache = mgr.getCache(cacheProperties.getCacheRegionName());
     }
     catch (CacheException e) {
-      throw new UriCacheException(e.toString());
+      throw new UriCacheException(e.getMessage());
     }
   }
 
@@ -66,7 +66,7 @@ public class UriCache<K, V> {
       this.uriCache.put(uriString, obj);
     }
     catch (CacheException e) {
-      throw new UriCacheException(e);
+      throw new UriCacheException(e.getMessage());
     }
   }
 
@@ -93,7 +93,7 @@ public class UriCache<K, V> {
       this.uriCache.put(uriString, obj, attr);
     }
     catch (CacheException e) {
-      throw new UriCacheException(e);
+      throw new UriCacheException(e.getMessage());
     }
   }
 
@@ -108,7 +108,7 @@ public class UriCache<K, V> {
         this.uriCache.clear();
       }
       catch (CacheException e) {
-        throw new UriCacheException(e);
+        throw new UriCacheException(e.getMessage());
       }
     }
   }
