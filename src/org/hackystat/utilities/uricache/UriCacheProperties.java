@@ -18,7 +18,7 @@ public class UriCacheProperties {
   private Long maxIdleTime = 86400L;
 
   /** Cache default capacity. */
-  private Long maxMemoryCacheCapacity = 50000L;
+  private Long maxMemoryCacheCapacity = 10000L;
 
   /** JCS cache configuration properties. */
   private Properties cacheProperties = null;

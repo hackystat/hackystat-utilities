@@ -76,6 +76,7 @@
 			<fileset dir="${basedir}" includes="*.jar" />
 		</delete>
 		<delete dir="${build.dir}" />
+		<delete dir="${basedir}/sandbox" />
 	</target>
 
 	<target name="convertLineEndings" description="Makes line endings compatible with host platform.">

@@ -38,7 +38,7 @@ public class TestUriCache {
 
   private UriCacheProperties prop;
 
-  private static final int cacheLoadLimit = 15000;
+  private static final int cacheLoadLimit = 9999;
 
   /** The formatter to use for formatting exceptions */
   private static OneLineFormatter formatter = new OneLineFormatter();
@@ -233,8 +233,11 @@ public class TestUriCache {
       }
 
       // shutdown caches
+      stringCache.clear();
       stringCache.shutdown();
+      integerCache.clear();
       integerCache.shutdown();
+      doubleCache.clear();
       doubleCache.shutdown();
     }
     catch (UriCacheException e) {
