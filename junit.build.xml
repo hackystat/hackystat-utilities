@@ -35,19 +35,17 @@
       <report format="frames" todir="${junit.dir}" />
     </junitreport>
   </target>
-    
-  <target name="junit.sensor" description="Sends UnitTest data to Hackystat using the JUnit sensor.">
-    <!-- Define the junit sensor taskdef, failing the build if the sensor is not installed. -->
-    <available classname="org.hackystat.sensor.junit.JUnitSensor" property="junit.sensor.available"/>
-    <fail unless="junit.sensor.available" message="Error: JUnit sensor not installed."/>
-    <taskdef name="hacky-junit" classname="org.hackystat.sensor.junit.JUnitSensor" />
 
-    <!-- Send JUnit test data to hackystat using the JUnit sensor. -->
-    <hacky-junit verbose="${hackystat.verbose.mode}" 
-                 sourcePath="${src.dir}">
-      <fileset dir="${junit.dir}" includes="TEST-*.xml"/>
-    </hacky-junit>
-  </target>
+ <target name="junit.sensor" depends="junit.tool" description="Sends UnitTest data to Hackystat using the JUnit sensor.">
+  <!-- Define the junit sensor taskdef. -->
+  <taskdef resource="antlib.xml" classpath="${basedir}/antsensors.jar"/>
+        
+  <!-- Send JUnit test data to hackystat using the JUnit sensor. -->
+  <hacky-junit verbose="true" sourcePath="${src.dir}">
+    <fileset dir="${junit.dir}" includes="TEST-*.xml"/>
+  </hacky-junit>
+ </target>
+
 </project>
 
 

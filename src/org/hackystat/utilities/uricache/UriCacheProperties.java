@@ -18,16 +18,13 @@ public class UriCacheProperties {
   private Long maxIdleTime = 86400L;
 
   /** Cache default capacity. */
-  private Long maxMemoryCacheCapacity = 10000L;
+  private Long maxCacheCapacity = 50000L;
 
   /** JCS cache configuration properties. */
   private Properties cacheProperties = null;
 
   /** JCS DC plug-in storage path. */
   private String dcStoragePath = System.getProperties().getProperty("java.io.tmpdir");
-
-  /** the internal properties handler */
-  private Properties prop;
 
   /** UriCache logging level */
   private Level loggerLevel = Level.OFF;
@@ -51,10 +48,10 @@ public class UriCacheProperties {
   /**
    * Sets maximum capacity for this cache.
    * 
-   * @param maxMemoryCacheCapacity maximal cache capacity.
+   * @param maxCacheCapacity maximal cache capacity.
    */
-  public void setMaxMemoryCacpacity(Long maxMemoryCacheCapacity) {
-    this.maxMemoryCacheCapacity = maxMemoryCacheCapacity;
+  public void setMaxMemoryCacpacity(Long maxCacheCapacity) {
+    this.maxCacheCapacity = maxCacheCapacity;
   }
 
   /**
@@ -64,7 +61,17 @@ public class UriCacheProperties {
    */
   public void setCacheStoragePath(String storagePath) {
     this.dcStoragePath = storagePath;
-    prop.setProperty("jcs.auxiliary.indexedDiskCache.attributes.DiskPath", this.dcStoragePath);
+    this.cacheProperties.setProperty("jcs.auxiliary.indexedDiskCache.attributes.DiskPath",
+        this.dcStoragePath);
+  }
+
+  /**
+   * Reports the path to the cache storage folder.
+   * 
+   * @return path to the cache storage folder.
+   */
+  public String getCacheStoragePath() {
+    return this.dcStoragePath;
   }
 
   /**
@@ -74,15 +81,14 @@ public class UriCacheProperties {
    */
   private Properties setupProperties() {
 
-    prop = new Properties();
+    Properties prop = new Properties();
     //
     // this is JCS required part - configuring default cache properties
     //
     prop.setProperty("jcs.default", "indexedDiskCache");
     prop.setProperty("jcs.default.cacheattributes",
         "org.apache.jcs.engine.CompositeCacheAttributes");
-    prop.setProperty("jcs.default.cacheattributes.MaxObjects", this.maxMemoryCacheCapacity
-        .toString());
+    prop.setProperty("jcs.default.cacheattributes.MaxObjects", this.maxCacheCapacity.toString());
     prop.setProperty("jcs.default.cacheattributes.MemoryCacheName",
         "org.apache.jcs.engine.memory.lru.LRUMemoryCache");
     //
@@ -91,8 +97,8 @@ public class UriCacheProperties {
     prop.setProperty("jcs.region." + this.uriCaheRegionName, "indexedDiskCache");
     prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes",
         "org.apache.jcs.engine.CompositeCacheAttributes");
-    prop.setProperty("jcs." + this.uriCaheRegionName + ".cacheattributes.MaxObjects",
-        this.maxMemoryCacheCapacity.toString());
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.MaxObjects",
+        this.maxCacheCapacity.toString());
     prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.MemoryCacheName",
         "org.apache.jcs.engine.memory.lru.LRUMemoryCache");
     prop.setProperty("jcs.region." + this.uriCaheRegionName
@@ -100,8 +106,9 @@ public class UriCacheProperties {
     prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseMemoryShrinker",
         "true");
     prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseDisk", "true");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + 
-        ".cacheattributes.UseRemote", "false");
+    prop
+        .setProperty("jcs.region." + this.uriCaheRegionName 
+            + ".cacheattributes.UseRemote", "false");
     prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseLateral",
         "false");
     prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.MaxSpoolPerRun",
@@ -109,13 +116,17 @@ public class UriCacheProperties {
     //
     // -------- elements attributes --------
     //
-    prop.setProperty("jcs.region.UriCache.elementattributes",
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes",
         "org.apache.jcs.engine.ElementAttributes");
-    prop.setProperty("jcs.region.UriCache.elementattributes.IsEternal", "false");
-    prop.setProperty("jcs.region.UriCache.elementattributes.IsLateral", "false");
-    prop.setProperty("jcs.region.UriCache.elementattributes.MaxLifeSeconds", this.maxIdleTime
-        .toString());
-    prop.setProperty("jcs.region.UriCache.elementattributes.IdleTime", this.maxIdleTime.toString());
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes.IsEternal",
+        "false");
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes.IsLateral",
+        "false");
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes.MaxLifeSeconds",
+        this.maxIdleTime.toString());
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes.IdleTime",
+        this.maxIdleTime.toString());
+    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes.isSpool", "true");
     //
     // -------- disk cache elements attributes --------
     //
@@ -145,6 +156,7 @@ public class UriCacheProperties {
     prop.setProperty("thread_pool.disk_cache_event_queue.startUpSize", "10");
 
     return prop;
+
   }
 
   /**
@@ -192,45 +204,4 @@ public class UriCacheProperties {
     this.loggerLevel = level;
   }
 
-  // /**
-  // * Constructs configuration properties for the cache instance.
-  // *
-  // * @return cache properties.
-  // */
-  // private Properties setupProperties() {
-  // Properties prop = new Properties();
-  // // this is JCS required part - configuring default cache properties
-  // prop.setProperty("jcs.default", "");
-  // prop.setProperty("jcs.default.cacheattributes",
-  // "org.apache.jcs.engine.CompositeCacheAttributes");
-  // prop.setProperty("jcs.default.cacheattributes.MemoryCacheName",
-  // "org.apache.jcs.engine.memory.lru.LRUMemoryCache");
-  // prop.setProperty("jcs.default.cacheattributes.MaxObjects", "500");
-  //
-  // // UriCache region - elements won't go to disk, but should be marked as expired after five
-  // // seconds of non-use
-  // prop.setProperty("jcs.region.UriCache", "");
-  // prop.setProperty("jcs.region.UriCache.cacheattributes.MemoryCacheName",
-  // "org.apache.jcs.engine.memory.lru.LRUMemoryCache");
-  //
-  // prop.setProperty("jcs.region.UriCache.cacheattributes",
-  // "org.apache.jcs.engine.CompositeCacheAttributes");
-  // prop.setProperty("jcs.region.UriCache.cacheattributes.MaxObjects", this.uriCacheMaxObjects
-  // .toString());
-  // prop.setProperty("jcs.region.UriCache.cacheattributes.ShrinkerIntervalSeconds", "60");
-  // prop.setProperty("jcs.region.UriCache.cacheattributes.UseMemoryShrinker", "true");
-  // prop.setProperty("jcs.region.UriCache.cacheattributes.UseDisk", "false");
-  // prop.setProperty("jcs.region.UriCache.cacheattributes.UseRemote", "false");
-  // prop.setProperty("jcs.region.UriCache.cacheattributes.UseLateral", "false");
-  //
-  // prop.setProperty("jcs.region.UriCache.elementattributes",
-  // "org.apache.jcs.engine.ElementAttributes");
-  // prop.setProperty("jcs.region.UriCache.elementattributes.IsEternal", "false");
-  // prop.setProperty("jcs.region.UriCache.elementattributes.IsLateral", "false");
-  // prop.setProperty("jcs.region.UriCache.elementattributes.MaxLifeSeconds", this.uriCacheIdleTime
-  // .toString());
-  // prop.setProperty("jcs.region.UriCache.elementattributes.IdleTime", this.uriCacheIdleTime
-  // .toString());
-  // return prop;
-  // }
 }

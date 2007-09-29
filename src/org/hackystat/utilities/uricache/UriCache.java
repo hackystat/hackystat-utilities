@@ -1,16 +1,18 @@
 package org.hackystat.utilities.uricache;
 
+import java.io.Serializable;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
-import org.apache.jcs.engine.CompositeCacheAttributes;
+import org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCache;
+import org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheAttributes;
+import org.apache.jcs.engine.CacheElement;
 import org.apache.jcs.engine.ElementAttributes;
-import org.apache.jcs.engine.control.CompositeCache;
-import org.apache.jcs.engine.control.CompositeCacheManager;
+import org.apache.jcs.engine.behavior.ICacheElement;
+import org.apache.jcs.engine.behavior.IElementAttributes;
 
 /**
  * Provides an easy caching mechanism which is backed by Apache JCS (Java Caching System). Once
@@ -26,32 +28,81 @@ import org.apache.jcs.engine.control.CompositeCacheManager;
  */
 public class UriCache<K, V> {
 
-  /** JCS cache handler */
-  private JCS uriCache;
+  /** JCS cache handler. */
+  private IndexedDiskCache uriCache;
+
+  /** JCS cache name. */
+  private String CacheName;
+
+  /** JCS cache properties set. */
+  private Properties cacheProperties;
+
+  /** JCS element "life time". */
+  private Long maxIdleTime;
 
   /**
    * Constructor, returns a default instance of UriCache.
    * 
+   * @param cacheName the name used for this cache identification, the cache filename will bear this
+   *        name as well.
    * @param cacheProperties the cache configuration properties.
    * @throws UriCacheException when unable instantiate a cache.
    */
-  public UriCache(UriCacheProperties cacheProperties) throws UriCacheException {
+  public UriCache(String cacheName, UriCacheProperties cacheProperties) throws UriCacheException {
+
     // getting rid of DEBUG level log messages
     Level loggerLevel = cacheProperties.getLoggerLevel();
     Logger logger = Logger.getLogger("org.apache.jcs");
     logger.setLevel(loggerLevel);
-    // setup JCS
-    CompositeCacheManager mgr = CompositeCacheManager.getUnconfiguredInstance();
-    mgr.configure(cacheProperties.getProperties());
-    // get access to bug test cache region
-    try {
-      this.uriCache = JCS.getInstance(cacheProperties.getCacheRegionName());
-      @SuppressWarnings("unused")
-      CompositeCache cache = mgr.getCache(cacheProperties.getCacheRegionName());
-    }
-    catch (CacheException e) {
-      throw new UriCacheException(e.getMessage());
-    }
+
+    this.CacheName = cacheName;
+
+    // try {
+    // CacheAccess instance = JCS.getAccess(this.CacheName);
+    // }
+    // catch (CacheException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+
+    // CompositeCacheManager mgr = CompositeCacheManager.getUnconfiguredInstance();
+    // String[] currentCaches = mgr.getCacheNames();
+    // for (String str : currentCaches) {
+    // if (str.equals(cacheName)) {
+    // throw new UriCacheException(
+    // "Error while attemting get a cache instance: the cache region name " + cacheName
+    // + " is in use.");
+    // }
+    // }
+
+    // try {
+    // CacheAccess instance = JCS.getAccess(this.CacheName);
+    // }
+    // catch (CacheException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // CompositeCacheManager mgr = CompositeCacheManager.getUnconfiguredInstance();
+    // String[] currentCaches = mgr.getCacheNames();
+
+    this.cacheProperties = cacheProperties.getProperties();
+    this.maxIdleTime = Long.valueOf(this.cacheProperties
+        .getProperty("jcs.region.UriCache.elementattributes.MaxLifeSeconds"));
+
+    IndexedDiskCacheAttributes cattr = new IndexedDiskCacheAttributes();
+    cattr.setCacheName(this.CacheName);
+    cattr.setMaxKeySize(Integer.valueOf(this.cacheProperties
+        .getProperty("jcs.region.UriCache.cacheattributes.MaxObjects")));
+    cattr.setDiskPath(cacheProperties.getCacheStoragePath());
+    this.uriCache = new IndexedDiskCache(cattr);
+
+    // this.uriCache = JCS.getInstance(cacheProperties.getCacheRegionName());
+    // @SuppressWarnings("unused")
+    // CompositeCache cache = mgr.getCache(cacheProperties.getCacheRegionName());
+    // }
+    // catch (CacheException e) {
+    // throw new UriCacheException(e.getMessage());
+    // }
   }
 
   /**
@@ -62,13 +113,21 @@ public class UriCache<K, V> {
    * @param obj The object to cache.
    * @throws UriCacheException in case of error.
    */
-  public void cache(K uriString, V obj) throws UriCacheException {
-    try {
-      this.uriCache.put(uriString, obj);
-    }
-    catch (CacheException e) {
-      throw new UriCacheException(e.getMessage());
-    }
+  public void cache(Serializable uriString, Serializable obj) throws UriCacheException {
+    //
+    // I'm hardcoding parameters here, probably good move is to get these from preperties when
+    // everything will be working.
+    //
+    IElementAttributes eAttr = new ElementAttributes();
+    eAttr.setIdleTime(this.maxIdleTime);
+    eAttr.setIsSpool(true);
+    eAttr.setIsEternal(false);
+    eAttr.setIsLateral(false);
+    eAttr.setIsRemote(false);
+    eAttr.setIsSpool(true);
+    ICacheElement element = new CacheElement(this.CacheName, uriString, obj);
+    element.setElementAttributes(eAttr);
+    this.uriCache.doUpdate(element);
   }
 
   /**
@@ -80,22 +139,23 @@ public class UriCache<K, V> {
    *        once System time is greater than the timestamp value.
    * @throws UriCacheException in case of error.
    */
-  public void cache(K uriString, V obj, XMLGregorianCalendar expirationTimeStamp)
-      throws UriCacheException {
+  public void cache(Serializable uriString, Serializable obj,
+      XMLGregorianCalendar expirationTimeStamp) throws UriCacheException {
 
     // first of all calculating the life time of this object from now
     Long currTime = System.currentTimeMillis();
     Long lifeTime = ((Integer) expirationTimeStamp.getMillisecond()).longValue() - currTime;
 
-    ElementAttributes attr = new ElementAttributes();
-    attr.setMaxLifeSeconds(lifeTime);
-
-    try {
-      this.uriCache.put(uriString, obj, attr);
-    }
-    catch (CacheException e) {
-      throw new UriCacheException(e.getMessage());
-    }
+    IElementAttributes eAttr = new ElementAttributes();
+    eAttr.setIdleTime(lifeTime);
+    eAttr.setIsSpool(true);
+    eAttr.setIsEternal(false);
+    eAttr.setIsLateral(false);
+    eAttr.setIsRemote(false);
+    eAttr.setIsSpool(true);
+    ICacheElement element = new CacheElement(this.CacheName, uriString, obj);
+    element.setElementAttributes(eAttr);
+    this.uriCache.doUpdate(element);
   }
 
   /**
@@ -104,14 +164,7 @@ public class UriCache<K, V> {
    * @throws UriCacheException in case of error.
    */
   public void clear() throws UriCacheException {
-    if (this.uriCache != null) {
-      try {
-        this.uriCache.clear();
-      }
-      catch (CacheException e) {
-        throw new UriCacheException(e.getMessage());
-      }
-    }
+    this.uriCache.doRemoveAll();
   }
 
   /**
@@ -119,9 +172,7 @@ public class UriCache<K, V> {
    * 
    */
   public void shutdown() {
-    if (this.uriCache != null) {
-      this.uriCache.dispose();
-    }
+    this.uriCache.dispose();
   }
 
   /**
@@ -130,8 +181,14 @@ public class UriCache<K, V> {
    * @param uriString URI of the object to search for.
    * @return The cached object or <em>null</em> if not found.
    */
-  public Object lookup(K uriString) {
-    return this.uriCache.get(uriString);
+  public Serializable lookup(Serializable uriString) {
+    ICacheElement ce = this.uriCache.get(uriString);
+    if (null == ce) {
+      return null;
+    }
+    else {
+      return ce.getVal();
+    }
   }
 
   /**
@@ -140,36 +197,36 @@ public class UriCache<K, V> {
    * @param uriString Identity of the object to be removed.
    * @throws UriCacheException in case of error.
    */
-  public void remove(K uriString) throws UriCacheException {
-    try {
-      this.uriCache.remove(uriString);
-    }
-    catch (CacheException e) {
-      throw new UriCacheException(e.getMessage());
-    }
+  public void remove(Serializable uriString) throws UriCacheException {
+    // try {
+    this.uriCache.remove(uriString);
+    // }
+    // catch (CacheException e) {
+    // throw new UriCacheException(e.getMessage());
+    // }
   }
 
-  /**
-   * Sets the cache auto-expire time. Cache will auto expire elements after specified seconds to
-   * reclaim space.
-   * 
-   * @param seconds The new ShrinkerIntervalSeconds value.
-   */
-  public void setMaxMemoryIdleTimeSeconds(int seconds) {
-    CompositeCacheAttributes attr = (CompositeCacheAttributes) this.uriCache.getCacheAttributes();
-    attr.setUseMemoryShrinker(true);
-    attr.setMaxMemoryIdleTimeSeconds(seconds);
-    attr.setShrinkerIntervalSeconds(seconds);
-    this.uriCache.setCacheAttributes(attr);
-  }
-
-  /**
-   * Reports the cache memory region name.
-   * 
-   * @return cache name.
-   */
-  public String getRegionName() {
-    return this.uriCache.getCacheAttributes().getCacheName();
-  }
+  // /**
+  // * Sets the cache auto-expire time. Cache will auto expire elements after specified seconds to
+  // * reclaim space.
+  // *
+  // * @param seconds The new ShrinkerIntervalSeconds value.
+  // */
+  // public void setMaxMemoryIdleTimeSeconds(int seconds) {
+  // CompositeCacheAttributes attr = (CompositeCacheAttributes) this.uriCache.getCacheAttributes();
+  // attr.setUseMemoryShrinker(true);
+  // attr.setMaxMemoryIdleTimeSeconds(seconds);
+  // attr.setShrinkerIntervalSeconds(seconds);
+  // this.uriCache.setCacheAttributes(attr);
+  // }
+  //
+  // /**
+  // * Reports the cache memory region name.
+  // *
+  // * @return cache name.
+  // */
+  // public String getRegionName() {
+  // return this.uriCache.getCacheAttributes().getCacheName();
+  // }
 
 }
