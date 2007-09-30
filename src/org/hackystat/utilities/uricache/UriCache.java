@@ -206,19 +206,15 @@ public class UriCache<K, V> {
     // }
   }
 
-  // /**
-  // * Sets the cache auto-expire time. Cache will auto expire elements after specified seconds to
-  // * reclaim space.
-  // *
-  // * @param seconds The new ShrinkerIntervalSeconds value.
-  // */
-  // public void setMaxMemoryIdleTimeSeconds(int seconds) {
-  // CompositeCacheAttributes attr = (CompositeCacheAttributes) this.uriCache.getCacheAttributes();
-  // attr.setUseMemoryShrinker(true);
-  // attr.setMaxMemoryIdleTimeSeconds(seconds);
-  // attr.setShrinkerIntervalSeconds(seconds);
-  // this.uriCache.setCacheAttributes(attr);
-  // }
+  /**
+   * Sets the cache auto-expire time. Cache will auto expire elements after specified seconds to
+   * reclaim space.
+   * 
+   * @param seconds The new ShrinkerIntervalSeconds value.
+   */
+  public void setMaxMemoryIdleTimeSeconds(Long seconds) {
+    this.maxIdleTime = seconds;
+  }
   //
   // /**
   // * Reports the cache memory region name.
