@@ -107,7 +107,8 @@ public class UriCacheProperties {
         "true");
     prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseDisk", "true");
     prop
-        .setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseRemote", "false");
+        .setProperty("jcs.region." + this.uriCaheRegionName 
+            + ".cacheattributes.UseRemote", "false");
     prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseLateral",
         "false");
     prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.MaxSpoolPerRun",
