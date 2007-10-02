@@ -16,7 +16,8 @@ import org.apache.jcs.engine.behavior.IElementAttributes;
 
 /**
  * Provides an easy caching mechanism which is backed by Apache JCS (Java Caching System). Once
- * cache configured and initialized, it caches pairs &lt;K, V&gt;.
+ * cache configured and initialized, it caches pairs &lt;K, V&gt;. Note that both K and V types must
+ * be Serializable.
  * 
  * <br/><br/> Using an UriCache has several advantages: it increases performance as it reduces URL
  * lookups.
@@ -41,7 +42,7 @@ public class UriCache<K, V> {
   private Long maxIdleTime;
 
   /**
-   * Constructor, returns a default instance of UriCache.
+   * Constructor, an instance of UriCache configured according to the Properties provided.
    * 
    * @param cacheName the name used for this cache identification, the cache filename will bear this
    *        name as well.
@@ -106,8 +107,8 @@ public class UriCache<K, V> {
   }
 
   /**
-   * Place a new object in the cache, associated with uriString. If there is currently an object
-   * associated with the same URI it is replaced.
+   * Place a new item in the cache, associated with uriString. If there is currently an item
+   * associated with the same uriString it is replaced.
    * 
    * @param uriString identity (URI) of the object to cache.
    * @param obj The object to cache.

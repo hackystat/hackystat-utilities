@@ -198,7 +198,7 @@ public class TestUriCache {
   }
 
   /**
-   * Cache shrinker test.
+   * Cache shrinker test #2, tests default autoexpiration.
    */
   @Test
   public void testCacheOptimizer2() {
@@ -239,7 +239,7 @@ public class TestUriCache {
   }
 
   /**
-   * Cache instantiation and simple routines.
+   * Tests cache instantiation and simple cache, remove and clean routines.
    */
   @Test
   public void testCacheInstance() {
