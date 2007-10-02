@@ -49,15 +49,12 @@ public class TestUriCacheProperties {
     // exercise setters
     //
     prop.setCacheStoragePath("newPath");
-    prop.setCacheRegionName("newRegion");
     prop.setLoggerLevel(Level.INFO);
     prop.setMaxIdleTime(999L);
     prop.setMaxMemoryCacpacity(999L);
     //
     // check set values
     //
-    assertEquals("Should report default \"newRegion\" name", 
-        "newRegion", prop.getCacheRegionName());
     assertEquals("Should report default new storage location", "newPath", prop
         .getCacheStoragePath());
     assertEquals("Should report Level.INFO logger level", Level.INFO, prop.getLoggerLevel());
@@ -75,7 +72,6 @@ public class TestUriCacheProperties {
   @Test
   public void testDefaultProperties() {
     // test the accessible properties
-    assertEquals("Should report default \"UriCache\" name", "UriCache", prop.getCacheRegionName());
     assertEquals("Should report default Level.OFF logger level", Level.OFF, prop.getLoggerLevel());
     assertEquals("Should report default storage location", System.getProperties().getProperty(
         "java.io.tmpdir"), prop.getCacheStoragePath());

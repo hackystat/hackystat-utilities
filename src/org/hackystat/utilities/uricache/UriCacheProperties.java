@@ -169,24 +169,6 @@ public class UriCacheProperties {
   }
 
   /**
-   * Reports the cache name associated with this properties object.
-   * 
-   * @return this cache region name.
-   */
-  public String getCacheRegionName() {
-    return this.uriCaheRegionName;
-  }
-
-  /**
-   * Sets the cache region name.
-   * 
-   * @param cacheName name to set.
-   */
-  public void setCacheRegionName(String cacheName) {
-    this.uriCaheRegionName = cacheName;
-  }
-
-  /**
    * Reports the logger level set in the properties.
    * 
    * @return logger level.
