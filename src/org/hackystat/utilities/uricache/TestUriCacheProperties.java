@@ -61,8 +61,8 @@ public class TestUriCacheProperties {
     Properties p = prop.getProperties();
     assertEquals("Should report default cache config property", "86400", p
         .getProperty("jcs.region.UriCache.elementattributes.MaxLifeSeconds"));
-    assertEquals("Should report default cache config property", 86400L, Long.valueOf(p
-        .getProperty("jcs.region.UriCache.elementattributes.IdleTime")));
+    assertEquals("Should report default cache config property", "86400", p
+        .getProperty("jcs.region.UriCache.elementattributes.IdleTime"));
 
   }
 
@@ -77,10 +77,10 @@ public class TestUriCacheProperties {
         "java.io.tmpdir"), prop.getCacheStoragePath());
     // get the default instance
     Properties p = prop.getProperties();
-    assertEquals("Should report cache max size", 50000L, Long.valueOf(p
-        .getProperty("jcs.default.cacheattributes.MaxObjects")));
-    assertEquals("Should report cache max size", 50000L, Long.valueOf(p
-        .getProperty("jcs.region.UriCache.cacheattributes.MaxObjects")));
+    assertEquals("Should report cache max size", "50000", p
+        .getProperty("jcs.default.cacheattributes.MaxObjects"));
+    assertEquals("Should report cache max size", "50000", p
+        .getProperty("jcs.region.UriCache.cacheattributes.MaxObjects"));
 
     // common properties test
     //
@@ -115,8 +115,8 @@ public class TestUriCacheProperties {
         .getProperty("jcs.region.UriCache.cacheattributes.UseRemote"));
     assertEquals("Should report default cache config property", "false", p
         .getProperty("jcs.region.UriCache.cacheattributes.UseLateral"));
-    assertEquals("Should report default cache config property", 500L, Long.valueOf(p
-        .getProperty("jcs.region.UriCache.cacheattributes.MaxSpoolPerRun")));
+    assertEquals("Should report default cache config property", "500", p
+        .getProperty("jcs.region.UriCache.cacheattributes.MaxSpoolPerRun"));
     //
     // -------- elements attributes --------
     //
@@ -129,8 +129,8 @@ public class TestUriCacheProperties {
         .getProperty("jcs.region.UriCache.elementattributes.IsLateral"));
     assertEquals("Should report default cache config property", "86400", p
         .getProperty("jcs.region.UriCache.elementattributes.MaxLifeSeconds"));
-    assertEquals("Should report default cache config property", 86400L, Long.valueOf(p
-        .getProperty("jcs.region.UriCache.elementattributes.IdleTime")));
+    assertEquals("Should report default cache config property", "86400", p
+        .getProperty("jcs.region.UriCache.elementattributes.IdleTime"));
     assertEquals("Should report default cache config property", "true", p
         .getProperty("jcs.region.UriCache.elementattributes.isSpool"));
     //

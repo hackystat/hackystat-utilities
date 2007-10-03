@@ -55,34 +55,33 @@ public class TestUriCache {
     testCache.shutdown();
   }
 
-  // /**
-  // * Cache exception test.
-  // */
-  // @Test
-  // public void testCacheException() {
-  // try {
-  // //
-  // // get cache instance and dump some data.
-  // //
-  // testCache = new UriCache<String, String>("testCache", prop);
-  // testCache.clear();
-  // int cnt = 10000;
-  // for (int i = 0; i < cnt; i++) {
-  // testCache.cache("key:" + i, "data:" + i);
-  // }
-  // //
-  // // now try to another cache with the same properties.
-  // // Should not be able to do this.
-  // //
-  // @SuppressWarnings("unused")
-  // UriCache<String, String> testCache2 = new UriCache<String, String>("testCache", prop);
-  // fail("Able to get the cache instance with the same name.");
-  // }
-  // catch (UriCacheException e) {
-  // fail("Unable to create cache instance: "
-  // + formatter.format(new LogRecord(Level.ALL, e.toString())));
-  // }
-  // }
+  /**
+   * Cache exception test.
+   */
+  @Test
+  public void testCacheException() {
+    try {
+      //
+      // get cache instance and dump some data.
+      //
+      testCache = new UriCache<String, String>("testCache", prop);
+      testCache.clear();
+      int cnt = 10000;
+      for (int i = 0; i < cnt; i++) {
+        testCache.cache("key:" + i, "data:" + i);
+      }
+      //
+      // now try to another cache with the same properties.
+      // Should not be able to do this.
+      //
+      @SuppressWarnings("unused")
+      UriCache<String, String> testCache2 = new UriCache<String, String>("testCache", prop);
+      fail("Able to get the cache instance with the same name.");
+    }
+    catch (UriCacheException e) {
+      assert true;
+    }
+  }
 
   /**
    * Cache persistence test.
@@ -206,8 +205,8 @@ public class TestUriCache {
       //
       // get cache instance, clear any leftovers and load cache with new data
       //
-      prop.setMaxIdleTime(5L);
       testCache = new UriCache<String, String>("testOptimizerCache", prop);
+      testCache.setMaxMemoryIdleTimeSeconds(5L);
       testCache.clear();
       int cnt = 10000;
       for (int i = 0; i < cnt; i++) {

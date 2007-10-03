@@ -1,6 +1,7 @@
 package org.hackystat.utilities.uricache;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,6 +42,9 @@ public class UriCache<K, V> {
   /** JCS element "life time". */
   private Long maxIdleTime;
 
+  /** JCS instances name holder */
+  private static ArrayList<String> cacheNames = new ArrayList<String>();
+
   /**
    * Constructor, an instance of UriCache configured according to the Properties provided.
    * 
@@ -58,23 +62,15 @@ public class UriCache<K, V> {
 
     this.CacheName = cacheName;
 
-    // try {
-    // CacheAccess instance = JCS.getAccess(this.CacheName);
-    // }
-    // catch (CacheException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-
-    // CompositeCacheManager mgr = CompositeCacheManager.getUnconfiguredInstance();
-    // String[] currentCaches = mgr.getCacheNames();
-    // for (String str : currentCaches) {
-    // if (str.equals(cacheName)) {
-    // throw new UriCacheException(
-    // "Error while attemting get a cache instance: the cache region name " + cacheName
-    // + " is in use.");
-    // }
-    // }
+    // check for the name duplication in here
+    if (UriCache.cacheNames.contains(this.CacheName)) {
+      throw new UriCacheException(
+          "Error while attemting get a cache instance: the cache region name " + cacheName
+              + " is in use.");
+    }
+    else {
+      UriCache.cacheNames.add(this.CacheName);
+    }
 
     // try {
     // CacheAccess instance = JCS.getAccess(this.CacheName);
@@ -174,6 +170,7 @@ public class UriCache<K, V> {
    */
   public void shutdown() {
     this.uriCache.dispose();
+    UriCache.cacheNames.remove(this.CacheName);
   }
 
   /**
