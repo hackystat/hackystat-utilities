@@ -76,6 +76,7 @@ public class TestUriCache {
       //
       @SuppressWarnings("unused")
       UriCache<String, String> testCache2 = new UriCache<String, String>("testCache", prop);
+      testCache2.clear();
       fail("Able to get the cache instance with the same name.");
     }
     catch (UriCacheException e) {
