@@ -3,6 +3,7 @@ package org.hackystat.utilities.uricache;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.GregorianCalendar;
@@ -65,6 +66,7 @@ public class TestUriCache {
       // get cache instance and dump some data.
       //
       testCache = new UriCache<String, String>("testCache", prop);
+      assertTrue("Should report proper cache name.", "testCache".equals(testCache.getRegionName()));
       testCache.clear();
       int cnt = 10000;
       for (int i = 0; i < cnt; i++) {
@@ -292,6 +294,5 @@ public class TestUriCache {
       fail("Unable to create cache instance: "
           + formatter.format(new LogRecord(Level.ALL, e.toString())));
     }
-
   }
 }

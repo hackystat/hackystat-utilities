@@ -213,14 +213,14 @@ public class UriCache<K, V> {
   public void setMaxMemoryIdleTimeSeconds(Long seconds) {
     this.maxIdleTime = seconds;
   }
-  //
-  // /**
-  // * Reports the cache memory region name.
-  // *
-  // * @return cache name.
-  // */
-  // public String getRegionName() {
-  // return this.uriCache.getCacheAttributes().getCacheName();
-  // }
+
+  /**
+   * Reports the cache memory region name.
+   * 
+   * @return cache name.
+   */
+  public String getRegionName() {
+    return this.CacheName;
+  }
 
 }
