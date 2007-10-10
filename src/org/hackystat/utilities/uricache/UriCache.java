@@ -219,7 +219,7 @@ public class UriCache<K, V> {
    * 
    * @return cache name.
    */
-  public String getRegionName() {
+  public String getName() {
     return this.CacheName;
   }
 

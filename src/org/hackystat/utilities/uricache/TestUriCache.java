@@ -66,7 +66,7 @@ public class TestUriCache {
       // get cache instance and dump some data.
       //
       testCache = new UriCache<String, String>("testCache", prop);
-      assertTrue("Should report proper cache name.", "testCache".equals(testCache.getRegionName()));
+      assertTrue("Should report proper cache name.", "testCache".equals(testCache.getName()));
       testCache.clear();
       int cnt = 10000;
       for (int i = 0; i < cnt; i++) {
