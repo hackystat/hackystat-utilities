@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.GregorianCalendar;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
@@ -266,6 +267,12 @@ public class TestUriCache {
         assertNotNull("Should have recevied an element. " + i, element);
         assertEquals("Element is wrong.", "data:" + i, element);
       }
+      //
+      // check statistics
+      //
+      Map<String, String> stat = testCache.getStatistics();
+      assertTrue("Should get proper cache type", "Indexed Disk Cache".equalsIgnoreCase(stat
+          .get("Cache type")));
       //
       // clean cache one by one and check removal
       //

@@ -2,6 +2,8 @@ package org.hackystat.utilities.uricache;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +16,8 @@ import org.apache.jcs.engine.CacheElement;
 import org.apache.jcs.engine.ElementAttributes;
 import org.apache.jcs.engine.behavior.ICacheElement;
 import org.apache.jcs.engine.behavior.IElementAttributes;
+import org.apache.jcs.engine.stats.behavior.IStatElement;
+import org.apache.jcs.engine.stats.behavior.IStats;
 
 /**
  * Provides an easy caching mechanism which is backed by Apache JCS (Java Caching System). Once
@@ -221,6 +225,35 @@ public class UriCache<K, V> {
    */
   public String getName() {
     return this.CacheName;
+  }
+
+  /**
+   * Reports cache statistics:
+   * <ul>
+   * <li>Cache type</li>
+   * <li>Is Alive</li>
+   * <li>Key Map Size</li>
+   * <li>Data File Length</li>
+   * <li>Hit Count</li>
+   * <li>Bytes Free</li>
+   * <li>Optimize Operation Count</li>
+   * <li>Times Optimized</li>
+   * <li>Recycle Count</li>
+   * <li>Recycle Bin Size</li>
+   * <li>Startup Size</li>
+   * </ul>
+   * 
+   * @return cache statistics.
+   */
+  public Map<String, String> getStatistics() {
+    IStats st = this.uriCache.getStatistics();
+    IStatElement[] elements = st.getStatElements();
+    Map<String, String> res = new HashMap<String, String>();
+    res.put("Cache type", st.getTypeName());
+    for (IStatElement e : elements) {
+      res.put(e.getName(), e.getData());
+    }
+    return res;
   }
 
 }
