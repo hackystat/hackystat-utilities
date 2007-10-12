@@ -12,7 +12,7 @@
   <target name="emma" depends="emma.tool" if="emma.enabled" 
     description="Runs Emma."/>
 
-  <target name="emma.tool" depends="clean, compile" if="emma.enabled" 
+  <target name="emma.tool" depends="clean, compile" if="${emma.enabled}" 
     description="Cleans, compiles, instruments byte codes, runs unit tests, generates Emma report.">
     <!-- Verify that Emma is installed. -->
     <available file="${env.EMMA_HOME}/lib/emma.jar" property="emma.available"/>
@@ -74,7 +74,7 @@
      <delete dir="${build.dir}/classes" />
   </target>
 
-  <target name="emma.report" depends="emma.tool" if="emma.enabled" description="Generates XML and HTML reports.">
+  <target name="emma.report" depends="emma.tool" if="${emma.enabled}" description="Generates XML and HTML reports.">
     <!-- Generate Emma reports. -->
     <emma enabled="true">
       <report sourcepath="${src.dir}" sort="+name" metrics="method:70,block:80,line:80,class:100">
@@ -88,7 +88,7 @@
     </emma>
   </target>
   
-  <target name="emma.echo" description="Sends summary of Emma results to console" if="emma.enabled" >
+  <target name="emma.echo" description="Sends summary of Emma results to console" if="${emma.enabled}" >
     <!-- It's ridiculous what we have to do to get a decent summary. -->
      <xslt style="${basedir}/lib/emma/hackystat.emma.xsl" 
               in="${emma.dir}/coverage.xml" out="${emma.dir}/coverage.brief.txt" />  
