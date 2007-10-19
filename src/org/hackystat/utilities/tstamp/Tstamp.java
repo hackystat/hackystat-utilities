@@ -6,6 +6,8 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.hackystat.utilities.time.period.Day;
+
 /**
  * Utility class that facilitates Timestamp representation and processing. There
  * are too many classes already named "Timestamp", thus the abbreviated name.
@@ -49,7 +51,7 @@ public class Tstamp {
    * Converts a javax.sql.Timestamp into a
    * javax.xml.datatype.XMLGregorianCalendar.
    * @param tstamp The javax.sql.Timestamp
-   * @return An new instance of a javax.xml.datatype.XmlGregorianCalendar
+   * @return A new instance of a javax.xml.datatype.XmlGregorianCalendar
    */
   public static XMLGregorianCalendar makeTimestamp(java.sql.Timestamp tstamp) {
     DatatypeFactory factory = null;
@@ -68,7 +70,7 @@ public class Tstamp {
    * Converts the specified time in milliseconds into a
    * javax.xml.datatype.XMLGregorianCalendar.
    * @param timeInMillis the specified time in milliseconds to convert.
-   * @return An new instance of a javax.xml.datatype.XmlGregorianCalendar
+   * @return A new instance of a javax.xml.datatype.XmlGregorianCalendar
    */
   public static XMLGregorianCalendar makeTimestamp(long timeInMillis) {
     DatatypeFactory factory = null;
@@ -76,6 +78,24 @@ public class Tstamp {
       factory = DatatypeFactory.newInstance();
       GregorianCalendar calendar = new GregorianCalendar();
       calendar.setTimeInMillis(timeInMillis);
+      return factory.newXMLGregorianCalendar(calendar);
+    }
+    catch (DatatypeConfigurationException e) {
+      throw new RuntimeException(factoryErrorMsg, e);
+    }
+  }
+  
+  /**
+   * Converts the specified Day into a javax.xml.datatype.XMLGregorianCalendar.
+   * @param day The day to be converted.
+   * @return A new instance of a javax.xml.datatype.XmlGregorianCalendar.
+   */
+  public static XMLGregorianCalendar makeTimestamp(Day day) {
+    DatatypeFactory factory = null;
+    try {
+      factory = DatatypeFactory.newInstance();
+      GregorianCalendar calendar = new GregorianCalendar();
+      calendar.setTimeInMillis(day.getDate().getTime());
       return factory.newXMLGregorianCalendar(calendar);
     }
     catch (DatatypeConfigurationException e) {
