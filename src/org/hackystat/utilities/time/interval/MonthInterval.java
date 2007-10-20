@@ -7,10 +7,9 @@ import org.hackystat.utilities.time.period.Month;
 /**
  * Provides month interval type.
  * 
- * @author Hongbing Kou
- * @version $Id: MonthInterval.java,v 1.1.1.1 2005/10/20 23:56:40 johnson Exp $
+ * @author Hongbing Kou, Philip Johnson
  */
-public class MonthInterval extends Interval {
+public class MonthInterval extends Interval implements Iterable<Month> {
   /** Start month. */
   private Month startMonth;
   /** End month. */

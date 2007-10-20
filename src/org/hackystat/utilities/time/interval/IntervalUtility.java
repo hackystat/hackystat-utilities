@@ -15,7 +15,7 @@ import org.hackystat.utilities.time.period.Week;
 /**
  * Provides support for constants and methods in the interval selector.
  *
- * @author Hongbing Kou
+ * @author Hongbing Kou, Philip Johnson
  */
 class IntervalUtility {
   /** Year options from 2000 to 2010. */

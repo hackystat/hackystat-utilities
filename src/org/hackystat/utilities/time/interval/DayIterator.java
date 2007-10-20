@@ -8,7 +8,7 @@ import org.hackystat.utilities.time.period.Day;
 /**
  * Provides an iterator over Day instances. 
  * 
- * @author Hongbing Kou
+ * @author Hongbing Kou, Philip Johnson
  */
 public class DayIterator implements Iterator<Day> {
   /** Start day of the day interval. */

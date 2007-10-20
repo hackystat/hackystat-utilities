@@ -132,7 +132,8 @@ public class Day implements TimePeriod {
 
   /**
    * Creates a new Day instance, initializing it from the passed Date.
-   * The internal date is always set to 12:00:00.000 noon of the passed day.
+   * The internal date is always set to 00:00:00.000 midnight at the 
+   * beginning of the passed day.
    * We do this upfront to make comparisons and interval calculations fast, since we're
    * caching these Day instances there should be relatively few of them around.
    * 
@@ -143,7 +144,7 @@ public class Day implements TimePeriod {
     // Not sure whether instance creation or synchronization is the better approach.
     this.cal = Calendar.getInstance(Locale.US);
     this.cal.setTime(date);
-    this.cal.set(Calendar.HOUR_OF_DAY, 12);
+    this.cal.set(Calendar.HOUR_OF_DAY, 00);
     this.cal.set(Calendar.MINUTE, 0);
     this.cal.set(Calendar.SECOND, 0);
     this.cal.set(Calendar.MILLISECOND, 0);

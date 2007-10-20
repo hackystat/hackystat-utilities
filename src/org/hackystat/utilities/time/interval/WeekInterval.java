@@ -7,10 +7,9 @@ import org.hackystat.utilities.time.period.Week;
 /**
  * Provides week interval. 
  * 
- * @author Hongbing Kou
- * @version $Id: WeekInterval.java,v 1.1.1.1 2005/10/20 23:56:40 johnson Exp $
+ * @author Hongbing Kou, Philip Johnson
  */
-public class WeekInterval extends Interval {
+public class WeekInterval extends Interval implements Iterable<Week> {
   /** Start week. */
   private Week startWeek;
   /** End week. */ 

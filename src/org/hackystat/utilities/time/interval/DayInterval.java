@@ -7,7 +7,7 @@ import org.hackystat.utilities.time.period.Day;
 /**
  * Represents an interval as a set of Days.
  * 
- * @author Hongbing Kou
+ * @author Hongbing Kou, Philip Johnson
  */
 public class DayInterval extends Interval implements Iterable<Day> {
 
