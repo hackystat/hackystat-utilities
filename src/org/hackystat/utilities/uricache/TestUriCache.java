@@ -27,6 +27,15 @@ import org.junit.Test;
  */
 public class TestUriCache {
 
+  /** Used for temporarily caches home */
+  private static final String tmpFolderName = String.valueOf(System.currentTimeMillis());
+
+  private static final String fileSeparator = System.getProperty("file.separator");
+
+  /** The general storage place. */
+  private static final String cacheHome = System.getProperties().getProperty("user.dir")
+      + fileSeparator + "build" + fileSeparator + "uricache-tests" + fileSeparator + tmpFolderName;
+
   /** The cache itself */
   private UriCache<String, String> testCache;
 
@@ -44,7 +53,7 @@ public class TestUriCache {
   @Before
   public void setUp() throws Exception {
     prop = new UriCacheProperties();
-    prop.setCacheStoragePath("sandbox/cache");
+    prop.setCacheStoragePath(cacheHome);
   }
 
   /**
