@@ -2,6 +2,8 @@ package org.hackystat.utilities.time.interval;
 
 import java.util.Iterator;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.hackystat.utilities.time.period.Day;
 
 /**
@@ -55,6 +57,18 @@ public class DayInterval extends Interval implements Iterable<Day> {
       throw new IllegalIntervalException("Start day " + this.startDay + " is later than end day "
           + this.endDay);
     }
+  }
+  
+  /**
+   * Instantiates DayInterval with start day and end day.
+   * 
+   * @param xmlStartDay The starting day.
+   * @param xmlEndDay The ending day.
+   * @throws IllegalIntervalException If start day is later than end day.
+   */
+  public DayInterval(XMLGregorianCalendar xmlStartDay, XMLGregorianCalendar xmlEndDay) 
+  throws IllegalIntervalException {
+    this(Day.getInstance(xmlStartDay), Day.getInstance(xmlEndDay));
   }
 
   /**

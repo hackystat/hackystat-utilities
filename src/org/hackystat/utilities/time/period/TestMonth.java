@@ -1,14 +1,27 @@
 package org.hackystat.utilities.time.period;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.hackystat.utilities.tstamp.Tstamp;
+
 import junit.framework.TestCase;
 
 /**
  * Tests the Month and Months implementations.
  * 
- * @author Hongbing Kou
- * @version $Id: TestMonth.java,v 1.1.1.1 2005/10/20 23:56:44 johnson Exp $
+ * @author Hongbing Kou, Philip Johnson
  */
 public class TestMonth extends TestCase {
+  
+  /**
+   * Test the XMLGregorianCalendar constructor. 
+   * @throws Exception If problems. 
+   */
+  public void testXmlMonth() throws Exception {
+    XMLGregorianCalendar xmlDay = Tstamp.makeTimestamp("2003-08-01");
+    Month month = new Month(xmlDay);
+    assertEquals("Checking month's toString() method", "Aug-2003", month.toString());
+  }
   
   /**
    * Test month constructor and operation.

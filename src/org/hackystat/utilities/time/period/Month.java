@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 /**
  * Provides the Month abstract data type, which represents the collection of Week and Day
  * instances in a given month.
@@ -51,6 +53,14 @@ public class Month implements TimePeriod {
     for (int i = 0; i < this.numOfDays; i++) {
       this.days.add(Day.getInstance(year, month, i));
     }
+  }
+  
+  /**
+   * Returns the Month instance corresponding to the passed XMLGregorianCalendar instance. 
+   * @param xmlDay The XMLGregorianCalendar date. 
+   */
+  public Month(XMLGregorianCalendar xmlDay) {
+    this(xmlDay.getYear(), xmlDay.getMonth() - 1);
   }
   
   /**

@@ -2,6 +2,8 @@ package org.hackystat.utilities.time.interval;
 
 import java.util.Iterator;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.hackystat.utilities.time.period.Month;
 
 /**
@@ -14,6 +16,7 @@ public class MonthInterval extends Interval implements Iterable<Month> {
   private Month startMonth;
   /** End month. */
   private Month endMonth;
+  
   /**
    * Creates a MonthInterval object with start month and end month.
    * 
@@ -34,6 +37,26 @@ public class MonthInterval extends Interval implements Iterable<Month> {
     year = Integer.parseInt(endYear);
     month = Integer.parseInt(endMonth);    
     this.endMonth = new Month(year, month);   
+    
+    if (this.startMonth.compareTo(this.endMonth) > 0) {
+      throw new IllegalIntervalException("Start month " + this.startMonth 
+                                       + "  is later than end month " + this.endMonth);
+    }
+  }
+  
+  /**
+   * Creates a MonthInterval object with start month and end month.
+   * 
+   * @param startMonth Start month.
+   * @param endMonth End month.
+   * 
+   * @throws IllegalIntervalException If try to create an interval with invalid period.
+   */
+  public MonthInterval(XMLGregorianCalendar startMonth, XMLGregorianCalendar endMonth) 
+     throws IllegalIntervalException {
+    super("Month");    
+    this.startMonth = new Month(startMonth);
+    this.endMonth = new Month(endMonth);   
     
     if (this.startMonth.compareTo(this.endMonth) > 0) {
       throw new IllegalIntervalException("Start month " + this.startMonth 

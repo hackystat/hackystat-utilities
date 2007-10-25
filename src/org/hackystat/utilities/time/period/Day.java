@@ -5,6 +5,8 @@ import java.util.Locale;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 
 /**
  * Provides a "cousin" of Date that represents only year, month, and day information. Many Hackystat
@@ -109,6 +111,16 @@ public class Day implements TimePeriod {
   public static Day getInstance(String dayString) throws Exception {
     Date date = new SimpleDateFormat("dd-MMM-yyyy", Locale.US).parse(dayString);
     return DayCache.getInstance().getDay(date.getTime());
+  }
+  
+  /**
+   * Returns a Day instance associated with this passed XMLGregorianCalendar. 
+   * @param xmlDay The date.
+   * @return The corresponding day.
+   */
+  public static Day getInstance(XMLGregorianCalendar xmlDay) {
+    long millis = xmlDay.toGregorianCalendar().getTimeInMillis();
+    return DayCache.getInstance().getDay(millis);
   }
 
   /** 

@@ -2,6 +2,8 @@ package org.hackystat.utilities.time.interval;
 
 import java.util.Iterator;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.hackystat.utilities.time.period.Week;
 
 /**
@@ -29,6 +31,23 @@ public class WeekInterval extends Interval implements Iterable<Week> {
     this.startWeek = utility.getWeek(startWeek);
     this.endWeek = utility.getWeek(endWeek);
     
+    if (this.startWeek.compareTo(this.endWeek) > 0) {
+      throw new IllegalIntervalException("Start week " + this.startWeek + " is later than end week "
+                                        + this.endWeek);       
+    }
+  }
+  
+  /**
+   * Creates a week-based interval with start and end information.
+   * @param startWeek An XMLGregorianCalendar indicating the start week.
+   * @param endWeek An XMLGregorianCalendar indicating the end week.
+   * @throws IllegalIntervalException If problems occur.
+   */
+  public WeekInterval(XMLGregorianCalendar startWeek, XMLGregorianCalendar endWeek)
+  throws IllegalIntervalException {
+    super("Week");
+    this.startWeek = new Week(startWeek);
+    this.endWeek = new Week(endWeek);
     if (this.startWeek.compareTo(this.endWeek) > 0) {
       throw new IllegalIntervalException("Start week " + this.startWeek + " is later than end week "
                                         + this.endWeek);       

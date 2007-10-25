@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 /**
  * Provides a representation for seven Day instances where the first Day 
  * is always a Sunday and the last Day is always the following Saturday. 
@@ -58,6 +60,15 @@ public class Week implements TimePeriod {
                                       weekDay = weekDay.inc(1)) {
       this.days.add(weekDay);
     }
+  }
+  
+  /**
+   * Creates a week instance starting on Sunday and ending on Saturday that includes the passed
+   * Day.
+   * @param xmlDay The day.
+   */
+  public Week(XMLGregorianCalendar xmlDay) {
+    this(Day.getInstance(xmlDay));
   }
 
   /**
