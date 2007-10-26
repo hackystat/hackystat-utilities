@@ -171,7 +171,7 @@ public class Day implements TimePeriod {
    * @return           A Day corresponding to the increment from this day.
    */
   public Day inc(int increment) {
-    return DayCache.getInstance().getDay(this.date.getTime() + ((long) increment * millisInDay));
+    return DayCache.getInstance().getDay(this.date.getTime() + (millisInDay * increment));
   }
   
   /**
@@ -182,6 +182,14 @@ public class Day implements TimePeriod {
    */
   public Date getDate() {
     return new Date(this.date.getTime());
+  }
+  
+  /**
+   * Returns the "first" day in the TimePeriod.  For Days, that's just this day.
+   * @return The current day.
+   */
+  public Day getFirstDay() {
+    return this;
   }
   
   /**
