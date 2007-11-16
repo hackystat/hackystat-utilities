@@ -1,0 +1,205 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    package org.hackystat.utilities.time.period;<a name="line.1"></a>
+<FONT color="green">002</FONT>    <a name="line.2"></a>
+<FONT color="green">003</FONT>    import java.util.Calendar;<a name="line.3"></a>
+<FONT color="green">004</FONT>    import java.util.Date;<a name="line.4"></a>
+<FONT color="green">005</FONT>    import java.util.Locale;<a name="line.5"></a>
+<FONT color="green">006</FONT>    import java.util.TimeZone;<a name="line.6"></a>
+<FONT color="green">007</FONT>    <a name="line.7"></a>
+<FONT color="green">008</FONT>    import junit.framework.TestCase;<a name="line.8"></a>
+<FONT color="green">009</FONT>    <a name="line.9"></a>
+<FONT color="green">010</FONT>    /**<a name="line.10"></a>
+<FONT color="green">011</FONT>     * Tests the Day implementation.<a name="line.11"></a>
+<FONT color="green">012</FONT>     *<a name="line.12"></a>
+<FONT color="green">013</FONT>     * @author    Hongbing Kou<a name="line.13"></a>
+<FONT color="green">014</FONT>     */<a name="line.14"></a>
+<FONT color="green">015</FONT>    public class TestDay extends TestCase {<a name="line.15"></a>
+<FONT color="green">016</FONT>    <a name="line.16"></a>
+<FONT color="green">017</FONT>      <a name="line.17"></a>
+<FONT color="green">018</FONT>      /**<a name="line.18"></a>
+<FONT color="green">019</FONT>       * Test the APIs of day object.<a name="line.19"></a>
+<FONT color="green">020</FONT>       * @throws Exception If problems occur.<a name="line.20"></a>
+<FONT color="green">021</FONT>       */<a name="line.21"></a>
+<FONT color="green">022</FONT>      public void testDay() throws Exception {<a name="line.22"></a>
+<FONT color="green">023</FONT>        Day day = Day.getInstance("01-Jan-2001");<a name="line.23"></a>
+<FONT color="green">024</FONT>        Day sameDay = Day.getInstance(2001, 0, 1);<a name="line.24"></a>
+<FONT color="green">025</FONT>        assertEquals("Check the year string", "2001", day.getYearString());<a name="line.25"></a>
+<FONT color="green">026</FONT>        assertEquals("Check the month string", "01", day.getMonthString());<a name="line.26"></a>
+<FONT color="green">027</FONT>        assertEquals("Check the day string", "01", day.getDayString());<a name="line.27"></a>
+<FONT color="green">028</FONT>        assertTrue("Checking the hashcode of the day object", day.hashCode() &gt; 0);<a name="line.28"></a>
+<FONT color="green">029</FONT>        assertEquals("Checking day and sameday.", day, sameDay);<a name="line.29"></a>
+<FONT color="green">030</FONT>    <a name="line.30"></a>
+<FONT color="green">031</FONT>        Day day2 = Day.getInstance();<a name="line.31"></a>
+<FONT color="green">032</FONT>        Day day3 = Day.getInstance();<a name="line.32"></a>
+<FONT color="green">033</FONT>        assertEquals("Checking that two days in same day are equal", day2, day3);<a name="line.33"></a>
+<FONT color="green">034</FONT>        assertSame("Checking that two days in same day are identical", day2, day3);<a name="line.34"></a>
+<FONT color="green">035</FONT>    <a name="line.35"></a>
+<FONT color="green">036</FONT>        Day day4 = day3.inc(1);<a name="line.36"></a>
+<FONT color="green">037</FONT>        assertTrue("Checking the comparison less", day3.compareTo(day4) &lt; 0);<a name="line.37"></a>
+<FONT color="green">038</FONT>        assertEquals("Checking the comparison equal", day3.compareTo(day3), 0);<a name="line.38"></a>
+<FONT color="green">039</FONT>        assertTrue("Checking the comparison more", day4.compareTo(day3) &gt; 0);<a name="line.39"></a>
+<FONT color="green">040</FONT>        <a name="line.40"></a>
+<FONT color="green">041</FONT>        assertTrue("Checking isBefore", day3.isBefore(day4));<a name="line.41"></a>
+<FONT color="green">042</FONT>        assertFalse("Checking isBefore with the same day", day3.isBefore(day3));<a name="line.42"></a>
+<FONT color="green">043</FONT>    <a name="line.43"></a>
+<FONT color="green">044</FONT>        assertEquals("Checking daysBetween on same day", 0, Day.daysBetween(day, day));<a name="line.44"></a>
+<FONT color="green">045</FONT>        assertEquals("Checking daysBetween on adjacent days.", 1, Day.daysBetween(day3, day4));<a name="line.45"></a>
+<FONT color="green">046</FONT>        assertEquals("Checking daysBetween on adjacent days.", -1, Day.daysBetween(day4, day3));<a name="line.46"></a>
+<FONT color="green">047</FONT>        assertEquals("Checking daysBetween on dist days.", 100, Day.daysBetween(day3, day3.inc(100)));<a name="line.47"></a>
+<FONT color="green">048</FONT>        <a name="line.48"></a>
+<FONT color="green">049</FONT>        TimeZone defaultTimeZone = TimeZone.getDefault();<a name="line.49"></a>
+<FONT color="green">050</FONT>        Calendar cal = Calendar.getInstance(Locale.US);<a name="line.50"></a>
+<FONT color="green">051</FONT>        // Test the DayCache because of daylight saving<a name="line.51"></a>
+<FONT color="green">052</FONT>        if (defaultTimeZone.inDaylightTime(cal.getTime())) {<a name="line.52"></a>
+<FONT color="green">053</FONT>          // January first is not in daylight saving<a name="line.53"></a>
+<FONT color="green">054</FONT>          cal.set(Calendar.MONTH, 0);<a name="line.54"></a>
+<FONT color="green">055</FONT>          cal.set(Calendar.DAY_OF_MONTH, 1);<a name="line.55"></a>
+<FONT color="green">056</FONT>          <a name="line.56"></a>
+<FONT color="green">057</FONT>          // 11:15pm<a name="line.57"></a>
+<FONT color="green">058</FONT>          cal.set(Calendar.HOUR_OF_DAY, 23);           <a name="line.58"></a>
+<FONT color="green">059</FONT>          cal.set(Calendar.MINUTE, 15);      <a name="line.59"></a>
+<FONT color="green">060</FONT>          Date lateNight = cal.getTime();<a name="line.60"></a>
+<FONT color="green">061</FONT>          Day.getInstance(lateNight);  // late night day. <a name="line.61"></a>
+<FONT color="green">062</FONT>          <a name="line.62"></a>
+<FONT color="green">063</FONT>          // 9:30am<a name="line.63"></a>
+<FONT color="green">064</FONT>          cal.set(Calendar.HOUR_OF_DAY, 9);           <a name="line.64"></a>
+<FONT color="green">065</FONT>          cal.set(Calendar.MINUTE, 30);<a name="line.65"></a>
+<FONT color="green">066</FONT>          Date officeHour = cal.getTime();<a name="line.66"></a>
+<FONT color="green">067</FONT>    <a name="line.67"></a>
+<FONT color="green">068</FONT>          Day officeHourDay = Day.getInstance(officeHour);<a name="line.68"></a>
+<FONT color="green">069</FONT>          <a name="line.69"></a>
+<FONT color="green">070</FONT>          // Gets next day<a name="line.70"></a>
+<FONT color="green">071</FONT>          Day nextDay = officeHourDay.inc(1);<a name="line.71"></a>
+<FONT color="green">072</FONT>          <a name="line.72"></a>
+<FONT color="green">073</FONT>          assertNotSame("Next day should be 1/2 but 1/1 ", officeHourDay.compareTo(nextDay), 0);<a name="line.73"></a>
+<FONT color="green">074</FONT>        }<a name="line.74"></a>
+<FONT color="green">075</FONT>        else {<a name="line.75"></a>
+<FONT color="green">076</FONT>          // July 4th is in daylight saving<a name="line.76"></a>
+<FONT color="green">077</FONT>          cal.add(Calendar.YEAR, 1);<a name="line.77"></a>
+<FONT color="green">078</FONT>          cal.set(Calendar.MONTH, 6);<a name="line.78"></a>
+<FONT color="green">079</FONT>          cal.set(Calendar.DAY_OF_MONTH, 4);<a name="line.79"></a>
+<FONT color="green">080</FONT>          <a name="line.80"></a>
+<FONT color="green">081</FONT>          // 12:10am<a name="line.81"></a>
+<FONT color="green">082</FONT>          cal.set(Calendar.HOUR_OF_DAY, 0);           <a name="line.82"></a>
+<FONT color="green">083</FONT>          cal.set(Calendar.MINUTE, 10);<a name="line.83"></a>
+<FONT color="green">084</FONT>          Date earlyMorning = cal.getTime();<a name="line.84"></a>
+<FONT color="green">085</FONT>          Day.getInstance(earlyMorning); // early morning day<a name="line.85"></a>
+<FONT color="green">086</FONT>          <a name="line.86"></a>
+<FONT color="green">087</FONT>          // 9:30am<a name="line.87"></a>
+<FONT color="green">088</FONT>          cal.set(Calendar.HOUR_OF_DAY, 9);           <a name="line.88"></a>
+<FONT color="green">089</FONT>          cal.set(Calendar.MINUTE, 30);<a name="line.89"></a>
+<FONT color="green">090</FONT>          Date officeHour = cal.getTime();<a name="line.90"></a>
+<FONT color="green">091</FONT>          Day officeHourDay = Day.getInstance(officeHour);<a name="line.91"></a>
+<FONT color="green">092</FONT>          <a name="line.92"></a>
+<FONT color="green">093</FONT>          Day previousDay = officeHourDay.inc(-1);<a name="line.93"></a>
+<FONT color="green">094</FONT>          assertNotSame("Previous day should be 7/3 not 7/4", officeHourDay.compareTo(previousDay), 0);<a name="line.94"></a>
+<FONT color="green">095</FONT>        }<a name="line.95"></a>
+<FONT color="green">096</FONT>      }<a name="line.96"></a>
+<FONT color="green">097</FONT>      <a name="line.97"></a>
+<FONT color="green">098</FONT>      /** <a name="line.98"></a>
+<FONT color="green">099</FONT>       * Tests the day light savings issue associated with getting a day.  When a Day instance is <a name="line.99"></a>
+<FONT color="green">100</FONT>       * created it is retrieved from DayCache. The DayCache must account for differences<a name="line.100"></a>
+<FONT color="green">101</FONT>       * in timestamps due to TimeZone and Daylight Saving Issues. This unit tests ensures<a name="line.101"></a>
+<FONT color="green">102</FONT>       * that we are able to correctly create Day objects for a 3 year period at 30 minute intervals.<a name="line.102"></a>
+<FONT color="green">103</FONT>       * &lt;p&gt;<a name="line.103"></a>
+<FONT color="green">104</FONT>       * A failure in this method is caused by a date (ie. 0-31) of the Day object does not<a name="line.104"></a>
+<FONT color="green">105</FONT>       * equal the date of the Date object.  This indicates that the DayCache is not interpreting<a name="line.105"></a>
+<FONT color="green">106</FONT>       * the TimeZone and DST correctly.<a name="line.106"></a>
+<FONT color="green">107</FONT>       */<a name="line.107"></a>
+<FONT color="green">108</FONT>      public void testDaylightSavingsIssues() {<a name="line.108"></a>
+<FONT color="green">109</FONT>        Calendar calendar = Calendar.getInstance(Locale.US);<a name="line.109"></a>
+<FONT color="green">110</FONT>        Calendar tempCal = Calendar.getInstance(Locale.US);<a name="line.110"></a>
+<FONT color="green">111</FONT>        Calendar calendarNextYear = Calendar.getInstance(Locale.US);<a name="line.111"></a>
+<FONT color="green">112</FONT>        tempCal.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - 1);<a name="line.112"></a>
+<FONT color="green">113</FONT>        calendarNextYear.set(Calendar.YEAR, calendar.get(Calendar.YEAR) + 2);<a name="line.113"></a>
+<FONT color="green">114</FONT>        while (!tempCal.equals(calendarNextYear)) {<a name="line.114"></a>
+<FONT color="green">115</FONT>          Day day = Day.getInstance(tempCal.getTime());<a name="line.115"></a>
+<FONT color="green">116</FONT>          assertEquals("checking that the day values are the same " +<a name="line.116"></a>
+<FONT color="green">117</FONT>              "[date=" + tempCal.getTime() + ", day=" + day + "]", <a name="line.117"></a>
+<FONT color="green">118</FONT>              tempCal.get(Calendar.DATE), Integer.parseInt(day.getDayString()));<a name="line.118"></a>
+<FONT color="green">119</FONT>          tempCal.add(Calendar.MINUTE, 30);<a name="line.119"></a>
+<FONT color="green">120</FONT>        }<a name="line.120"></a>
+<FONT color="green">121</FONT>      }<a name="line.121"></a>
+<FONT color="green">122</FONT>      <a name="line.122"></a>
+<FONT color="green">123</FONT>      /**<a name="line.123"></a>
+<FONT color="green">124</FONT>       * Tests &lt;code&gt;getFirstTickOfTheDay&lt;/code&gt; and &lt;code&gt;getLastTickOfTheDay&lt;/code&gt; method.<a name="line.124"></a>
+<FONT color="green">125</FONT>       */<a name="line.125"></a>
+<FONT color="green">126</FONT>      public void testGetFirstTickOfTheDay() {<a name="line.126"></a>
+<FONT color="green">127</FONT>        long millisInADay = 24 * 60 * 60 * 1000;<a name="line.127"></a>
+<FONT color="green">128</FONT>        Calendar cal = Calendar.getInstance(Locale.US);<a name="line.128"></a>
+<FONT color="green">129</FONT>        cal.set(2005, 0, 1, 10, 10, 10);<a name="line.129"></a>
+<FONT color="green">130</FONT>        Day day = Day.getInstance(cal.getTime());<a name="line.130"></a>
+<FONT color="green">131</FONT>        <a name="line.131"></a>
+<FONT color="green">132</FONT>        cal.set(2005, 0, 1, 0, 0, 0);<a name="line.132"></a>
+<FONT color="green">133</FONT>        cal.set(Calendar.MILLISECOND, 0);<a name="line.133"></a>
+<FONT color="green">134</FONT>        long firstTickOfDay = cal.getTimeInMillis();<a name="line.134"></a>
+<FONT color="green">135</FONT>        long lastTickOfDay = firstTickOfDay + millisInADay - 1;<a name="line.135"></a>
+<FONT color="green">136</FONT>        assertEquals("Checking first tick", firstTickOfDay, day.getFirstTickOfTheDay());<a name="line.136"></a>
+<FONT color="green">137</FONT>        assertEquals("Checking last tick", lastTickOfDay, day.getLastTickOfTheDay());<a name="line.137"></a>
+<FONT color="green">138</FONT>      }<a name="line.138"></a>
+<FONT color="green">139</FONT>    }<a name="line.139"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>
