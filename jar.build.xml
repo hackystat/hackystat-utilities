@@ -3,111 +3,118 @@
   Provides the target for building a jar file of the SensorBase.
   </description>
 
-  <import file="build.xml"/>
+  <import file="build.xml" />
   <property name="tmp.dir" location="${basedir}/tmp" />
   <property name="tmp.lib.dir" location="${basedir}/tmp-lib" />
 
-  <target name="jar" depends="jar-hackystatlogger, jar-stacktrace, jar-tstamp, jar-uricache, jar-time"/>
+  <target name="jar" depends="jar-home, jar-hackystatlogger, jar-stacktrace, jar-tstamp, jar-uricache, jar-time" />
 
-  <target name="jar-hackystatlogger" depends="compile" 
-     description="Create hackystatlogger.lib.jar, containing just org.hackystat.utilities.logger code.">
+  <target name="jar-hackystatlogger" depends="compile" description="Create hackystatlogger.lib.jar, containing just org.hackystat.utilities.logger code.">
     <!-- Define the directories and distribution name -->
     <mkdir dir="${tmp.lib.dir}" />
     <copy todir="${tmp.lib.dir}">
       <fileset dir="${basedir}/build/classes/">
-        <include name="org/hackystat/utilities/logger/**"/>
+        <include name="org/hackystat/utilities/logger/**" />
       </fileset>
     </copy>
-
     <jar destfile="${basedir}/hackystatlogger.lib.jar" basedir="${tmp.lib.dir}">
       <manifest>
-        <attribute name="Implementation-Title" value="HackystatLogger"/>
-        <attribute name="Implementation-Version" value="${version}"/>
-        <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii"/>
+        <attribute name="Implementation-Title" value="HackystatLogger" />
+        <attribute name="Implementation-Version" value="${version}" />
+        <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii" />
       </manifest>
     </jar>
     <delete dir="${tmp.lib.dir}" />
   </target>
 
-  <target name="jar-stacktrace" depends="compile" 
-      description="Create stacktrace.lib.jar, containing just org.hackystat.utilities.stacktrace code.">
+  <target name="jar-stacktrace" depends="compile" description="Create stacktrace.lib.jar, containing just org.hackystat.utilities.stacktrace code.">
     <!-- Define the directories and distribution name -->
     <mkdir dir="${tmp.lib.dir}" />
     <copy todir="${tmp.lib.dir}">
       <fileset dir="${basedir}/build/classes/">
-        <include name="org/hackystat/utilities/stacktrace/**"/>
+        <include name="org/hackystat/utilities/stacktrace/**" />
       </fileset>
     </copy>
-
     <jar destfile="${basedir}/stacktrace.lib.jar" basedir="${tmp.lib.dir}">
       <manifest>
-        <attribute name="Implementation-Title" value="StackTrace"/>
-        <attribute name="Implementation-Version" value="${version}"/>
-        <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii"/>
+        <attribute name="Implementation-Title" value="StackTrace" />
+        <attribute name="Implementation-Version" value="${version}" />
+        <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii" />
       </manifest>
     </jar>
     <delete dir="${tmp.lib.dir}" />
   </target>
 
-  <target name="jar-tstamp" depends="compile" 
-          description="Create tstamp.lib.jar, containing just org.hackystat.utilities.tstamp code.">
+  <target name="jar-tstamp" depends="compile" description="Create tstamp.lib.jar, containing just org.hackystat.utilities.tstamp code.">
     <!-- Define the directories and distribution name -->
     <mkdir dir="${tmp.lib.dir}" />
     <copy todir="${tmp.lib.dir}">
       <fileset dir="${basedir}/build/classes/">
-        <include name="org/hackystat/utilities/tstamp/**"/>
+        <include name="org/hackystat/utilities/tstamp/**" />
       </fileset>
     </copy>
-
     <jar destfile="${basedir}/tstamp.lib.jar" basedir="${tmp.lib.dir}">
       <manifest>
-        <attribute name="Implementation-Title" value="Tstamp"/>
-        <attribute name="Implementation-Version" value="${version}"/>
-        <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii"/>
+        <attribute name="Implementation-Title" value="Tstamp" />
+        <attribute name="Implementation-Version" value="${version}" />
+        <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii" />
+      </manifest>
+    </jar>
+    <delete dir="${tmp.lib.dir}" />
+  </target>
+
+  <target name="jar-time" depends="compile" description="Create time.lib.jar, containing org.hackystat.utilities.time.* code.">
+    <!-- Define the directories and distribution name -->
+    <mkdir dir="${tmp.lib.dir}" />
+    <copy todir="${tmp.lib.dir}">
+      <fileset dir="${basedir}/build/classes/">
+        <include name="org/hackystat/utilities/time/**" />
+      </fileset>
+    </copy>
+    <jar destfile="${basedir}/time.lib.jar" basedir="${tmp.lib.dir}">
+      <manifest>
+        <attribute name="Implementation-Title" value="Time" />
+        <attribute name="Implementation-Version" value="${version}" />
+        <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii" />
       </manifest>
     </jar>
     <delete dir="${tmp.lib.dir}" />
   </target>
   
-  <target name="jar-time" depends="compile" 
-           description="Create time.lib.jar, containing org.hackystat.utilities.time.* code.">
-     <!-- Define the directories and distribution name -->
-     <mkdir dir="${tmp.lib.dir}" />
-     <copy todir="${tmp.lib.dir}">
-       <fileset dir="${basedir}/build/classes/">
-         <include name="org/hackystat/utilities/time/**"/>
-       </fileset>
-     </copy>
-
-     <jar destfile="${basedir}/time.lib.jar" basedir="${tmp.lib.dir}">
-       <manifest>
-         <attribute name="Implementation-Title" value="Time"/>
-         <attribute name="Implementation-Version" value="${version}"/>
-         <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii"/>
-       </manifest>
-     </jar>
-     <delete dir="${tmp.lib.dir}" />
-   </target>
-
-  <target name="jar-uricache" depends="compile" 
-          description="Create uri.lib.jar, containing the UriCache code.">
+  <target name="jar-home" depends="compile" description="Create hackystatuserhome.lib.jar, containing org.hackystat.utilities.home.* code.">
     <!-- Define the directories and distribution name -->
     <mkdir dir="${tmp.lib.dir}" />
     <copy todir="${tmp.lib.dir}">
       <fileset dir="${basedir}/build/classes/">
-        <include name="org/hackystat/utilities/uricache/**"/>
+        <include name="org/hackystat/utilities/home/**" />
       </fileset>
     </copy>
+    <jar destfile="${basedir}/homeuserhome.lib.jar" basedir="${tmp.lib.dir}">
+      <manifest>
+        <attribute name="Implementation-Title" value="Hackystat User Home" />
+        <attribute name="Implementation-Version" value="${version}" />
+        <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii" />
+      </manifest>
+    </jar>
+    <delete dir="${tmp.lib.dir}" />
+  </target>
 
+  <target name="jar-uricache" depends="compile" description="Create uri.lib.jar, containing the UriCache code.">
+    <!-- Define the directories and distribution name -->
+    <mkdir dir="${tmp.lib.dir}" />
+    <copy todir="${tmp.lib.dir}">
+      <fileset dir="${basedir}/build/classes/">
+        <include name="org/hackystat/utilities/uricache/**" />
+      </fileset>
+    </copy>
     <unjar src="${lib.dir}/concurrent/concurrent.jar" dest="${tmp.lib.dir}" />
-  	<unjar src="${env.APACHE_JCS_HOME}/jcs-1.3.jar" dest="${tmp.lib.dir}" />
-  	<unjar src="${env.APACHE_COMMONS_LOGGING_HOME}/commons-logging-1.1.jar" dest="${tmp.lib.dir}" />
-
+    <unjar src="${env.APACHE_JCS_HOME}/jcs-1.3.jar" dest="${tmp.lib.dir}" />
+    <unjar src="${env.APACHE_COMMONS_LOGGING_HOME}/commons-logging-1.1.jar" dest="${tmp.lib.dir}" />
     <jar destfile="${basedir}/uricache.lib.jar" basedir="${tmp.lib.dir}">
       <manifest>
-        <attribute name="Implementation-Title" value="UriCache"/>
-        <attribute name="Implementation-Version" value="${version}"/>
-        <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii"/>
+        <attribute name="Implementation-Title" value="UriCache" />
+        <attribute name="Implementation-Version" value="${version}" />
+        <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii" />
       </manifest>
     </jar>
     <delete dir="${tmp.lib.dir}" />
