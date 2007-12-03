@@ -9,6 +9,8 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import org.hackystat.utilities.home.HackystatUserHome;
+
 /**
  * Provides a convenience method for Restlet logging that adjusts the output Handlers.
  * @author Philip Johnson
@@ -33,8 +35,7 @@ public class RestletLoggerUtil {
           logger.removeHandler(handler);
         }
         // Define a file handler that writes to the ~/.hackystat/<service>/logs directory
-        File logDir = new File(System.getProperty("user.home") + 
-            "/.hackystat/" + serviceDir + "/logs/");
+        File logDir = new File(HackystatUserHome.getHome(), ".hackystat/" + serviceDir + "/logs/");
         logDir.mkdirs();
         String fileName = logDir + "/" + logName + ".%u.log";
         FileHandler fileHandler;
@@ -49,6 +50,4 @@ public class RestletLoggerUtil {
       }
     }
   }
-  
-
 }
