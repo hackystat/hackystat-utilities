@@ -11,87 +11,112 @@
 <FONT color="green">008</FONT>    import java.util.logging.LogManager;<a name="line.8"></a>
 <FONT color="green">009</FONT>    import java.util.logging.Logger;<a name="line.9"></a>
 <FONT color="green">010</FONT>    <a name="line.10"></a>
-<FONT color="green">011</FONT>    <a name="line.11"></a>
-<FONT color="green">012</FONT>    /**<a name="line.12"></a>
-<FONT color="green">013</FONT>     * Supports logging of informational and error messages by this service.<a name="line.13"></a>
-<FONT color="green">014</FONT>     * @author Philip Johnson<a name="line.14"></a>
-<FONT color="green">015</FONT>     */<a name="line.15"></a>
-<FONT color="green">016</FONT>    public class HackystatLogger {<a name="line.16"></a>
-<FONT color="green">017</FONT>      <a name="line.17"></a>
-<FONT color="green">018</FONT>    <a name="line.18"></a>
-<FONT color="green">019</FONT>      /**<a name="line.19"></a>
-<FONT color="green">020</FONT>       * Create a new Logger for Hackystat.  <a name="line.20"></a>
-<FONT color="green">021</FONT>       *<a name="line.21"></a>
-<FONT color="green">022</FONT>       * @param loggerName The name of the logger to create.<a name="line.22"></a>
-<FONT color="green">023</FONT>       */<a name="line.23"></a>
-<FONT color="green">024</FONT>      private HackystatLogger(String loggerName) {<a name="line.24"></a>
-<FONT color="green">025</FONT>        Logger logger = Logger.getLogger(loggerName);<a name="line.25"></a>
-<FONT color="green">026</FONT>        logger.setUseParentHandlers(false);<a name="line.26"></a>
-<FONT color="green">027</FONT>    <a name="line.27"></a>
-<FONT color="green">028</FONT>        // Define a file handler that writes to the ~/.hackystat/logs directory, creating it if nec.<a name="line.28"></a>
-<FONT color="green">029</FONT>        File logDir = new File(System.getProperty("user.home") + "/.hackystat/logs/");<a name="line.29"></a>
-<FONT color="green">030</FONT>        logDir.mkdirs();<a name="line.30"></a>
-<FONT color="green">031</FONT>        String fileName = logDir + "/" + loggerName + ".%u.log";<a name="line.31"></a>
-<FONT color="green">032</FONT>        FileHandler fileHandler;<a name="line.32"></a>
-<FONT color="green">033</FONT>        try {<a name="line.33"></a>
-<FONT color="green">034</FONT>          fileHandler = new FileHandler(fileName, 500000, 1, true);<a name="line.34"></a>
-<FONT color="green">035</FONT>          fileHandler.setFormatter(new OneLineFormatter());<a name="line.35"></a>
-<FONT color="green">036</FONT>          logger.addHandler(fileHandler);<a name="line.36"></a>
-<FONT color="green">037</FONT>        }<a name="line.37"></a>
-<FONT color="green">038</FONT>        catch (IOException e) {<a name="line.38"></a>
-<FONT color="green">039</FONT>          throw new RuntimeException("Could not open the log file for this Hackystat service.", e);<a name="line.39"></a>
-<FONT color="green">040</FONT>        }<a name="line.40"></a>
-<FONT color="green">041</FONT>    <a name="line.41"></a>
-<FONT color="green">042</FONT>        // Define a console handler to also write the message to the console.<a name="line.42"></a>
-<FONT color="green">043</FONT>        ConsoleHandler consoleHandler = new ConsoleHandler();<a name="line.43"></a>
-<FONT color="green">044</FONT>        consoleHandler.setFormatter(new OneLineFormatter());<a name="line.44"></a>
-<FONT color="green">045</FONT>        logger.addHandler(consoleHandler);<a name="line.45"></a>
-<FONT color="green">046</FONT>        setLoggingLevel(logger, "INFO");<a name="line.46"></a>
-<FONT color="green">047</FONT>      }<a name="line.47"></a>
-<FONT color="green">048</FONT>    <a name="line.48"></a>
-<FONT color="green">049</FONT>      <a name="line.49"></a>
-<FONT color="green">050</FONT>      /**<a name="line.50"></a>
-<FONT color="green">051</FONT>       * Return the Hackystat Logger named with loggerName, creating it if it does not yet exist.<a name="line.51"></a>
-<FONT color="green">052</FONT>       * Hackystat loggers have the following characteristics:<a name="line.52"></a>
-<FONT color="green">053</FONT>       * &lt;ul&gt;<a name="line.53"></a>
-<FONT color="green">054</FONT>       * &lt;li&gt; Log messages are one line and are prefixed with a time stamp using the OneLineFormatter<a name="line.54"></a>
-<FONT color="green">055</FONT>       * class.<a name="line.55"></a>
-<FONT color="green">056</FONT>       * &lt;li&gt; The logger creates a Console logger and a File logger. <a name="line.56"></a>
-<FONT color="green">057</FONT>       * &lt;li&gt; The File logger is written out to the ~/.hackystat/logs/ directory, creating this if<a name="line.57"></a>
-<FONT color="green">058</FONT>       * it is not found.<a name="line.58"></a>
-<FONT color="green">059</FONT>       * &lt;li&gt; The File log name is {name}.%u.log.<a name="line.59"></a>
-<FONT color="green">060</FONT>       * &lt;/ul&gt; <a name="line.60"></a>
-<FONT color="green">061</FONT>       * @param loggerName The name of this HackystatLogger.<a name="line.61"></a>
-<FONT color="green">062</FONT>       * @return The Logger instance. <a name="line.62"></a>
-<FONT color="green">063</FONT>       */<a name="line.63"></a>
-<FONT color="green">064</FONT>      public static Logger getLogger(String loggerName) {<a name="line.64"></a>
-<FONT color="green">065</FONT>        Logger logger = LogManager.getLogManager().getLogger(loggerName);<a name="line.65"></a>
-<FONT color="green">066</FONT>        if (logger == null) {<a name="line.66"></a>
-<FONT color="green">067</FONT>          new HackystatLogger(loggerName);<a name="line.67"></a>
-<FONT color="green">068</FONT>        }<a name="line.68"></a>
-<FONT color="green">069</FONT>        return LogManager.getLogManager().getLogger(loggerName);<a name="line.69"></a>
-<FONT color="green">070</FONT>      }<a name="line.70"></a>
-<FONT color="green">071</FONT>    <a name="line.71"></a>
-<FONT color="green">072</FONT>      /**<a name="line.72"></a>
-<FONT color="green">073</FONT>       * Sets the logging level to be used for this Hackystat logger.<a name="line.73"></a>
-<FONT color="green">074</FONT>       * If the passed string cannot be parsed into a Level, then INFO is set by default.<a name="line.74"></a>
-<FONT color="green">075</FONT>       * @param logger The logger whose level is to be set.  <a name="line.75"></a>
-<FONT color="green">076</FONT>       * @param level The new Level.<a name="line.76"></a>
-<FONT color="green">077</FONT>       */<a name="line.77"></a>
-<FONT color="green">078</FONT>      public static void setLoggingLevel(Logger logger, String level) {<a name="line.78"></a>
-<FONT color="green">079</FONT>        Level newLevel = Level.INFO;<a name="line.79"></a>
-<FONT color="green">080</FONT>        try {<a name="line.80"></a>
-<FONT color="green">081</FONT>          newLevel = Level.parse(level);<a name="line.81"></a>
-<FONT color="green">082</FONT>        }<a name="line.82"></a>
-<FONT color="green">083</FONT>        catch (Exception e) {<a name="line.83"></a>
-<FONT color="green">084</FONT>          logger.info("Couldn't set Logging level to: " + level);<a name="line.84"></a>
-<FONT color="green">085</FONT>        }<a name="line.85"></a>
-<FONT color="green">086</FONT>        logger.setLevel(newLevel);<a name="line.86"></a>
-<FONT color="green">087</FONT>        logger.getHandlers()[0].setLevel(newLevel);<a name="line.87"></a>
-<FONT color="green">088</FONT>        logger.getHandlers()[1].setLevel(newLevel);<a name="line.88"></a>
-<FONT color="green">089</FONT>      }<a name="line.89"></a>
-<FONT color="green">090</FONT>    }<a name="line.90"></a>
-<FONT color="green">091</FONT>    <a name="line.91"></a>
+<FONT color="green">011</FONT>    import org.hackystat.utilities.home.HackystatUserHome;<a name="line.11"></a>
+<FONT color="green">012</FONT>    <a name="line.12"></a>
+<FONT color="green">013</FONT>    <a name="line.13"></a>
+<FONT color="green">014</FONT>    /**<a name="line.14"></a>
+<FONT color="green">015</FONT>     * Supports logging of informational and error messages by a service.<a name="line.15"></a>
+<FONT color="green">016</FONT>     * Uses HackystatUserHome.getHome() to determine where to put the logs directory.<a name="line.16"></a>
+<FONT color="green">017</FONT>     * @author Philip Johnson<a name="line.17"></a>
+<FONT color="green">018</FONT>     */<a name="line.18"></a>
+<FONT color="green">019</FONT>    public class HackystatLogger {<a name="line.19"></a>
+<FONT color="green">020</FONT>      <a name="line.20"></a>
+<FONT color="green">021</FONT>    <a name="line.21"></a>
+<FONT color="green">022</FONT>      /**<a name="line.22"></a>
+<FONT color="green">023</FONT>       * Create a new Logger for Hackystat.  <a name="line.23"></a>
+<FONT color="green">024</FONT>       *<a name="line.24"></a>
+<FONT color="green">025</FONT>       * @param loggerName The name of the logger to create.<a name="line.25"></a>
+<FONT color="green">026</FONT>       * @param subdir If non-null, then logging files are placed in .hackystat/[subdir]/logs.<a name="line.26"></a>
+<FONT color="green">027</FONT>       * Otherwise they are placed in .hackystat/logs.<a name="line.27"></a>
+<FONT color="green">028</FONT>       */<a name="line.28"></a>
+<FONT color="green">029</FONT>      private HackystatLogger(String loggerName, String subdir) {<a name="line.29"></a>
+<FONT color="green">030</FONT>        Logger logger = Logger.getLogger(loggerName);<a name="line.30"></a>
+<FONT color="green">031</FONT>        logger.setUseParentHandlers(false);<a name="line.31"></a>
+<FONT color="green">032</FONT>    <a name="line.32"></a>
+<FONT color="green">033</FONT>        // Define a file handler that writes to the ~/.hackystat/logs directory, creating it if nec.<a name="line.33"></a>
+<FONT color="green">034</FONT>        String logSubDir = (subdir == null) ? ".hackystat/logs/" : ".hackystat/" + subdir + "/logs";<a name="line.34"></a>
+<FONT color="green">035</FONT>        File logDir = new File(HackystatUserHome.getHome() + logSubDir);<a name="line.35"></a>
+<FONT color="green">036</FONT>        logDir.mkdirs();<a name="line.36"></a>
+<FONT color="green">037</FONT>        String fileName = logDir + "/" + loggerName + ".%u.log";<a name="line.37"></a>
+<FONT color="green">038</FONT>        FileHandler fileHandler;<a name="line.38"></a>
+<FONT color="green">039</FONT>        try {<a name="line.39"></a>
+<FONT color="green">040</FONT>          fileHandler = new FileHandler(fileName, 500000, 1, true);<a name="line.40"></a>
+<FONT color="green">041</FONT>          fileHandler.setFormatter(new OneLineFormatter());<a name="line.41"></a>
+<FONT color="green">042</FONT>          logger.addHandler(fileHandler);<a name="line.42"></a>
+<FONT color="green">043</FONT>        }<a name="line.43"></a>
+<FONT color="green">044</FONT>        catch (IOException e) {<a name="line.44"></a>
+<FONT color="green">045</FONT>          throw new RuntimeException("Could not open the log file for this Hackystat service.", e);<a name="line.45"></a>
+<FONT color="green">046</FONT>        }<a name="line.46"></a>
+<FONT color="green">047</FONT>    <a name="line.47"></a>
+<FONT color="green">048</FONT>        // Define a console handler to also write the message to the console.<a name="line.48"></a>
+<FONT color="green">049</FONT>        ConsoleHandler consoleHandler = new ConsoleHandler();<a name="line.49"></a>
+<FONT color="green">050</FONT>        consoleHandler.setFormatter(new OneLineFormatter());<a name="line.50"></a>
+<FONT color="green">051</FONT>        logger.addHandler(consoleHandler);<a name="line.51"></a>
+<FONT color="green">052</FONT>        setLoggingLevel(logger, "INFO");<a name="line.52"></a>
+<FONT color="green">053</FONT>      }<a name="line.53"></a>
+<FONT color="green">054</FONT>    <a name="line.54"></a>
+<FONT color="green">055</FONT>      <a name="line.55"></a>
+<FONT color="green">056</FONT>      /**<a name="line.56"></a>
+<FONT color="green">057</FONT>       * Return the Hackystat Logger named with loggerName, creating it if it does not yet exist.<a name="line.57"></a>
+<FONT color="green">058</FONT>       * Hackystat loggers have the following characteristics:<a name="line.58"></a>
+<FONT color="green">059</FONT>       * &lt;ul&gt;<a name="line.59"></a>
+<FONT color="green">060</FONT>       * &lt;li&gt; Log messages are one line and are prefixed with a time stamp using the OneLineFormatter<a name="line.60"></a>
+<FONT color="green">061</FONT>       * class.<a name="line.61"></a>
+<FONT color="green">062</FONT>       * &lt;li&gt; The logger creates a Console logger and a File logger. <a name="line.62"></a>
+<FONT color="green">063</FONT>       * &lt;li&gt; The File logger is written out to the ~/.hackystat/logs/ directory, creating this if<a name="line.63"></a>
+<FONT color="green">064</FONT>       * it is not found.<a name="line.64"></a>
+<FONT color="green">065</FONT>       * &lt;li&gt; The File log name is {name}.%u.log.<a name="line.65"></a>
+<FONT color="green">066</FONT>       * &lt;/ul&gt; <a name="line.66"></a>
+<FONT color="green">067</FONT>       * @param loggerName The name of this HackystatLogger.<a name="line.67"></a>
+<FONT color="green">068</FONT>       * @return The Logger instance. <a name="line.68"></a>
+<FONT color="green">069</FONT>       */<a name="line.69"></a>
+<FONT color="green">070</FONT>      public static Logger getLogger(String loggerName) {<a name="line.70"></a>
+<FONT color="green">071</FONT>        return HackystatLogger.getLogger(loggerName, null);<a name="line.71"></a>
+<FONT color="green">072</FONT>      }<a name="line.72"></a>
+<FONT color="green">073</FONT>      <a name="line.73"></a>
+<FONT color="green">074</FONT>      /**<a name="line.74"></a>
+<FONT color="green">075</FONT>       * Return the Hackystat Logger named with loggerName, creating it if it does not yet exist.<a name="line.75"></a>
+<FONT color="green">076</FONT>       * Hackystat loggers have the following characteristics:<a name="line.76"></a>
+<FONT color="green">077</FONT>       * &lt;ul&gt;<a name="line.77"></a>
+<FONT color="green">078</FONT>       * &lt;li&gt; Log messages are one line and are prefixed with a time stamp using the OneLineFormatter<a name="line.78"></a>
+<FONT color="green">079</FONT>       * class.<a name="line.79"></a>
+<FONT color="green">080</FONT>       * &lt;li&gt; The logger creates a Console logger and a File logger. <a name="line.80"></a>
+<FONT color="green">081</FONT>       * &lt;li&gt; The File logger is written out to the ~/.hackystat/[subDir]/logs/ directory, creating <a name="line.81"></a>
+<FONT color="green">082</FONT>       * this if it is not found.<a name="line.82"></a>
+<FONT color="green">083</FONT>       * &lt;li&gt; The File log name is {name}.%u.log.<a name="line.83"></a>
+<FONT color="green">084</FONT>       * &lt;/ul&gt; <a name="line.84"></a>
+<FONT color="green">085</FONT>       * @param loggerName The name of this HackystatLogger.<a name="line.85"></a>
+<FONT color="green">086</FONT>       * @param subDir The .hackystat subdirectory in which the log/ directory should be put.<a name="line.86"></a>
+<FONT color="green">087</FONT>       * @return The Logger instance. <a name="line.87"></a>
+<FONT color="green">088</FONT>       */<a name="line.88"></a>
+<FONT color="green">089</FONT>      public static Logger getLogger(String loggerName, String subDir) {<a name="line.89"></a>
+<FONT color="green">090</FONT>        Logger logger = LogManager.getLogManager().getLogger(loggerName);<a name="line.90"></a>
+<FONT color="green">091</FONT>        if (logger == null) {<a name="line.91"></a>
+<FONT color="green">092</FONT>          new HackystatLogger(loggerName, subDir);<a name="line.92"></a>
+<FONT color="green">093</FONT>        }<a name="line.93"></a>
+<FONT color="green">094</FONT>        return LogManager.getLogManager().getLogger(loggerName);<a name="line.94"></a>
+<FONT color="green">095</FONT>      }<a name="line.95"></a>
+<FONT color="green">096</FONT>    <a name="line.96"></a>
+<FONT color="green">097</FONT>      /**<a name="line.97"></a>
+<FONT color="green">098</FONT>       * Sets the logging level to be used for this Hackystat logger.<a name="line.98"></a>
+<FONT color="green">099</FONT>       * If the passed string cannot be parsed into a Level, then INFO is set by default.<a name="line.99"></a>
+<FONT color="green">100</FONT>       * @param logger The logger whose level is to be set.  <a name="line.100"></a>
+<FONT color="green">101</FONT>       * @param level The new Level.<a name="line.101"></a>
+<FONT color="green">102</FONT>       */<a name="line.102"></a>
+<FONT color="green">103</FONT>      public static void setLoggingLevel(Logger logger, String level) {<a name="line.103"></a>
+<FONT color="green">104</FONT>        Level newLevel = Level.INFO;<a name="line.104"></a>
+<FONT color="green">105</FONT>        try {<a name="line.105"></a>
+<FONT color="green">106</FONT>          newLevel = Level.parse(level);<a name="line.106"></a>
+<FONT color="green">107</FONT>        }<a name="line.107"></a>
+<FONT color="green">108</FONT>        catch (Exception e) {<a name="line.108"></a>
+<FONT color="green">109</FONT>          logger.info("Couldn't set Logging level to: " + level);<a name="line.109"></a>
+<FONT color="green">110</FONT>        }<a name="line.110"></a>
+<FONT color="green">111</FONT>        logger.setLevel(newLevel);<a name="line.111"></a>
+<FONT color="green">112</FONT>        logger.getHandlers()[0].setLevel(newLevel);<a name="line.112"></a>
+<FONT color="green">113</FONT>        logger.getHandlers()[1].setLevel(newLevel);<a name="line.113"></a>
+<FONT color="green">114</FONT>      }<a name="line.114"></a>
+<FONT color="green">115</FONT>    }<a name="line.115"></a>
+<FONT color="green">116</FONT>    <a name="line.116"></a>
 
 
 
