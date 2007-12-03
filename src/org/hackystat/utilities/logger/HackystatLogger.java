@@ -8,9 +8,12 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.hackystat.utilities.home.HackystatUserHome;
+
 
 /**
- * Supports logging of informational and error messages by this service.
+ * Supports logging of informational and error messages by a service.
+ * Uses HackystatUserHome.getHome() to determine where to put the logs directory.
  * @author Philip Johnson
  */
 public class HackystatLogger {
@@ -20,13 +23,16 @@ public class HackystatLogger {
    * Create a new Logger for Hackystat.  
    *
    * @param loggerName The name of the logger to create.
+   * @param subdir If non-null, then logging files are placed in .hackystat/[subdir]/logs.
+   * Otherwise they are placed in .hackystat/logs.
    */
-  private HackystatLogger(String loggerName) {
+  private HackystatLogger(String loggerName, String subdir) {
     Logger logger = Logger.getLogger(loggerName);
     logger.setUseParentHandlers(false);
 
     // Define a file handler that writes to the ~/.hackystat/logs directory, creating it if nec.
-    File logDir = new File(System.getProperty("user.home") + "/.hackystat/logs/");
+    String logSubDir = (subdir == null) ? ".hackystat/logs/" : ".hackystat/" + subdir + "/logs";
+    File logDir = new File(HackystatUserHome.getHome() + logSubDir);
     logDir.mkdirs();
     String fileName = logDir + "/" + loggerName + ".%u.log";
     FileHandler fileHandler;
@@ -62,9 +68,28 @@ public class HackystatLogger {
    * @return The Logger instance. 
    */
   public static Logger getLogger(String loggerName) {
+    return HackystatLogger.getLogger(loggerName, null);
+  }
+  
+  /**
+   * Return the Hackystat Logger named with loggerName, creating it if it does not yet exist.
+   * Hackystat loggers have the following characteristics:
+   * <ul>
+   * <li> Log messages are one line and are prefixed with a time stamp using the OneLineFormatter
+   * class.
+   * <li> The logger creates a Console logger and a File logger. 
+   * <li> The File logger is written out to the ~/.hackystat/[subDir]/logs/ directory, creating 
+   * this if it is not found.
+   * <li> The File log name is {name}.%u.log.
+   * </ul> 
+   * @param loggerName The name of this HackystatLogger.
+   * @param subDir The .hackystat subdirectory in which the log/ directory should be put.
+   * @return The Logger instance. 
+   */
+  public static Logger getLogger(String loggerName, String subDir) {
     Logger logger = LogManager.getLogManager().getLogger(loggerName);
     if (logger == null) {
-      new HackystatLogger(loggerName);
+      new HackystatLogger(loggerName, subDir);
     }
     return LogManager.getLogManager().getLogger(loggerName);
   }
