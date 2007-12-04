@@ -31,8 +31,8 @@ public class HackystatLogger {
     logger.setUseParentHandlers(false);
 
     // Define a file handler that writes to the ~/.hackystat/logs directory, creating it if nec.
-    String logSubDir = (subdir == null) ? ".hackystat/logs/" : ".hackystat/" + subdir + "/logs";
-    File logDir = new File(HackystatUserHome.getHome() + logSubDir);
+    String logSubDir = (subdir == null) ? ".hackystat/logs/" : ".hackystat/" + subdir + "/logs/";
+    File logDir = new File(HackystatUserHome.getHome(), logSubDir);
     logDir.mkdirs();
     String fileName = logDir + "/" + loggerName + ".%u.log";
     FileHandler fileHandler;

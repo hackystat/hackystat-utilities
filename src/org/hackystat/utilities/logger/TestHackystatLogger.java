@@ -19,8 +19,10 @@ public class TestHackystatLogger {
   @Test
   public void testLogging() {
     Logger logger = HackystatLogger.getLogger("org.hackystat.utilities.testlogger");
-    HackystatLogger.setLoggingLevel(logger, "INFO");
-    logger.info("(Test message)");
-    assertEquals("Checking identity", "org.hackystat.utilities.testlogger", logger.getName());
+    logger.fine("(Test message)");
+    logger = HackystatLogger.getLogger("org.hackystat.nestedlogger.test", "testlogging");
+    HackystatLogger.setLoggingLevel(logger, "FINE");
+    logger.fine("(Test message2)");
+    assertEquals("Checking identity", "org.hackystat.nestedlogger.test", logger.getName());
   }
 }
