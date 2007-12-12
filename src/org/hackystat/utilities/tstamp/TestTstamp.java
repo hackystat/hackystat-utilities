@@ -43,6 +43,8 @@ public class TestTstamp {
     assertTrue("Test inbetween 1", Tstamp.inBetween(date1, date2, date3));
     assertTrue("Test inbetween 2", Tstamp.inBetween(date1, date1, date2));
     assertTrue("Test inbetween 3", Tstamp.inBetween(date1, date2, date2));    
-    assertFalse("Test inbetween 4", Tstamp.inBetween(date1, date3, date2));    
+    assertFalse("Test inbetween 4", Tstamp.inBetween(date1, date3, date2));   
+    
+    assertFalse("Test bogus time check", Tstamp.isBogusStartTime(date1));
   }
 }
