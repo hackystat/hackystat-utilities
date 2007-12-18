@@ -352,4 +352,18 @@ public class Tstamp {
     return millis1 == millis2;
   }
 
+  /**
+   * Returns differences between time1 and time2 in milliseconds.
+   * 
+   * @param time1 Start.
+   * @param time2 End.
+   * @return Difference between two times in milliseconds.
+   */
+  public static long diff(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
+    long millis1 = time1.toGregorianCalendar().getTimeInMillis();
+    long millis2 = time2.toGregorianCalendar().getTimeInMillis();
+    
+    return millis2 - millis1;
+  }
+
 }

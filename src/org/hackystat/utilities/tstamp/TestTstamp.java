@@ -1,5 +1,6 @@
 package org.hackystat.utilities.tstamp;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -47,4 +48,19 @@ public class TestTstamp {
     
     assertFalse("Test bogus time check", Tstamp.isBogusStartTime(date1));
   }
+  
+  /**
+   * Tests time span. 
+   * 
+   * @throws Exception If problem occurs
+   */
+  @Test public void testTstampSpan() throws Exception {
+    XMLGregorianCalendar date1 = Tstamp.makeTimestamp("2007-08-01T01:00:00.000");
+    XMLGregorianCalendar date2 = Tstamp.makeTimestamp("2007-08-01T01:01:20.200");
+    XMLGregorianCalendar date3 = Tstamp.makeTimestamp("2007-08-01T01:01:20.400");
+
+    assertEquals("Test timespan 80200 ms", 80200, Tstamp.diff(date1, date2));
+    assertEquals("Test timespan 200 ms", 200, Tstamp.diff(date2, date3));
+  }
+
 }
