@@ -2,7 +2,6 @@ package org.hackystat.utilities.tstamp;
 
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -38,14 +37,16 @@ public class Tstamp {
 
   /**
    * Returns an XMLGregorianCalendar, given its string representation.
-   * @param lexicalRepresentation The string representation.
+   * Missing hours, minutes, second, millisecond, and timezone fields are given defaults.
+   * @param rep The string representation.
    * @return The timestamp.
    * @throws Exception If the string cannot be parsed into a timestamp.
    */
-  public static XMLGregorianCalendar makeTimestamp(String lexicalRepresentation)
+  public static XMLGregorianCalendar makeTimestamp(String rep)
       throws Exception {
     DatatypeFactory factory = DatatypeFactory.newInstance();
-    return factory.newXMLGregorianCalendar(lexicalRepresentation);
+    long mills = factory.newXMLGregorianCalendar(rep).toGregorianCalendar().getTimeInMillis();  
+    return makeTimestamp(mills);
   }
 
   /**
@@ -194,6 +195,30 @@ public class Tstamp {
       throw new RuntimeException(factoryErrorMsg, e);
     }
   }
+  
+  /**
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of milliseconds.
+   * @param tstamp The base date and time.
+   * @param milliseconds The number of milliseconds to increment. This can be a negative
+   * number.
+   * @return A new XMLGregorianCalendar instance representing the inc'd time.
+   */
+  public static XMLGregorianCalendar incrementMilliseconds(XMLGregorianCalendar tstamp, 
+      int milliseconds) {
+    DatatypeFactory factory = null;
+    try {
+      factory = DatatypeFactory.newInstance();
+      GregorianCalendar calendar = new GregorianCalendar();
+      long millis = tstamp.toGregorianCalendar().getTimeInMillis();
+      millis += milliseconds;
+      calendar.setTimeInMillis(millis);
+      return factory.newXMLGregorianCalendar(calendar);
+    }
+    catch (DatatypeConfigurationException e) {
+      throw new RuntimeException(factoryErrorMsg, e);
+    }
+  }
 
   /**
    * Returns a new java.sql.Timestamp created from a
@@ -232,7 +257,7 @@ public class Tstamp {
       startTime.setYear(2000);
       startTime.setTime(0, 0, 0);
       startTime.setMillisecond(000); // NOPMD
-      return startTime;
+      return Tstamp.makeTimestamp(startTime.toGregorianCalendar().getTimeInMillis());
     }
     catch (Exception e) {
       throw new RuntimeException(factoryErrorMsg, e);
@@ -252,7 +277,7 @@ public class Tstamp {
       endTime.setYear(2010);
       endTime.setTime(23, 59, 59);
       endTime.setMillisecond(999);
-      return endTime;
+      return Tstamp.makeTimestamp(endTime.toGregorianCalendar().getTimeInMillis());
     }
     catch (Exception e) {
       throw new RuntimeException(factoryErrorMsg, e);
@@ -285,14 +310,10 @@ public class Tstamp {
    */
   public static boolean inBetween(XMLGregorianCalendar start, XMLGregorianCalendar tstamp,
       XMLGregorianCalendar end) {
-    if ((Tstamp.equal(start, tstamp)) || (Tstamp.equal(end, tstamp))) {
-      return true;
-    }
-    if ((start.compare(tstamp) == DatatypeConstants.LESSER)
-        && (end.compare(tstamp) == DatatypeConstants.GREATER)) {
-      return true;
-    }
-    return false;
+    long startMillis = start.toGregorianCalendar().getTimeInMillis();
+    long endMillis = end.toGregorianCalendar().getTimeInMillis();
+    long tstampMillis = tstamp.toGregorianCalendar().getTimeInMillis();
+    return ((tstampMillis >= startMillis) && (tstampMillis <= endMillis));
   }
 
   /**
@@ -302,7 +323,9 @@ public class Tstamp {
    * @return True if time1 > time2
    */
   public static boolean greaterThan(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
-    return time1.compare(time2) == DatatypeConstants.GREATER;
+    long time1Millis = time1.toGregorianCalendar().getTimeInMillis();
+    long time2Millis = time2.toGregorianCalendar().getTimeInMillis();
+    return (time1Millis > time2Millis);
   }
 
   /**
@@ -317,7 +340,7 @@ public class Tstamp {
       DatatypeFactory factory = DatatypeFactory.newInstance();
       XMLGregorianCalendar time1 = factory.newXMLGregorianCalendar(timeString1);
       XMLGregorianCalendar time2 = factory.newXMLGregorianCalendar(timeString2);
-      return time1.compare(time2) == DatatypeConstants.GREATER;
+      return greaterThan(time1, time2);
     }
     catch (Exception e) {
       throw new IllegalArgumentException("Illegal timestring", e);
@@ -331,17 +354,13 @@ public class Tstamp {
    * @return True if time1 < time2
    */
   public static boolean lessThan(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
-    return time1.compare(time2) == DatatypeConstants.LESSER;
+    long time1Millis = time1.toGregorianCalendar().getTimeInMillis();
+    long time2Millis = time2.toGregorianCalendar().getTimeInMillis();
+    return (time1Millis < time2Millis);
   }
 
   /**
-   * Returns true if time1 equals time2. Note that this class compares for
-   * equality by converting to millis, which is apparently not what the built-in
-   * XMLGregorianCalendar class does, which leads to the XMLGregorianCalendar
-   * class saying that two logically equal instances are not equal. For example,
-   * 2007-01-01 does not equal 2007-01-01T00:00:00 using
-   * XMLGregorianCalendar.equals(). The Tstamp.equal() method does the right
-   * thing in this case.
+   * Returns true if time1 equals time2. 
    * @param time1 The first time.
    * @param time2 The second time.
    * @return True if time1 equals time2
@@ -349,7 +368,7 @@ public class Tstamp {
   public static boolean equal(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
     long millis1 = time1.toGregorianCalendar().getTimeInMillis();
     long millis2 = time2.toGregorianCalendar().getTimeInMillis();
-    return millis1 == millis2;
+    return (millis1 == millis2);
   }
 
   /**
@@ -362,7 +381,6 @@ public class Tstamp {
   public static long diff(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
     long millis1 = time1.toGregorianCalendar().getTimeInMillis();
     long millis2 = time2.toGregorianCalendar().getTimeInMillis();
-    
     return millis2 - millis1;
   }
 
