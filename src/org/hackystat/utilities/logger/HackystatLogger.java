@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -25,8 +26,9 @@ public class HackystatLogger {
    * @param loggerName The name of the logger to create.
    * @param subdir If non-null, then logging files are placed in .hackystat/[subdir]/logs.
    * Otherwise they are placed in .hackystat/logs.
+   * @param hasConsole If true, then a ConsoleHandler is created.
    */
-  private HackystatLogger(String loggerName, String subdir) {
+  private HackystatLogger(String loggerName, String subdir, boolean hasConsole) {
     Logger logger = Logger.getLogger(loggerName);
     logger.setUseParentHandlers(false);
 
@@ -46,9 +48,11 @@ public class HackystatLogger {
     }
 
     // Define a console handler to also write the message to the console.
-    ConsoleHandler consoleHandler = new ConsoleHandler();
-    consoleHandler.setFormatter(new OneLineFormatter());
-    logger.addHandler(consoleHandler);
+    if (hasConsole) {
+      ConsoleHandler consoleHandler = new ConsoleHandler();
+      consoleHandler.setFormatter(new OneLineFormatter());
+      logger.addHandler(consoleHandler);
+    }
     setLoggingLevel(logger, "INFO");
   }
 
@@ -68,7 +72,7 @@ public class HackystatLogger {
    * @return The Logger instance. 
    */
   public static Logger getLogger(String loggerName) {
-    return HackystatLogger.getLogger(loggerName, null);
+    return HackystatLogger.getLogger(loggerName, null, true);
   }
   
   /**
@@ -87,12 +91,34 @@ public class HackystatLogger {
    * @return The Logger instance. 
    */
   public static Logger getLogger(String loggerName, String subDir) {
+    return getLogger(loggerName, subDir, true);
+  }
+  
+  /**
+   * Return the Hackystat Logger named with loggerName, creating it if it does not yet exist.
+   * Hackystat loggers have the following characteristics:
+   * <ul>
+   * <li> Log messages are one line and are prefixed with a time stamp using the OneLineFormatter
+   * class.
+   * <li> The logger creates a File logger. 
+   * <li> The File logger is written out to the ~/.hackystat/[subDir]/logs/ directory, creating 
+   * this if it is not found.
+   * <li> The File log name is {name}.%u.log.
+   * <li> There is also a ConsoleHandler (if hasConsole is true).
+   * </ul> 
+   * @param loggerName The name of this HackystatLogger.
+   * @param subDir The .hackystat subdirectory in which the log/ directory should be put.
+   * @param hasConsole If true, then a ConsoleHandler is created. 
+   * @return The Logger instance. 
+   */
+  public static Logger getLogger(String loggerName, String subDir, boolean hasConsole) {
     Logger logger = LogManager.getLogManager().getLogger(loggerName);
     if (logger == null) {
-      new HackystatLogger(loggerName, subDir);
+      new HackystatLogger(loggerName, subDir, hasConsole);
     }
     return LogManager.getLogManager().getLogger(loggerName);
   }
+
 
   /**
    * Sets the logging level to be used for this Hackystat logger.
@@ -109,8 +135,9 @@ public class HackystatLogger {
       logger.info("Couldn't set Logging level to: " + level);
     }
     logger.setLevel(newLevel);
-    logger.getHandlers()[0].setLevel(newLevel);
-    logger.getHandlers()[1].setLevel(newLevel);
+    for (Handler handler : logger.getHandlers()) {
+      handler.setLevel(newLevel);
+    }
   }
 }
 
