@@ -1,7 +1,0 @@
-org.hackystat.utilities.home
-org.hackystat.utilities.logger
-org.hackystat.utilities.stacktrace
-org.hackystat.utilities.time.interval
-org.hackystat.utilities.time.period
-org.hackystat.utilities.tstamp
-org.hackystat.utilities.uricache
