@@ -12,7 +12,7 @@ import java.util.logging.Level;
 public class UriCacheProperties {
 
   /** Cache default region name. */
-  private String uriCaheRegionName = "UriCache";
+  private String uriCacheRegionName = "UriCache";
 
   /** Cache elements idle time. 24 hours default time. */
   private Long maxIdleTime = 86400L;
@@ -94,39 +94,40 @@ public class UriCacheProperties {
     //
     // ------- UriCache region cache attributes ---------
     //
-    prop.setProperty("jcs.region." + this.uriCaheRegionName, "indexedDiskCache");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName, "indexedDiskCache");
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".cacheattributes",
         "org.apache.jcs.engine.CompositeCacheAttributes");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.MaxObjects",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".cacheattributes.MaxObjects",
         this.maxCacheCapacity.toString());
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.MemoryCacheName",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".cacheattributes.MemoryCacheName",
         "org.apache.jcs.engine.memory.lru.LRUMemoryCache");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName
+    prop.setProperty("jcs.region." + this.uriCacheRegionName
         + ".cacheattributes.ShrinkerIntervalSeconds", "300");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseMemoryShrinker",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".cacheattributes.UseMemoryShrinker",
         "true");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseDisk", "true");
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".cacheattributes.UseDisk", "true");
     prop
-        .setProperty("jcs.region." + this.uriCaheRegionName 
+        .setProperty("jcs.region." + this.uriCacheRegionName 
             + ".cacheattributes.UseRemote", "false");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.UseLateral",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".cacheattributes.UseLateral",
         "false");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".cacheattributes.MaxSpoolPerRun",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".cacheattributes.MaxSpoolPerRun",
         "500");
     //
     // -------- elements attributes --------
     //
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".elementattributes",
         "org.apache.jcs.engine.ElementAttributes");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes.IsEternal",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".elementattributes.IsEternal",
         "false");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes.IsLateral",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".elementattributes.IsLateral",
         "false");
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes.MaxLifeSeconds",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".elementattributes.MaxLifeSeconds",
         this.maxIdleTime.toString());
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes.IdleTime",
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".elementattributes.IdleTime",
         this.maxIdleTime.toString());
-    prop.setProperty("jcs.region." + this.uriCaheRegionName + ".elementattributes.isSpool", "true");
+    prop.setProperty("jcs.region." + this.uriCacheRegionName + ".elementattributes.isSpool", 
+        "true");
     //
     // -------- disk cache elements attributes --------
     //

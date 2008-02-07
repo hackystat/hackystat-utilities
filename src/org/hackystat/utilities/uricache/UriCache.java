@@ -20,12 +20,9 @@ import org.apache.jcs.engine.stats.behavior.IStatElement;
 import org.apache.jcs.engine.stats.behavior.IStats;
 
 /**
- * Provides an easy caching mechanism which is backed by Apache JCS (Java Caching System). Once
- * cache configured and initialized, it caches pairs &lt;K, V&gt;. Note that both K and V types must
- * be Serializable.
- * 
- * <br/><br/> Using an UriCache has several advantages: it increases performance as it reduces URL
- * lookups.
+ * Provides a caching mechanism based upon Apache JCS (Java Caching System). Once the
+ * cache is configured and initialized, it caches pairs &lt;K, V&gt;. Note that both K and V types 
+ * must be Serializable.
  * 
  * @author <a href="mailto:seninp@gmail.com">Pavel Senin<a>
  * 
@@ -38,7 +35,7 @@ public class UriCache<K, V> {
   private IndexedDiskCache uriCache;
 
   /** JCS cache name. */
-  private String CacheName;
+  private String cacheName;
 
   /** JCS cache properties set. */
   private Properties cacheProperties;
@@ -52,10 +49,10 @@ public class UriCache<K, V> {
   /**
    * Constructor, an instance of UriCache configured according to the Properties provided.
    * 
-   * @param cacheName the name used for this cache identification, the cache filename will bear this
-   *        name as well.
+   * @param cacheName the name used for this cache identification and to name the 
+   * file containing this cache.
    * @param cacheProperties the cache configuration properties.
-   * @throws UriCacheException when unable instantiate a cache.
+   * @throws UriCacheException If the cacheName is already in use.
    */
   public UriCache(String cacheName, UriCacheProperties cacheProperties) throws UriCacheException {
 
@@ -64,46 +61,28 @@ public class UriCache<K, V> {
     Logger logger = Logger.getLogger("org.apache.jcs");
     logger.setLevel(loggerLevel);
 
-    this.CacheName = cacheName;
+    this.cacheName = cacheName;
 
     // check for the name duplication in here
-    if (UriCache.cacheNames.contains(this.CacheName)) {
+    if (UriCache.cacheNames.contains(this.cacheName)) {
       throw new UriCacheException(
           "Error while attemting get a cache instance: the cache region name " + cacheName
               + " is in use.");
     }
     else {
-      UriCache.cacheNames.add(this.CacheName);
+      UriCache.cacheNames.add(this.cacheName);
     }
-
-    // try {
-    // CacheAccess instance = JCS.getAccess(this.CacheName);
-    // }
-    // catch (CacheException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // CompositeCacheManager mgr = CompositeCacheManager.getUnconfiguredInstance();
-    // String[] currentCaches = mgr.getCacheNames();
 
     this.cacheProperties = cacheProperties.getProperties();
     this.maxIdleTime = Long.valueOf(this.cacheProperties
         .getProperty("jcs.region.UriCache.elementattributes.MaxLifeSeconds"));
 
     IndexedDiskCacheAttributes cattr = new IndexedDiskCacheAttributes();
-    cattr.setCacheName(this.CacheName);
+    cattr.setCacheName(this.cacheName);
     cattr.setMaxKeySize(Integer.valueOf(this.cacheProperties
         .getProperty("jcs.region.UriCache.cacheattributes.MaxObjects")));
     cattr.setDiskPath(cacheProperties.getCacheStoragePath());
     this.uriCache = new IndexedDiskCache(cattr);
-
-    // this.uriCache = JCS.getInstance(cacheProperties.getCacheRegionName());
-    // @SuppressWarnings("unused")
-    // CompositeCache cache = mgr.getCache(cacheProperties.getCacheRegionName());
-    // }
-    // catch (CacheException e) {
-    // throw new UriCacheException(e.getMessage());
-    // }
   }
 
   /**
@@ -116,7 +95,7 @@ public class UriCache<K, V> {
    */
   public void cache(Serializable uriString, Serializable obj) throws UriCacheException {
     //
-    // I'm hardcoding parameters here, probably good move is to get these from preperties when
+    // I'm hardcoding parameters here, probably good move is to get these from properties when
     // everything will be working.
     //
     IElementAttributes eAttr = new ElementAttributes();
@@ -126,7 +105,7 @@ public class UriCache<K, V> {
     eAttr.setIsLateral(false);
     eAttr.setIsRemote(false);
     eAttr.setIsSpool(true);
-    ICacheElement element = new CacheElement(this.CacheName, uriString, obj);
+    ICacheElement element = new CacheElement(this.cacheName, uriString, obj);
     element.setElementAttributes(eAttr);
     this.uriCache.doUpdate(element);
   }
@@ -154,7 +133,7 @@ public class UriCache<K, V> {
     eAttr.setIsLateral(false);
     eAttr.setIsRemote(false);
     eAttr.setIsSpool(true);
-    ICacheElement element = new CacheElement(this.CacheName, uriString, obj);
+    ICacheElement element = new CacheElement(this.cacheName, uriString, obj);
     element.setElementAttributes(eAttr);
     this.uriCache.doUpdate(element);
   }
@@ -174,7 +153,7 @@ public class UriCache<K, V> {
    */
   public void shutdown() {
     this.uriCache.dispose();
-    UriCache.cacheNames.remove(this.CacheName);
+    UriCache.cacheNames.remove(this.cacheName);
   }
 
   /**
@@ -197,15 +176,9 @@ public class UriCache<K, V> {
    * Removes an Object from the cache.
    * 
    * @param uriString Identity of the object to be removed.
-   * @throws UriCacheException in case of error.
    */
-  public void remove(Serializable uriString) throws UriCacheException {
-    // try {
+  public void remove(Serializable uriString)  {
     this.uriCache.remove(uriString);
-    // }
-    // catch (CacheException e) {
-    // throw new UriCacheException(e.getMessage());
-    // }
   }
 
   /**
@@ -224,7 +197,7 @@ public class UriCache<K, V> {
    * @return cache name.
    */
   public String getName() {
-    return this.CacheName;
+    return this.cacheName;
   }
 
   /**
