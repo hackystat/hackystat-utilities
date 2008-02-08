@@ -37,7 +37,7 @@ public class TestUriCache {
       + fileSeparator + "build" + fileSeparator + "uricache-tests" + fileSeparator + tmpFolderName;
 
   /** The cache itself */
-  private UriCache<String, String> testCache;
+  private UriCache testCache;
 
   /** The default properties to use. */
   private UriCacheProperties prop;
@@ -75,7 +75,7 @@ public class TestUriCache {
       //
       // get cache instance and dump some data.
       //
-      testCache = new UriCache<String, String>("testCache", prop);
+      testCache = new UriCache("testCache", prop);
       assertTrue("Should report proper cache name.", "testCache".equals(testCache.getName()));
       testCache.clear();
       int cnt = 10000;
@@ -87,7 +87,7 @@ public class TestUriCache {
       // Should not be able to do this.
       //
       @SuppressWarnings("unused")
-      UriCache<String, String> testCache2 = new UriCache<String, String>("testCache", prop);
+      UriCache testCache2 = new UriCache("testCache", prop);
       testCache2.clear();
       fail("Able to get the cache instance with the same name.");
     }
@@ -105,7 +105,7 @@ public class TestUriCache {
       //
       // get cache instance, clear any leftovers and load cache with new data
       //
-      testCache = new UriCache<String, String>("testOptimizerCache", prop);
+      testCache = new UriCache("testOptimizerCache", prop);
       testCache.clear();
       int cnt = 10000;
       for (int i = 0; i < cnt; i++) {
@@ -125,7 +125,7 @@ public class TestUriCache {
       //
       // get cache back alive
       //
-      testCache = new UriCache<String, String>("testOptimizerCache", prop);
+      testCache = new UriCache("testOptimizerCache", prop);
       //
       // should be ABLE to read data back
       //
@@ -160,7 +160,7 @@ public class TestUriCache {
       //
       // get cache instance, clear any leftovers and load cache with new data
       //
-      testCache = new UriCache<String, String>("testOptimizerCache", prop);
+      testCache = new UriCache("testOptimizerCache", prop);
       testCache.clear();
       int cnt = 5000;
       for (int i = 0; i < cnt; i++) {
@@ -218,7 +218,7 @@ public class TestUriCache {
       //
       // get cache instance, clear any leftovers and load cache with new data
       //
-      testCache = new UriCache<String, String>("testOptimizerCache", prop);
+      testCache = new UriCache("testOptimizerCache", prop);
       testCache.setMaxMemoryIdleTimeSeconds(5L);
       testCache.clear();
       int cnt = 10000;
@@ -259,7 +259,7 @@ public class TestUriCache {
       //
       // get cache instance and clear any leftovers
       //
-      testCache = new UriCache<String, String>("testCache", prop);
+      testCache = new UriCache("testCache", prop);
       testCache.clear();
       //
       // load cache with new data

@@ -20,16 +20,11 @@ import org.apache.jcs.engine.stats.behavior.IStatElement;
 import org.apache.jcs.engine.stats.behavior.IStats;
 
 /**
- * Provides a caching mechanism based upon Apache JCS (Java Caching System). Once the
- * cache is configured and initialized, it caches pairs &lt;K, V&gt;. Note that both K and V types 
- * must be Serializable.
+ * Provides a caching mechanism based upon Apache JCS (Java Caching System). 
  * 
  * @author <a href="mailto:seninp@gmail.com">Pavel Senin<a>
- * 
- * @param <K> type of the cache keys.
- * @param <V> type of the cache items.
  */
-public class UriCache<K, V> {
+public class UriCache {
 
   /** JCS cache handler. */
   private IndexedDiskCache uriCache;
