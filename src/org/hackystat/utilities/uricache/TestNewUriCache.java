@@ -81,12 +81,17 @@ public class TestNewUriCache {
     for (int i = 1; i < 200; i++) {
       cache.put(i, i);
     }
+    // Put something in the cache with a custom expiration time of 100 seconds. 
+    cache.put(300, 300, 100);
+    // Now sleep for a second.
     Thread.yield();
     Thread.sleep(1000);
     Thread.yield();
-    // Now check to see that none of these items are in the cache.
+    // Now check to see that none of the items with the default expiration are in the cache.
     for (int i = 1; i < 200; i++) {
       assertNull("Checking retrieval", cache.get(i));
     }
+    // Now check that our item with the custom expiration time is still there. 
+    assertEquals("Check non-expired element", 300, cache.get(300));
   }
 }

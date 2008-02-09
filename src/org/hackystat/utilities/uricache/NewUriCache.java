@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.jcs.access.exception.CacheException;
+import org.apache.jcs.engine.ElementAttributes;
 import org.apache.jcs.engine.control.CompositeCacheManager;
 import org.apache.jcs.JCS;
 import org.hackystat.utilities.home.HackystatUserHome;
@@ -111,6 +112,25 @@ public class NewUriCache {
   public void put(Serializable key, Serializable value) {
     try {
       JCS.getInstance(this.cacheName).put(key, value);
+    }
+    catch (CacheException e) {
+      String msg = "Failure to add " + key + " to cache " + this.cacheName + ":" + e.getMessage();
+      this.logger.warning(msg);
+    }
+  }
+  
+  /**
+   * Adds the key-value pair to this cache.
+   * Logs a message if the cache throws an exception.
+   * @param key The key, typically a UriString.
+   * @param value The value, typically the object returned from the Hackystat service.
+   * @param maxIdleTime The time to wait before expiring this element from the cache.
+   */
+  public void put(Serializable key, Serializable value, long maxIdleTime) {
+    try {
+      ElementAttributes attributes = new ElementAttributes();
+      attributes.setIdleTime(maxIdleTime);
+      JCS.getInstance(this.cacheName).put(key, value, attributes);
     }
     catch (CacheException e) {
       String msg = "Failure to add " + key + " to cache " + this.cacheName + ":" + e.getMessage();
