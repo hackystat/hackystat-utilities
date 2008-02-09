@@ -29,6 +29,23 @@ import org.hackystat.utilities.logger.HackystatLogger;
  * <li> Convenient packaging mechanism for required jar files to simplify use in Hackystat.
  * </ul> 
  * 
+ * Here's an example usage, where we create a separate cache for each user to hold their sensor
+ * data instances as part of the dailyprojectdata service.
+ * <pre>
+ * SensorBaseClient client = new SensorBaseClient(user, host);
+ * NewUriCache cache = new UriCache(user.getEmail(), "dailyprojectdata");
+ *   :
+ * SensorData data = (SensorData)cache.get(uriString);
+ * if (data == null) {
+ *   // Cache doesn't have it, so retrieve from SensorBase and cache locally for next time.
+ *   data = client.getSensorData(uriString);
+ *   cache.put(uriString, data);
+ * }
+ * </pre>
+ * The cache files are in the directory ~/.hackystat/dailyprojectdata/uricache.
+ * Instances expire from the cache after one day, by default.
+ * The maximum number of in-memory instances is 50,000, by default.  
+ * 
  * @author Philip Johnson
  * @author Pavel Senin
  */
