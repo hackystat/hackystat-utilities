@@ -72,26 +72,29 @@ public class TestNewUriCache {
    * Test that we can expire elements from the cache. 
    * @throws Exception If problems occur.
    */
+  @Test
   public void testElementExpiration() throws Exception {
-    // Create a cache
-    Long idleTime = 1L;
+    // Create a cache with maxLife of 1 second and a maximum of 100 in-memory elements.
+    Long maxLife = 1L;
     Long capacity = 100L;
-    NewUriCache cache = new NewUriCache("TestExpiration", testSubDir, idleTime, capacity);
-    // Now do a loop and put more than 100 items in it, forcing disk usage.
+    NewUriCache cache = new NewUriCache("TestExpiration", testSubDir, maxLife, capacity);
+    // Now do a loop and put 200 items in it, forcing disk usage.
     for (int i = 1; i < 200; i++) {
       cache.put(i, i);
     }
-    // Put something in the cache with a custom expiration time of 100 seconds. 
-    cache.put(300, 300, 100);
-    // Now sleep for a second.
-    Thread.yield();
-    Thread.sleep(1000);
-    Thread.yield();
-    // Now check to see that none of the items with the default expiration are in the cache.
+    // Add an element that expires in 3 seconds. 
+    cache.put(300, 300, 3);
+    // Now wait for two seconds.
+    Thread.sleep(2000);
+    // Now check to see that all of the items with the default maxLife are gone.
     for (int i = 1; i < 200; i++) {
       assertNull("Checking retrieval", cache.get(i));
     }
-    // Now check that our item with the custom expiration time is still there. 
+    // And check that our item with the custom maxLife time is still there.
     assertEquals("Check non-expired element", 300, cache.get(300));
+    // Now wait one more second, enough time for our custom maxLife time to be exceeded.
+    Thread.sleep(1001);
+    // Now see that our element with the custom maxLife time is now gone.
+    assertNull("Check expired element", cache.get(300));
   }
 }
