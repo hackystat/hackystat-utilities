@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 /**
- * Tests the new version of the UriCache class.
+ * Tests the UriCache class.
  * 
  * @author Philip Johnson
  * 
@@ -55,10 +55,10 @@ public class TestNewUriCache {
   @Test
   public void testDiskCache() {
     // Create a cache
-    Long idleTime = 100L;
+    Double maxLifeDays = 1D;
     Long capacity = 100L;
-    NewUriCache cache = new NewUriCache("TestDiskCache", testSubDir, idleTime, capacity);
-    // Now do a loop and put more than 100 items in it, forcing disk usage.
+    NewUriCache cache = new NewUriCache("TestDiskCache", testSubDir, maxLifeDays, capacity);
+    // Now do a loop and put more than 100 items in it.
     for (int i = 1; i < 200; i++) {
       cache.put(i, i);
     }
@@ -70,20 +70,21 @@ public class TestNewUriCache {
   
   /**
    * Test that we can expire elements from the cache. 
+   * This test no longer works because we've changed the 
    * @throws Exception If problems occur.
    */
   @Test
   public void testElementExpiration() throws Exception {
     // Create a cache with maxLife of 1 second and a maximum of 100 in-memory elements.
-    Long maxLife = 1L;
+    Double maxLifeDays = 1.157e-5D;
     Long capacity = 100L;
-    NewUriCache cache = new NewUriCache("TestExpiration", testSubDir, maxLife, capacity);
-    // Now do a loop and put 200 items in it, forcing disk usage.
+    NewUriCache cache = new NewUriCache("TestExpiration", testSubDir, maxLifeDays, capacity);
+    // Now do a loop and put 200 items in it.
     for (int i = 1; i < 200; i++) {
       cache.put(i, i);
     }
     // Add an element that expires in 3 seconds. 
-    cache.put(300, 300, 3);
+    cache.put(300, 300, 8.4e-4D);
     // Now wait for two seconds.
     Thread.sleep(2000);
     // Now check to see that all of the items with the default maxLife are gone.

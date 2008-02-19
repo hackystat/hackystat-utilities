@@ -19,10 +19,13 @@ import org.hackystat.utilities.logger.HackystatLogger;
  * This wrapper provides the following:
  * <ul>
  * <li> Automatic configuration of an indexed disk cache backing store.
+ * <li> Disk cache is write-through, saving every cached instance. 
  * <li> Provides a default maximum life for expiring of entries of one day.
  * <li> Provides a default maximum in-memory cache size of 50,000 instances before using backing
  * store.
  * <li> Ensures that all UriCache instances have a unique name and are created only once.
+ * <li> Constructor uses "days" rather than seconds as time unit for maxLife.
+ * <li> put() uses "hours" rather than seconds as time unit for maxLife.
  * <li> A more convenient API for setting/getting items from the cache and controlling logging.
  * <li> Logging of exceptions raised by JCS.
  * <li> Disables JCS logging messages unless the System property 
@@ -52,8 +55,10 @@ import org.hackystat.utilities.logger.HackystatLogger;
  */
 public class NewUriCache {
   
-  /** Maximum life in seconds that an entry stays in the cache. Default is 24 hours. */
-  private static final Long defaultMaxLife = 86400L;
+  /** The number of seconds in a day. **/
+  private static final long secondsInADay = 60L * 60L * 24L;
+  /** Maximum life in seconds that an entry stays in the cache. Default is 1 day. */
+  private static final Long defaultMaxLifeSeconds = secondsInADay;
   /** Maximum number of in-memory instances before sending items to disk. Default is 50,000. */
   private static final Long defaultCapacity = 50000L;
   /** The name of this cache, which defines a "region" in JCS terms. */
@@ -73,7 +78,7 @@ public class NewUriCache {
    * store will be created.
    */
   public NewUriCache(String cacheName, String subDir) {
-    this(cacheName, subDir, defaultMaxLife, defaultCapacity);
+    this(cacheName, subDir, new Double(defaultMaxLifeSeconds), defaultCapacity);
   }
   
   /**
@@ -83,10 +88,10 @@ public class NewUriCache {
    * define the subdirectory in which the index files will live.
    * @param subDir the .hackystat subdirectory in which the uricache directory holding the backing
    * store will be created.
-   * @param maxLife The maximum number of seconds after which items expire from the cache.
+   * @param maxLifeDays The maximum number of days after which items expire from the cache.
    * @param capacity The number of in-memory instances to store before sending to disk.
    */
-  public NewUriCache(String cacheName, String subDir, Long maxLife, Long capacity) {
+  public NewUriCache(String cacheName, String subDir, Double maxLifeDays, Long capacity) {
     // Check to make sure we have not already instantiated a UriCache with this name.
     if (NewUriCache.cacheNames.contains(cacheName)) {
       throw new RuntimeException("Error: the cache region name is in use: " + cacheName);
@@ -99,8 +104,9 @@ public class NewUriCache {
     if (!System.getProperties().containsKey("org.hackystat.utilities.uricache.enableJCSLogging")) {
       Logger.getLogger("org.apache.jcs").setLevel(Level.OFF);
     }
-    CompositeCacheManager ccm = CompositeCacheManager.getUnconfiguredInstance(); 
-    ccm.configure(initJcsProps(cacheName, subDir, maxLife, capacity));
+    CompositeCacheManager ccm = CompositeCacheManager.getUnconfiguredInstance();
+    long maxLifeSeconds = (long)(maxLifeDays * secondsInADay);
+    ccm.configure(initJcsProps(cacheName, subDir, maxLifeSeconds, capacity));
   }
   
   /**
@@ -125,12 +131,13 @@ public class NewUriCache {
    * Logs a message if the cache throws an exception.
    * @param key The key, typically a UriString.
    * @param value The value, typically the object returned from the Hackystat service.
-   * @param maxLife The number of seconds before this item will expire from cache.
+   * @param maxLifeHours The number of hours before this item will expire from cache. 
    */
-  public void put(Serializable key, Serializable value, long maxLife) {
+  public void put(Serializable key, Serializable value, double maxLifeHours) {
     try {
       ElementAttributes attributes = new ElementAttributes();
-      attributes.setMaxLifeSeconds(maxLife);
+      long maxLifeSeconds = (long)(maxLifeHours * 3600D);
+      attributes.setMaxLifeSeconds(maxLifeSeconds);
       attributes.setIsEternal(false);
       JCS.getInstance(this.cacheName).put(key, value, attributes);
     }
@@ -231,11 +238,12 @@ public class NewUriCache {
    * 
    * @param cacheName The name of this cache, used to define the region properties.
    * @param subDir The subdirectory name, used to generate the disk storage directory.
-   * @param maxLife The maximum life of instances in the cache in seconds before they expire.
+   * @param maxLifeSeconds The maximum life of instances in the cache in seconds before they expire.
    * @param maxCapacity The in-memory cache capacity before it goes to disk.
    * @return The properties file. 
    */
-  private Properties initJcsProps(String cacheName, String subDir, Long maxLife, Long maxCapacity) {
+  private Properties initJcsProps(String cacheName, String subDir, Long maxLifeSeconds, 
+      Long maxCapacity) {
     String reg = "jcs.region." + cacheName;
     String regCacheAtt = reg + ".cacheattributes";
     String regEleAtt = reg + ".elementattributes";
@@ -251,10 +259,11 @@ public class NewUriCache {
     props.setProperty(regCacheAtt + ".UseMemoryShrinker", "true");
     props.setProperty(regCacheAtt + ".MaxMemoryIdleTimeSeconds", "3600");
     props.setProperty(regCacheAtt + ".ShrinkerIntervalSeconds", "60");
+    props.setProperty(regCacheAtt + ".DiskUsagePattern", "UPDATE");
     props.setProperty(regCacheAtt + ".MaxSpoolPerRun", "500");
     props.setProperty(regEleAtt, "org.apache.jcs.engine.ElementAttributes");
     props.setProperty(regEleAtt + ".IsEternal", "false");
-    props.setProperty(regEleAtt + ".MaxLifeSeconds", maxLife.toString());
+    props.setProperty(regEleAtt + ".MaxLifeSeconds", maxLifeSeconds.toString());
     props.setProperty(aux, "org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheFactory");
     props.setProperty(auxAtt, diskAttName);
     props.setProperty(auxAtt + ".DiskPath", getCachePath(subDir));
