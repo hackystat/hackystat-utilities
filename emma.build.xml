@@ -49,6 +49,7 @@
         </fileset>
       </batchtest>
     </junit>
+    <echo>EMMA SRC DIR: ${src.dir}  EMMA DIR: ${emma.dir}</echo>
 
     <!-- Generate Emma reports. -->
     <emma enabled="true">
