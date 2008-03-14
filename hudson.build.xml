@@ -11,6 +11,7 @@
   <property name="checkstyle.failOnViolation" value="true"/> 
   <property name="junit.haltonfailure" value="true"/>
   --> 
+  
 
   <!-- Now import the target definitions. -->
   <import file="javadoc.build.xml"/>  
@@ -38,6 +39,9 @@
 
   <target name="hudson.daily.junit"  
     depends="compile, junit.tool, junit.sensor"  description="JUnit plus sensor."/>
+  
+  <target name="hudson.daily.javancss"  
+    depends="compile, javancss.tool, javancss.sensor"  description="JavaNCSS plus sensor."/>
   
   
 </project>
