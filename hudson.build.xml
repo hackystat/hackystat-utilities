@@ -1,4 +1,4 @@
-<project name="hudson" default="hudson.basic">
+<project name="utilities.hudson" default="hudson.basic">
   <description>
     Tasks for use by Hudson continuous integration system.
   </description>
@@ -43,5 +43,7 @@
   <target name="hudson.daily.javancss"  
     depends="compile, javancss.tool, javancss.sensor"  description="JavaNCSS plus sensor."/>
   
+  <target name="hudson.daily.emma"  
+     depends="compile, emma.tool, emma.sensor"  description="Emma plus sensor."/>
   
 </project>
