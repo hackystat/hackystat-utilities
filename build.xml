@@ -40,7 +40,7 @@
   <!-- Hackystat sensor definitions and configuration. -->
   <import file="hackystat.build.xml"/>
   <property name="hackystat.verbose.mode" value="false" />
-  <property name="hackystat.enable" value="true" />
+  <property name="hackystat.enable" value="false" />
   <!-- define hackystat.enabled if hackystat.enable is true, so we can use it in an 'if' clause -->
   <condition property="hackystat.enabled">
     <istrue value="${hackystat.enable}"/>
