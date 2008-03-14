@@ -11,6 +11,14 @@
   <target name="emma" depends="emma.tool, emma.report, emma.sensor, emma.echo" unless="emma.disabled" description="Runs Emma." />
 
   <target name="emma.tool" depends="clean, compile" unless="emma.disabled" description="Cleans, compiles, instruments byte codes, runs unit tests, generates Emma report.">
+    <echo>
+      SRC DIR:  ${src.dir}  
+      EMMA DIR: ${emma.dir}
+      BUILD DIR: ${build.dir}
+      JUNIT DIR: ${junit.dir}
+    </echo>
+
+    
     <!-- Verify that Emma is installed. -->
     <available file="${env.EMMA_HOME}/lib/emma.jar" property="emma.available" />
     <fail unless="emma.available" message="Error: EMMA_HOME not set or ${env.EMMA_HOME}/lib/emma.jar not found, indicating Emma is not installed." />
@@ -49,7 +57,6 @@
         </fileset>
       </batchtest>
     </junit>
-    <echo>EMMA SRC DIR: ${src.dir}  EMMA DIR: ${emma.dir}</echo>
 
     <!-- Generate Emma reports. -->
     <emma enabled="true">
