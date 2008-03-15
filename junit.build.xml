@@ -21,6 +21,7 @@
         <path refid="compile.classpath" />
         <pathelement location="${lib.dir}/uricache" />
       </classpath>
+      <sysproperty key="user.dir" value="${basedir}" />
       <formatter type="xml" />
       <batchtest todir="${junit.dir}">
         <fileset dir="${src.dir}" includes="**/Test*.java" />
