@@ -40,6 +40,7 @@
         <path refid="compile.classpath" />
         <pathelement location="${lib.dir}/uricache" />
       </classpath>
+      <sysproperty key="user.dir" value="${basedir}" />
       <sysproperty key="emma.coverage.out.file" value="${build.dir}/emma/coverage.emma" />
       <sysproperty key="emma.coverage.out.merge" value="true" />
       <formatter type="xml" />
