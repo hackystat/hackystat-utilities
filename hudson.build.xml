@@ -38,12 +38,12 @@
   </target>
 
   <target name="hudson.daily.junit"  
-    depends="compile, junit.tool, junit.sensor"  description="JUnit plus sensor."/>
+    depends="junit.tool, junit.sensor"  description="JUnit plus sensor."/>
   
   <target name="hudson.daily.javancss"  
-    depends="compile, javancss.tool, javancss.sensor"  description="JavaNCSS plus sensor."/>
+    depends="javancss.tool, javancss.sensor"  description="JavaNCSS plus sensor."/>
   
   <target name="hudson.daily.emma"  
-     depends="compile, emma.tool, emma.report, emma.sensor"  description="Emma plus sensor."/>
+     depends="emma.tool, emma.report, emma.sensor"  description="Emma plus sensor."/>
   
 </project>
