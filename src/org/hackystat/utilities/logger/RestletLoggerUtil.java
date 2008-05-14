@@ -23,20 +23,26 @@ public class RestletLoggerUtil {
    */
   public static void useFileHandler(String serviceDir) {
     LogManager logManager = LogManager.getLogManager();
+    //System.out.println("In useFileHandler");
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements() ;) {
       String logName = en.nextElement();
+      //System.out.println("logName is: " + logName);
       if (logName.startsWith("com.noelios") ||
           logName.startsWith("org.restlet")) {
         // First, get rid of current Handlers
         Logger logger = logManager.getLogger(logName);
+        //System.out.println("logger is: " + logger);
         logger = logger.getParent();
+        //System.out.println("parent logger is: " + logger);
         Handler[] handlers = logger.getHandlers();
         for (Handler handler : handlers) {
           logger.removeHandler(handler);
         }
+        //System.out.println("Removed handlers.");
         // Define a file handler that writes to the ~/.hackystat/<service>/logs directory
         File logDir = new File(HackystatUserHome.getHome(), ".hackystat/" + serviceDir + "/logs/");
         logDir.mkdirs();
+        //System.out.println("Made this directory: " + logDir);
         String fileName = logDir + "/" + logName + ".%u.log";
         FileHandler fileHandler;
         try {
