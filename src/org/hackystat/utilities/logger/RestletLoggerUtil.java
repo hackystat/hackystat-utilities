@@ -27,8 +27,9 @@ public class RestletLoggerUtil {
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements() ;) {
       String logName = en.nextElement();
       //System.out.println("logName is: " + logName);
-      if (logName.startsWith("com.noelios") ||
-          logName.startsWith("org.restlet")) {
+      if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet")) 
+          &&
+          (logManager.getLogger(logName) != null)) {
         // First, get rid of current Handlers
         Logger logger = logManager.getLogger(logName);
         //System.out.println("logger is: " + logger);
