@@ -15,29 +15,31 @@ import org.hackystat.utilities.home.HackystatUserHome;
 import org.hackystat.utilities.logger.HackystatLogger;
 
 /**
- * Provides a wrapper around Apache JCS (Java Caching System) to facilitate Hackystat caching.
- * This wrapper provides the following:
+ * Provides a wrapper around Apache JCS (Java Caching System) to facilitate Hackystat caching. This
+ * wrapper provides the following:
  * <ul>
  * <li> Automatic configuration of an indexed disk cache backing store.
- * <li> Disk cache is write-through, saving every cached instance. 
+ * <li> All cached instances are written out to disk. 
  * <li> Provides a default maximum life for expiring of entries of one day.
- * <li> Provides a default maximum in-memory cache size of 50,000 instances before using backing
+ * <li> Provides a default maximum in-memory cache size of 100 instances before using backing
  * store.
  * <li> Ensures that all UriCache instances have a unique name and are created only once.
  * <li> Constructor uses "days" rather than seconds as time unit for maxLife.
  * <li> put() uses "hours" rather than seconds as time unit for maxLife.
  * <li> A more convenient API for setting/getting items from the cache and controlling logging.
  * <li> Logging of exceptions raised by JCS.
- * <li> Disables JCS logging messages unless the System property 
+ * <li> Disables JCS logging messages unless the System property
  * org.hackystat.utilities.uricache.enableJCSLogging is set.
+ * <li> Shutdown hook ensures that backing index file is closed correctly on JVM exit. 
  * <li> Convenient packaging mechanism for required jar files to simplify use in Hackystat.
- * </ul> 
+ * </ul>
  * 
- * Here's an example usage, where we create a separate cache for each user to hold their sensor
- * data instances as part of the dailyprojectdata service.
+ * Here's an example usage, where we create a separate cache for each user to hold their sensor data
+ * instances as part of the dailyprojectdata service.
+ * 
  * <pre>
  * SensorBaseClient client = new SensorBaseClient(user, host);
- * NewUriCache cache = new UriCache(user.getEmail(), "dailyprojectdata");
+ * NewUriCache cache = new UriCache(user.getEmail(), &quot;dailyprojectdata&quot;);
  *   :
  * SensorData data = (SensorData)cache.get(uriString);
  * if (data == null) {
@@ -46,16 +48,18 @@ import org.hackystat.utilities.logger.HackystatLogger;
  *   cache.put(uriString, data);
  * }
  * </pre>
- * The cache files are in the directory ~/.hackystat/dailyprojectdata/uricache.
- * Instances expire from the cache after one day, by default.
- * The maximum number of in-memory instances is 50,000, by default.  
+ * 
+ * The cache files are in the directory ~/.hackystat/dailyprojectdata/uricache. Instances expire
+ * from the cache after one day, by default. The maximum number of in-memory instances is 100, by
+ * default.
  * 
  * @author Philip Johnson
  * @author Pavel Senin
  */
 public class NewUriCache {
   
-  /** The number of seconds in a day. **/
+
+  /** The number of seconds in a day. * */
   private static final long secondsInADay = 60L * 60L * 24L;
   /** Maximum life in seconds that an entry stays in the cache. Default is 1 day. */
   private static final Long defaultMaxLifeSeconds = secondsInADay;
@@ -68,30 +72,60 @@ public class NewUriCache {
   /** Holds a list of already defined caches to help ensure uniqueness. */
   private static ArrayList<String> cacheNames = new ArrayList<String>();
   
+  /** A thread that will ensure that all of these caches will be disposed of during shutdown. */ 
+  private static Thread shutdownThread = new Thread() {
+    /** Run the shutdown hook for disposing of all caches. */
+    @Override 
+    public void run() {
+      for (String cacheName : cacheNames) {
+        try {
+          System.out.println("Shutting down " + cacheName + " cache.");
+          JCS.getInstance(cacheName).dispose();
+        }
+        catch (Exception e) {
+          String msg = "Failure to clear cache " + cacheName + ":" + e.getMessage();
+          System.out.println(msg);
+        }
+      }
+    }
+  };
+  
+  /** A boolean that enables us to figure out whether to install the shutdown thread.  */
+  private static boolean hasShutdownHook = false;  //NOPMD
+  
   /**
-   * Creates a new UriCache instance with the specified name.
-   * Good for services who want to create a single cache for themselves, such as "dailyprojectdata".
-   * The cacheName must not have already been instantiated, otherwise we raise a runtime exception.
-   * Logger, IdleTime and Capacity will have default values. 
+   * Creates a new UriCache instance with the specified name. Good for services who want to create a
+   * single cache for themselves, such as "dailyprojectdata". The cacheName must not have already
+   * been instantiated, otherwise we raise a runtime exception. MaxLifeDays and Capacity will have
+   * default values. 
+   * 
    * @param cacheName The name of this cache.
    * @param subDir the .hackystat subdirectory in which the uricache directory holding the backing
-   * store will be created.
+   *        store will be created.
    */
   public NewUriCache(String cacheName, String subDir) {
     this(cacheName, subDir, new Double(defaultMaxLifeSeconds), defaultCapacity);
   }
   
   /**
-   * Creates a new UriCache with the specified parameters. 
-   * The cacheName must not have already been instantiated, otherwise we raise a runtime exception.
+   * Creates a new UriCache with the specified parameters. The cacheName must not have already been
+   * instantiated, otherwise we raise a runtime exception.
+   * 
    * @param cacheName The name of this UriCache, which will be used as the JCS "region" and also
-   * define the subdirectory in which the index files will live.
+   *        define the subdirectory in which the index files will live.
    * @param subDir the .hackystat subdirectory in which the uricache directory holding the backing
-   * store will be created.
+   *        store will be created.
    * @param maxLifeDays The maximum number of days after which items expire from the cache.
-   * @param capacity The number of in-memory instances to store before sending to disk.
+   * @param capacity The number of in-memory instances to hold. Others are available from the 
+   * backing disk store. 
    */
   public NewUriCache(String cacheName, String subDir, Double maxLifeDays, Long capacity) {
+    // Set up the shutdown hook if we're the first one.  Not thread safe, but there's not too
+    // much harm done if there are multiple shutdown hooks running. 
+    if (!NewUriCache.hasShutdownHook) {
+      Runtime.getRuntime().addShutdownHook(NewUriCache.shutdownThread);
+      NewUriCache.hasShutdownHook = true;
+    }
     // Check to make sure we have not already instantiated a UriCache with this name.
     if (NewUriCache.cacheNames.contains(cacheName)) {
       throw new RuntimeException("Error: the cache region name is in use: " + cacheName);
@@ -110,9 +144,9 @@ public class NewUriCache {
   }
   
   /**
-   * Adds the key-value pair to this cache.
-   * Entry will expire from cache after the default maxLife (currently 24 hours).
-   * Logs a message if the cache throws an exception.
+   * Adds the key-value pair to this cache. Entry will expire from cache after the default maxLife
+   * (currently 24 hours). Logs a message if the cache throws an exception.
+   * 
    * @param key The key, typically a UriString.
    * @param value The value, typically the object returned from the Hackystat service.
    */
@@ -127,11 +161,11 @@ public class NewUriCache {
   }
   
   /**
-   * Adds the key-value pair to this cache.
-   * Logs a message if the cache throws an exception.
+   * Adds the key-value pair to this cache. Logs a message if the cache throws an exception.
+   * 
    * @param key The key, typically a UriString.
    * @param value The value, typically the object returned from the Hackystat service.
-   * @param maxLifeHours The number of hours before this item will expire from cache. 
+   * @param maxLifeHours The number of hours before this item will expire from cache.
    */
   public void put(Serializable key, Serializable value, double maxLifeHours) {
     try {
@@ -148,8 +182,9 @@ public class NewUriCache {
   }
   
   /**
-   * Returns the object associated with key from the cache, or null if not found.
-   * Logs a message if the cache throws an exception.
+   * Returns the object associated with key from the cache, or null if not found. Logs a message if
+   * the cache throws an exception.
+   * 
    * @param key The key whose associated value is to be retrieved.
    * @return The value, or null if not found.
    */
@@ -165,9 +200,10 @@ public class NewUriCache {
   }
 
   /**
-   * Ensures that the key-value pair associated with key is no longer in this cache.
-   * Logs a message if the cache throws an exception.
-   * @param key The key to be removed. 
+   * Ensures that the key-value pair associated with key is no longer in this cache. Logs a message
+   * if the cache throws an exception.
+   * 
+   * @param key The key to be removed.
    */
   public void remove(Serializable key) {
     try {
@@ -195,6 +231,7 @@ public class NewUriCache {
   /**
    * Shuts down the specified cache, and removes it from the list of active caches so it can be
    * created again.
+   * 
    * @param cacheName The name of the cache to dispose of.
    */
   public static void dispose(String cacheName) {
@@ -208,11 +245,13 @@ public class NewUriCache {
     }
     
   }
+ 
 
   /**
-   * Sets up the Properties instance for configuring this JCS cache instance.  Each UriCache is
-   * defined as a JCS "region".  Given a UriCache named "PJ", we create a properties instance
-   * whose contents are similar to the following:
+   * Sets up the Properties instance for configuring this JCS cache instance. Each UriCache is
+   * defined as a JCS "region". Given a UriCache named "PJ", we create a properties instance whose
+   * contents are similar to the following:
+   * 
    * <pre>
    * jcs.region.PJ=DC-PJ
    * jcs.region.PJ.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
@@ -230,9 +269,10 @@ public class NewUriCache {
    * jcs.auxiliary.DC-PJ.attributes.DiskPath=[cachePath]
    * jcs.auxiliary.DC-PJ.attributes.maxKeySize=1000000
    * </pre>
-   * We define cachePath as HackystatHome.getHome()/.hackystat/[cacheSubDir]/cache.  This enables
-   * a service a cache name of "dailyprojectdata" and have the cache data put inside its
-   * internal subdirectory. 
+   * 
+   * We define cachePath as HackystatHome.getHome()/.hackystat/[cacheSubDir]/cache. This enables a
+   * service a cache name of "dailyprojectdata" and have the cache data put inside its internal
+   * subdirectory.
    * 
    * See bottom of: http://jakarta.apache.org/jcs/BasicJCSConfiguration.html for more details.
    * 
@@ -240,7 +280,7 @@ public class NewUriCache {
    * @param subDir The subdirectory name, used to generate the disk storage directory.
    * @param maxLifeSeconds The maximum life of instances in the cache in seconds before they expire.
    * @param maxCapacity The in-memory cache capacity before it goes to disk.
-   * @return The properties file. 
+   * @return The properties file.
    */
   private Properties initJcsProps(String cacheName, String subDir, Long maxLifeSeconds, 
       Long maxCapacity) {
@@ -259,7 +299,7 @@ public class NewUriCache {
     props.setProperty(regCacheAtt + ".UseMemoryShrinker", "true");
     props.setProperty(regCacheAtt + ".MaxMemoryIdleTimeSeconds", "3600");
     props.setProperty(regCacheAtt + ".ShrinkerIntervalSeconds", "60");
-    props.setProperty(regCacheAtt + ".DiskUsagePattern", "UPDATE");
+    props.setProperty(regCacheAtt + ".DiskUsagePatternName", "UPDATE");
     props.setProperty(regCacheAtt + ".MaxSpoolPerRun", "500");
     props.setProperty(regEleAtt, "org.apache.jcs.engine.ElementAttributes");
     props.setProperty(regEleAtt + ".IsEternal", "false");
@@ -274,9 +314,9 @@ public class NewUriCache {
   /**
    * Returns the fully qualified file path to the directory in which the backing store files for
    * this cache will be placed. Creates the path if it does not already exist.
-
+   * 
    * @param cacheSubDir The subdirectory where we want to locate the cache files.
-   * @return The fully qualified file path to the location where we should put the index files. 
+   * @return The fully qualified file path to the location where we should put the index files.
    */
   private String getCachePath(String cacheSubDir) {
     File path = new File(HackystatUserHome.getHome(), ".hackystat/" + cacheSubDir + "/uricache");
