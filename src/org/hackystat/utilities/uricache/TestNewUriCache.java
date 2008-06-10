@@ -2,7 +2,9 @@ package org.hackystat.utilities.uricache;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -30,6 +32,34 @@ public class TestNewUriCache {
     assertNull("Checking non-existant get", cache.get(key));
   }
   
+  /**
+   * Tests addition and deletion of hierarchical cache entries. 
+   * The idea is that if you use keys with the ":" to separate parts, you can delete
+   * collections of cache elements with one call by specifying the colon delimited hierarchy.
+   * See http://jakarta.apache.org/jcs/faq.html#hierarchical-removal for details. 
+   * Unfortunately this does not work.
+   */
+  @Ignore
+  @Test
+  public void testHierarchicalKeyCacheRemoval() {
+    // Create a cache. 
+    NewUriCache cache = new NewUriCache("HierarchicalKeyCache", testSubDir, 1D, 1L);
+    cache.clear();
+    Logger.getLogger("org.apache.jcs").setLevel(Level.ALL);
+    cache.setLoggingLevel("ALL");
+    // Add three elements.
+    cache.put("foo:bar:baz", "one");
+    cache.put("foo:bar:qux", "two");
+    cache.put("bar:quxx", "three");
+    cache.remove("foo:bar:");
+    System.out.println(cache.get("foo:bar:baz"));
+    System.out.println(cache.get("foo:bar:qux"));
+    assertNull("Checking foo:bar:baz is gone", cache.get("foo:bar:baz"));
+    assertNull("Checking foo:bar:qux is gone", cache.get("foo:bar:qux"));
+    assertEquals("Checking foo:qux is still there", "three", cache.get("bar:quxx"));
+  }
+  
+ 
   /**
    * Test simple cache put and get.
    */

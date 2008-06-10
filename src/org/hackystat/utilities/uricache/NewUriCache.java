@@ -95,9 +95,8 @@ public class NewUriCache {
   
   /**
    * Creates a new UriCache instance with the specified name. Good for services who want to create a
-   * single cache for themselves, such as "dailyprojectdata". The cacheName must not have already
-   * been instantiated, otherwise we raise a runtime exception. MaxLifeDays and Capacity will have
-   * default values. 
+   * single cache for themselves, such as "dailyprojectdata". If the cache with this name has been 
+   * previously created, then this instance will become an alias to the previously existing cache. 
    * 
    * @param cacheName The name of this cache.
    * @param subDir the .hackystat subdirectory in which the uricache directory holding the backing
@@ -108,8 +107,9 @@ public class NewUriCache {
   }
   
   /**
-   * Creates a new UriCache with the specified parameters. The cacheName must not have already been
-   * instantiated, otherwise we raise a runtime exception.
+   * Creates a new UriCache with the specified parameters. 
+   * If a cache with this name already exists, then this instance will be an alias to that cache
+   * and its original configuration will remain unchanged. 
    * 
    * @param cacheName The name of this UriCache, which will be used as the JCS "region" and also
    *        define the subdirectory in which the index files will live.
@@ -120,27 +120,26 @@ public class NewUriCache {
    * backing disk store. 
    */
   public NewUriCache(String cacheName, String subDir, Double maxLifeDays, Long capacity) {
-    // Set up the shutdown hook if we're the first one.  Not thread safe, but there's not too
-    // much harm done if there are multiple shutdown hooks running. 
+    // Set up the shutdown hook if we're the first one. Not thread safe, but there's not too
+    // much harm done if there are multiple shutdown hooks running.
     if (!NewUriCache.hasShutdownHook) {
       Runtime.getRuntime().addShutdownHook(NewUriCache.shutdownThread);
       NewUriCache.hasShutdownHook = true;
     }
-    // Check to make sure we have not already instantiated a UriCache with this name.
-    if (NewUriCache.cacheNames.contains(cacheName)) {
-      throw new RuntimeException("Error: the cache region name is in use: " + cacheName);
-    }
-    else {
-      NewUriCache.cacheNames.add(cacheName);
-    }
     this.cacheName = cacheName;
     this.logger = HackystatLogger.getLogger(cacheName + ".uricache", subDir);
-    if (!System.getProperties().containsKey("org.hackystat.utilities.uricache.enableJCSLogging")) {
-      Logger.getLogger("org.apache.jcs").setLevel(Level.OFF);
+
+    // Finish configuration if this is a new instance of the cache.
+    if (!NewUriCache.cacheNames.contains(cacheName)) {
+      NewUriCache.cacheNames.add(cacheName);
+      if (!System.getProperties().containsKey(
+          "org.hackystat.utilities.uricache.enableJCSLogging")) {
+        Logger.getLogger("org.apache.jcs").setLevel(Level.OFF);
+      }
+      CompositeCacheManager ccm = CompositeCacheManager.getUnconfiguredInstance();
+      long maxLifeSeconds = (long) (maxLifeDays * secondsInADay);
+      ccm.configure(initJcsProps(cacheName, subDir, maxLifeSeconds, capacity));
     }
-    CompositeCacheManager ccm = CompositeCacheManager.getUnconfiguredInstance();
-    long maxLifeSeconds = (long)(maxLifeDays * secondsInADay);
-    ccm.configure(initJcsProps(cacheName, subDir, maxLifeSeconds, capacity));
   }
   
   /**
@@ -322,5 +321,13 @@ public class NewUriCache {
     File path = new File(HackystatUserHome.getHome(), ".hackystat/" + cacheSubDir + "/uricache");
     path.mkdirs();
     return path.getAbsolutePath();
+  }
+  
+  /**
+   * Sets the logging level for this logger to level.
+   * @param level A string indicating the level, such as "FINE", "INFO", "ALL", etc.
+   */
+  public void setLoggingLevel(String level) {
+    HackystatLogger.setLoggingLevel(this.logger, level);
   }
 }
