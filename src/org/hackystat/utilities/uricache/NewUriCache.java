@@ -302,13 +302,14 @@ public class NewUriCache {
    */
   @SuppressWarnings("unchecked")
   public Set<Serializable> getGroupKeys(String group) {
-    Set<Serializable> keySet = new HashSet<Serializable>();
+    Set<Serializable> keySet;
     try {
       keySet = JCS.getInstance(this.cacheName).getGroupKeys(group);
     }
     catch (CacheException e) {
       String msg = "Failure to obtain keyset for cache: " + this.cacheName;
       this.logger.warning(msg);
+      keySet = new HashSet<Serializable>();
     }
     return keySet;
   }
