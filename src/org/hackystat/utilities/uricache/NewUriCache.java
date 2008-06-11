@@ -3,7 +3,9 @@ package org.hackystat.utilities.uricache;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -242,7 +244,73 @@ public class NewUriCache {
       String msg = "Failure to clear cache " + cacheName + ":" + e.getMessage();
       System.out.println(msg);
     }
-    
+  }
+  
+  
+  /**
+   * Implements group-based addition of cache elements.
+   * @param key The key.
+   * @param group The group.
+   * @param value The value.
+   */
+  public void putInGroup(Serializable key, String group, Serializable value) {
+    try {
+      JCS.getInstance(this.cacheName).putInGroup(key, group, value);
+    }
+    catch (CacheException e) {
+      String msg = "Failure to add " + key + " to cache " + this.cacheName + ":" + e.getMessage();
+      this.logger.warning(msg);
+    }
+  }
+
+  /**
+   * Implements group-based retrieval of cache elements. 
+   * @param key The key.
+   * @param group The group.
+   * @return The element associated with key in the group, or null.
+   */
+  public Object getFromGroup(Serializable key, String group) {
+    try {
+      return JCS.getInstance(this.cacheName).getFromGroup(key, group);
+    }
+    catch (CacheException e) {
+      String msg = "Failure of get: " + key + " in cache " + this.cacheName + ":" + e.getMessage();
+      this.logger.warning(msg);
+      return null;
+    }
+  }
+  
+  /**
+   * Implements group-based removal of cache elements. 
+   * @param key The key whose value is to be removed. 
+   * @param group The group.
+   */
+  public void removeFromGroup(Serializable key, String group) {
+    try {
+      JCS.getInstance(this.cacheName).remove(key, group);
+    }
+    catch (CacheException e) {
+      String msg = "Failure to remove: " + key + " cache " + this.cacheName + ":" + e.getMessage();
+      this.logger.warning(msg);
+    }
+  }
+  
+  /**
+   * Returns the set of cache keys associated with this group.
+   * @param group The group.
+   * @return The set of cache keys for this group.
+   */
+  @SuppressWarnings("unchecked")
+  public Set<Serializable> getGroupKeys(String group) {
+    Set<Serializable> keySet = new HashSet<Serializable>();
+    try {
+      keySet = JCS.getInstance(this.cacheName).getGroupKeys(group);
+    }
+    catch (CacheException e) {
+      String msg = "Failure to obtain keyset for cache: " + this.cacheName;
+      this.logger.warning(msg);
+    }
+    return keySet;
   }
  
 

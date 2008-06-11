@@ -2,6 +2,8 @@ package org.hackystat.utilities.uricache;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Ignore;
@@ -57,6 +59,32 @@ public class TestNewUriCache {
     assertNull("Checking foo:bar:baz is gone", cache.get("foo:bar:baz"));
     assertNull("Checking foo:bar:qux is gone", cache.get("foo:bar:qux"));
     assertEquals("Checking foo:qux is still there", "three", cache.get("bar:quxx"));
+  }
+  
+  /**
+   * Tests addition and deletion of grouped cache entries. 
+   */
+  @Test
+  public void testGroupedElementsCache() {
+    // Create a cache. 
+    NewUriCache cache = new NewUriCache("GroupedKeyCache", testSubDir, 1D, 1L);
+    cache.clear();
+    Logger.getLogger("org.apache.jcs").setLevel(Level.ALL);
+    cache.setLoggingLevel("ALL");
+    // Add three elements.
+    String group1 = "group1";
+    cache.putInGroup("one", group1, "1");
+    cache.putInGroup("two", group1, "2");
+    cache.putInGroup("three", "group2", "3");
+    assertEquals("Test simple group retrieval1", "1", cache.getFromGroup("one", group1));
+    assertEquals("Test simple group retrieval2", "2", cache.getFromGroup("two", group1));
+    assertEquals("Test simple group retrieval3", "3", cache.getFromGroup("three", "group2"));
+    assertNull("Test non-group retrieval won't get the element", cache.get("one"));
+    assertEquals("Test group1 keyset", 2, cache.getGroupKeys(group1).size());
+    assertEquals("Test group2 keyset", 1, cache.getGroupKeys("group2").size());
+    cache.removeFromGroup("one", group1);
+    assertEquals("Test new group1 keyset", 1, cache.getGroupKeys(group1).size());
+    assertTrue("Test group1 keyset element", cache.getGroupKeys(group1).contains("two"));
   }
   
  
