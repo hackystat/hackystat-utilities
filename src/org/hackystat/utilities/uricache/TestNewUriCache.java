@@ -67,11 +67,8 @@ public class TestNewUriCache {
   @Test
   public void testGroupedElementsCache() {
     // Create a cache. 
-    NewUriCache cache = new NewUriCache("GroupedKeyCache", testSubDir, 1D, 1L);
+    NewUriCache cache = new NewUriCache("GroupedKeyCache", testSubDir, 1D, 1000L);
     cache.clear();
-    Logger.getLogger("org.apache.jcs").setLevel(Level.ALL);
-    cache.setLoggingLevel("ALL");
-    // Add three elements.
     String group1 = "group1";
     cache.putInGroup("one", group1, "1");
     cache.putInGroup("two", group1, "2");
