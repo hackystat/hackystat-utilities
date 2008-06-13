@@ -30,8 +30,10 @@ public class TestUriCache {
     UriCache cache = new UriCache("TestSimpleCache", testSubDir);
     cache.put(key, value);
     assertEquals("Checking simple get", value, cache.get(key));
+    assertTrue("Checking keys", cache.getKeys().contains(key));
     cache.remove(key);
     assertNull("Checking non-existant get", cache.get(key));
+    assertEquals("Checking size", 0, cache.size());
   }
   
   /**

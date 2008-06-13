@@ -21,11 +21,12 @@ import org.hackystat.utilities.logger.HackystatLogger;
  * wrapper provides the following:
  * <ul>
  * <li> Automatic configuration of an indexed disk cache backing store.
- * <li> All cached instances are written out to disk. 
+ * <li> Write-through caching: All cached instances are written out to disk. 
  * <li> Provides a default maximum life for expiring of entries of one day.
- * <li> Provides a default maximum in-memory cache size of 100 instances before using backing
- * store.
- * <li> Ensures that all UriCache instances have a unique name and are created only once.
+ * <li> Provides a default maximum cache size of 10000 instances.
+ * <li> Provides a default directory location (inside ~/.hackystat) for backing store files. 
+ * <li> Helps ensure that all UriCache instances have a unique name.
+ * <li> All caches use the JCS "group" facility to allow access to the set of keys. 
  * <li> Constructor uses "days" rather than seconds as time unit for maxLife.
  * <li> put() uses "hours" rather than seconds as time unit for maxLife.
  * <li> A more convenient API for setting/getting items from the cache and controlling logging.
@@ -33,7 +34,7 @@ import org.hackystat.utilities.logger.HackystatLogger;
  * <li> Disables JCS logging messages unless the System property
  * org.hackystat.utilities.uricache.enableJCSLogging is set.
  * <li> Shutdown hook ensures that backing index file is closed correctly on JVM exit. 
- * <li> Convenient packaging mechanism for required jar files to simplify use in Hackystat.
+ * <li> Convenient packaging mechanism for required jar files to simplify library use.
  * </ul>
  * 
  * Here's an example usage, where we create a separate cache for each user to hold their sensor data
@@ -41,7 +42,7 @@ import org.hackystat.utilities.logger.HackystatLogger;
  * 
  * <pre>
  * SensorBaseClient client = new SensorBaseClient(user, host);
- * NewUriCache cache = new UriCache(user.getEmail(), &quot;dailyprojectdata&quot;);
+ * UriCache cache = new UriCache(user.getEmail(), &quot;dailyprojectdata&quot;);
  *   :
  * SensorData data = (SensorData)cache.get(uriString);
  * if (data == null) {
@@ -52,27 +53,27 @@ import org.hackystat.utilities.logger.HackystatLogger;
  * </pre>
  * 
  * The cache files are in the directory ~/.hackystat/dailyprojectdata/uricache. Instances expire
- * from the cache after one day, by default. The maximum number of in-memory instances is 100, by
+ * from the cache after one day, by default. The maximum number of in-memory instances is 10,000, by
  * default.
  * 
  * @author Philip Johnson
- * @author Pavel Senin
  */
 public class UriCache {
   
-
   /** The number of seconds in a day. * */
   private static final long secondsInADay = 60L * 60L * 24L;
   /** Maximum life in seconds that an entry stays in the cache. Default is 1 day. */
   private static final Long defaultMaxLifeSeconds = secondsInADay;
   /** Maximum number of in-memory instances before sending items to disk. Default is 50,000. */
-  private static final Long defaultCapacity = 50000L;
+  private static final Long defaultCapacity = 10000L;
   /** The name of this cache, which defines a "region" in JCS terms. */
   private String cacheName = null;
   /** The logger used for cache exception logging. */
   private Logger logger = null;
   /** Holds a list of already defined caches to help ensure uniqueness. */
   private static ArrayList<String> cacheNames = new ArrayList<String>();
+  /** Default group name. No client should ever using the following string for a group. */
+  private static final String DEFAULT_GROUP = "__Default_UriCache_Group__";
   
   /** A thread that will ensure that all of these caches will be disposed of during shutdown. */ 
   private static Thread shutdownThread = new Thread() {
@@ -118,8 +119,7 @@ public class UriCache {
    * @param subDir the .hackystat subdirectory in which the uricache directory holding the backing
    *        store will be created.
    * @param maxLifeDays The maximum number of days after which items expire from the cache.
-   * @param capacity The number of in-memory instances to hold. Others are available from the 
-   * backing disk store. 
+   * @param capacity The maximum number of instances to hold in the cache. 
    */
   public UriCache(String cacheName, String subDir, Double maxLifeDays, Long capacity) {
     // Set up the shutdown hook if we're the first one. Not thread safe, but there's not too
@@ -153,7 +153,7 @@ public class UriCache {
    */
   public void put(Serializable key, Serializable value) {
     try {
-      JCS.getInstance(this.cacheName).put(key, value);
+      JCS.getInstance(this.cacheName).putInGroup(key, DEFAULT_GROUP, value);
     }
     catch (CacheException e) {
       String msg = "Failure to add " + key + " to cache " + this.cacheName + ":" + e.getMessage();
@@ -162,7 +162,7 @@ public class UriCache {
   }
   
   /**
-   * Adds the key-value pair to this cache. Logs a message if the cache throws an exception.
+   * Adds the key-value pair to this cache with an explicit expiration time.  
    * 
    * @param key The key, typically a UriString.
    * @param value The value, typically the object returned from the Hackystat service.
@@ -174,7 +174,7 @@ public class UriCache {
       long maxLifeSeconds = (long)(maxLifeHours * 3600D);
       attributes.setMaxLifeSeconds(maxLifeSeconds);
       attributes.setIsEternal(false);
-      JCS.getInstance(this.cacheName).put(key, value, attributes);
+      JCS.getInstance(this.cacheName).putInGroup(key, DEFAULT_GROUP, value, attributes);
     }
     catch (CacheException e) {
       String msg = "Failure to add " + key + " to cache " + this.cacheName + ":" + e.getMessage();
@@ -183,15 +183,14 @@ public class UriCache {
   }
   
   /**
-   * Returns the object associated with key from the cache, or null if not found. Logs a message if
-   * the cache throws an exception.
+   * Returns the object associated with key from the cache, or null if not found. 
    * 
    * @param key The key whose associated value is to be retrieved.
    * @return The value, or null if not found.
    */
   public Object get(Serializable key) {
     try {
-      return JCS.getInstance(this.cacheName).get(key);
+      return JCS.getInstance(this.cacheName).getFromGroup(key, DEFAULT_GROUP);
     }
     catch (CacheException e) {
       String msg = "Failure of get: " + key + " in cache " + this.cacheName + ":" + e.getMessage();
@@ -201,14 +200,14 @@ public class UriCache {
   }
 
   /**
-   * Ensures that the key-value pair associated with key is no longer in this cache. Logs a message
-   * if the cache throws an exception.
+   * Ensures that the key-value pair associated with key is no longer in this cache. 
+   * Logs a message if the cache throws an exception.
    * 
    * @param key The key to be removed.
    */
   public void remove(Serializable key) {
     try {
-      JCS.getInstance(this.cacheName).remove(key);
+      JCS.getInstance(this.cacheName).remove(key, DEFAULT_GROUP);
     }
     catch (CacheException e) {
       String msg = "Failure to remove: " + key + " cache " + this.cacheName + ":" + e.getMessage();
@@ -217,9 +216,16 @@ public class UriCache {
   }
   
   /**
-   * Removes everything in this cache.
+   * Removes everything in the default cache, but not any of the group caches. 
    */
   public void clear() {
+    clearGroup(DEFAULT_GROUP);
+  }
+
+  /**
+   * Clears the default as well as all group caches. 
+   */
+  public void clearAll() {
     try {
       JCS.getInstance(this.cacheName).clear();
     }
@@ -228,6 +234,23 @@ public class UriCache {
       this.logger.warning(msg);
     }
   }
+
+  /**
+   * Returns the set of keys associated with this cache. 
+   * @return The set containing the keys for this cache. 
+   */
+  public Set<Serializable> getKeys() {
+    return getGroupKeys(DEFAULT_GROUP);
+  }
+  
+  /**
+   * Returns the current number of elements in this cache. 
+   * @return The current size of this cache. 
+   */
+  public int size() {
+    return getGroupSize(DEFAULT_GROUP);
+  }
+  
   
   /**
    * Shuts down the specified cache, and removes it from the list of active caches so it can be
@@ -313,7 +336,32 @@ public class UriCache {
     }
     return keySet;
   }
+  
+  /**
+   * Returns the current number of elements in this cache group.
+   * @param group The name of the group.  
+   * @return The current size of this cache. 
+   */
+  public int getGroupSize(String group) {
+    return getGroupKeys(group).size();
+  }
  
+  /**
+   * Removes everything in the default cache, but not any of the group caches.
+   * @param group The group name.  
+   */
+  public void clearGroup(String group) {
+    try {
+      JCS cache = JCS.getInstance(this.cacheName);
+      for (Object key : cache.getGroupKeys(group)) {
+        cache.remove(key, group);
+      }
+    }
+    catch (CacheException e) {
+      String msg = "Failure to clear cache " + this.cacheName + ":" + e.getMessage();
+      this.logger.warning(msg);
+    }
+  }
 
   /**
    * Sets up the Properties instance for configuring this JCS cache instance. Each UriCache is
@@ -327,7 +375,7 @@ public class UriCache {
    * jcs.region.PJ.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
    * jcs.region.PJ.cacheattributes.UseMemoryShrinker=true
    * jcs.region.PJ.cacheattributes.MaxMemoryIdleTimeSeconds=3600
-   * jcs.region.PJ.cacheattributes.ShrinkerIntervalSeconds=60
+   * jcs.region.PJ.cacheattributes.ShrinkerIntervalSeconds=3600
    * jcs.region.PJ.cacheattributes.MaxSpoolPerRun=500
    * jcs.region.PJ.elementattributes=org.apache.jcs.engine.ElementAttributes
    * jcs.region.PJ.elementattributes.IsEternal=false
@@ -335,7 +383,7 @@ public class UriCache {
    * jcs.auxiliary.DC-PJ=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheFactory
    * jcs.auxiliary.DC-PJ.attributes=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheAttributes
    * jcs.auxiliary.DC-PJ.attributes.DiskPath=[cachePath]
-   * jcs.auxiliary.DC-PJ.attributes.maxKeySize=1000000
+   * jcs.auxiliary.DC-PJ.attributes.maxKeySize=10000000
    * </pre>
    * 
    * We define cachePath as HackystatHome.getHome()/.hackystat/[cacheSubDir]/cache. This enables a
@@ -347,7 +395,7 @@ public class UriCache {
    * @param cacheName The name of this cache, used to define the region properties.
    * @param subDir The subdirectory name, used to generate the disk storage directory.
    * @param maxLifeSeconds The maximum life of instances in the cache in seconds before they expire.
-   * @param maxCapacity The in-memory cache capacity before it goes to disk.
+   * @param maxCapacity The maximum size of this cache.
    * @return The properties file.
    */
   private Properties initJcsProps(String cacheName, String subDir, Long maxLifeSeconds, 
@@ -366,7 +414,7 @@ public class UriCache {
     props.setProperty(regCacheAtt + ".MemoryCacheName", memName);
     props.setProperty(regCacheAtt + ".UseMemoryShrinker", "true");
     props.setProperty(regCacheAtt + ".MaxMemoryIdleTimeSeconds", "3600");
-    props.setProperty(regCacheAtt + ".ShrinkerIntervalSeconds", "60");
+    props.setProperty(regCacheAtt + ".ShrinkerIntervalSeconds", "3600");
     props.setProperty(regCacheAtt + ".DiskUsagePatternName", "UPDATE");
     props.setProperty(regCacheAtt + ".MaxSpoolPerRun", "500");
     props.setProperty(regEleAtt, "org.apache.jcs.engine.ElementAttributes");
@@ -375,7 +423,7 @@ public class UriCache {
     props.setProperty(aux, "org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheFactory");
     props.setProperty(auxAtt, diskAttName);
     props.setProperty(auxAtt + ".DiskPath", getCachePath(subDir));
-    props.setProperty(auxAtt + ".maxKeySize", "100000");
+    props.setProperty(auxAtt + ".maxKeySize", "1000000");
     return props;
   }
   
