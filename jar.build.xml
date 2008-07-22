@@ -1,13 +1,13 @@
 <project name="jar" default="jar">
   <description>
-  Provides the target for building a jar file of the SensorBase.
+  Provides the target for building a jar file of the various utilities.
   </description>
 
   <import file="build.xml" />
   <property name="tmp.dir" location="${basedir}/tmp" />
   <property name="tmp.lib.dir" location="${basedir}/tmp-lib" />
 
-  <target name="jar" depends="jar-home, jar-hackystatlogger, jar-stacktrace, jar-tstamp, jar-uricache, jar-time" />
+  <target name="jar" depends="jar-validate-email, jar-home, jar-hackystatlogger, jar-stacktrace, jar-tstamp, jar-uricache, jar-time" />
 
   <target name="jar-hackystatlogger" depends="compile" description="Create hackystatlogger.lib.jar, containing just org.hackystat.utilities.logger code.">
     <!-- Define the directories and distribution name -->
@@ -119,5 +119,23 @@
     </jar>
     <delete dir="${tmp.lib.dir}" />
   </target>
+  
+  <target name="jar-validate-email" depends="compile" description="Create validate.email.lib.jar, containing the email validation code.">
+     <!-- Define the directories and distribution name -->
+     <mkdir dir="${tmp.lib.dir}" />
+     <copy todir="${tmp.lib.dir}">
+       <fileset dir="${basedir}/build/classes/">
+         <include name="org/hackystat/utilities/email/**" />
+       </fileset>
+     </copy>
+     <jar destfile="${basedir}/validate.email.lib.jar" basedir="${tmp.lib.dir}">
+       <manifest>
+         <attribute name="Implementation-Title" value="ValidateEmail" />
+         <attribute name="Implementation-Version" value="${version}" />
+         <attribute name="Implementation-Vendor" value="Collaborative Software Development Laboratory, University of Hawaii" />
+       </manifest>
+     </jar>
+     <delete dir="${tmp.lib.dir}" />
+   </target>
 </project>
 
