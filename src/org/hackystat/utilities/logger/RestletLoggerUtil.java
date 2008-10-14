@@ -42,7 +42,10 @@ public class RestletLoggerUtil {
         //System.out.println("Removed handlers.");
         // Define a file handler that writes to the ~/.hackystat/<service>/logs directory
         File logDir = new File(HackystatUserHome.getHome(), ".hackystat/" + serviceDir + "/logs/");
-        logDir.mkdirs();
+        boolean dirsOk = logDir.mkdirs();
+        if (!dirsOk && !logDir.exists()) {
+          throw new RuntimeException("mkdirs() failed");
+        }
         //System.out.println("Made this directory: " + logDir);
         String fileName = logDir + "/" + logName + ".%u.log";
         FileHandler fileHandler;

@@ -9,11 +9,8 @@ import org.hackystat.utilities.time.period.Month;
  * Defines iterator for month interval.
  *  
  * @author Hongbing Kou
- * @version $Id: MonthIterator.java,v 1.1.1.1 2005/10/20 23:56:40 johnson Exp $
  */
 public class MonthIterator implements Iterator<Month> {
-  /** Start month. */
-  private Month startMonth;
   /** End month. */
   private Month endMonth;
   /** Current month. */
@@ -25,9 +22,9 @@ public class MonthIterator implements Iterator<Month> {
    * @param monthInterval Month Interval.
    */
   MonthIterator(MonthInterval monthInterval) {
-    this.startMonth = monthInterval.getStartMonth();
+    Month startMonth = monthInterval.getStartMonth();
     this.endMonth = monthInterval.getEndMonth();
-    this.currentMonth = this.startMonth.dec();
+    this.currentMonth = startMonth.dec();
   }
   
   /**

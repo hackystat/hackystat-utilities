@@ -12,7 +12,7 @@ import java.io.StringWriter;
  * 
  * @author Philip Johnson, Takuya Yamashita
  */
-public class StackTrace {
+public final class StackTrace {
   
   /** Disable public constructor. */
   private StackTrace() {

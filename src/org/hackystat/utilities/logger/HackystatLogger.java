@@ -17,7 +17,7 @@ import org.hackystat.utilities.home.HackystatUserHome;
  * Uses HackystatUserHome.getHome() to determine where to put the logs directory.
  * @author Philip Johnson
  */
-public class HackystatLogger {
+public final class HackystatLogger {
   
 
   /**
@@ -35,7 +35,10 @@ public class HackystatLogger {
     // Define a file handler that writes to the ~/.hackystat/logs directory, creating it if nec.
     String logSubDir = (subdir == null) ? ".hackystat/logs/" : ".hackystat/" + subdir + "/logs/";
     File logDir = new File(HackystatUserHome.getHome(), logSubDir);
-    logDir.mkdirs();
+    boolean dirsOk = logDir.mkdirs();
+    if (!dirsOk && !logDir.exists()) {
+      throw new RuntimeException("mkdirs() failed");
+    }
     String fileName = logDir + "/" + loggerName + ".%u.log";
     FileHandler fileHandler;
     try {

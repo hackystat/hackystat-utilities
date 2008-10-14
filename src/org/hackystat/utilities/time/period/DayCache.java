@@ -33,7 +33,7 @@ import java.util.TimeZone;
  * @author Philip M. Johnson
  * @version $Id: DayCache.java,v 1.1.1.1 2005/10/20 23:56:44 johnson Exp $
  */
-public class DayCache {
+public final class DayCache {
   /** The singleton DayCache instance. */
   private static DayCache theCache = new DayCache();
 

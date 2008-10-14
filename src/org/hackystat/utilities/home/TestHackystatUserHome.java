@@ -6,7 +6,7 @@ import java.io.File;
 import org.junit.Test;
 
 /**
- * Tests the HackystatUserHome class
+ * Tests the HackystatUserHome class.
  * 
  * @author Philip Johnson
  */

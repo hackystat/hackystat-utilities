@@ -61,6 +61,5 @@ public class TestTstamp {
     assertEquals("Test timespan 80200 ms", 80200, Tstamp.diff(date1, date2));
     assertEquals("Test timespan 200 ms", 200, Tstamp.diff(date2, date3));
   }
-  
 
 }

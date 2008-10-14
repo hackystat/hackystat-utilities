@@ -28,7 +28,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * @author    Philip M. Johnson
  * @version   $Id: Day.java,v 1.1.1.1 2005/10/20 23:56:44 johnson Exp $
  */
-public class Day implements TimePeriod {
+public final class Day implements TimePeriod {
 
   /** Used to canonicalize the internal date object to high noon on the passed day. */
   private Calendar cal = Calendar.getInstance(Locale.US);

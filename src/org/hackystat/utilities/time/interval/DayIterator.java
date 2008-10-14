@@ -11,8 +11,6 @@ import org.hackystat.utilities.time.period.Day;
  * @author Hongbing Kou, Philip Johnson
  */
 public class DayIterator implements Iterator<Day> {
-  /** Start day of the day interval. */
-  private Day startDay;
   /** End day of the day interval. */
   private Day endDay;
   /** Current day. */
@@ -24,9 +22,9 @@ public class DayIterator implements Iterator<Day> {
    * @param dayInterval Iterator over the day.
    */
   DayIterator(DayInterval dayInterval) {
-    this.startDay = dayInterval.getStartDay();
+    Day startDay = dayInterval.getStartDay();
     this.endDay = dayInterval.getEndDay();
-    this.currentDay = this.startDay.inc(-1); 
+    this.currentDay = startDay.inc(-1); 
   }
   
   /**

@@ -8,7 +8,7 @@ import java.util.Iterator;
  * @author Hongbing Kou
  */
 public abstract class Interval {
-  /** Interval type */
+  /** Interval type. */
   private String intervalType;
 
   /**

@@ -436,7 +436,10 @@ public class UriCache {
    */
   private String getCachePath(String cacheSubDir) {
     File path = new File(HackystatUserHome.getHome(), ".hackystat/" + cacheSubDir + "/uricache");
-    path.mkdirs();
+    boolean dirsOk = path.mkdirs();
+    if (!dirsOk && !path.exists()) {
+      throw new RuntimeException("mkdirs() failed");
+    }
     return path.getAbsolutePath();
   }
   

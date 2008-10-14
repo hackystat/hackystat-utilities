@@ -3,7 +3,7 @@ package org.hackystat.utilities.home;
 import java.io.File;
 
 /**
- * Provides a utility that returns the desired location of the .hackystat directory. 
+ * Provides a utility that returns the desired location of the dot-hackystat directory. 
  * This defaults to the user.home System Property, but can be overridden by the user
  * by providing the property hackystat.user.home.
  * @author Philip Johnson

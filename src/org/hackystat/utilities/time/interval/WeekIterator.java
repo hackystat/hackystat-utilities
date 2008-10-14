@@ -11,8 +11,6 @@ import org.hackystat.utilities.time.period.Week;
  * @author Hongbing Kou
  */
 public class WeekIterator implements Iterator<Week> {
-  /** Start week. */
-  private Week startWeek;
   /** End week. */
   private Week endWeek;
   /** Current week. */
@@ -24,9 +22,9 @@ public class WeekIterator implements Iterator<Week> {
    * @param weekInterval Week interval.
    */
   WeekIterator(WeekInterval weekInterval) {
-    this.startWeek = weekInterval.getStartWeek();
+    Week startWeek = weekInterval.getStartWeek();
     this.endWeek = weekInterval.getEndWeek();
-    this.currentWeek = this.startWeek.dec();
+    this.currentWeek = startWeek.dec();
   }
   
   /**
