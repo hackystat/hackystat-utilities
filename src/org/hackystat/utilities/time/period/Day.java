@@ -10,37 +10,28 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Provides a "cousin" of Date that represents only year, month, and day information. Many Hackystat
- * facilities need date information only at the precision of year/month/day.  By eliminating the
- * extra precision of hours/minutes/seconds/milliseconds, we can employ caching to minimize the 
- * number of created Day objects, and improve
- * the efficiency of comparisons. We can also provide fast computation of the interval in days
- * between two Day objects.  
- * <P>
+ * facilities need date information only at the precision of year/month/day.  This abstraction
+ * represents a single 24 hour time period.
+ * <p>
  * All Day constructors are private or package private. Clients of this class must use the 
- * static getInstance() methods to obtain Day instances. The Day class uses a helper class, 
- * DayCache, which guarantees that the same Day instance will be returned to clients for any 
- * timestamp within a given day, if the day occurs within a two year window.  However, because
- * object identity is not always guaranteed, avoid the use of '==' and employ 
- * only equals() to compare two Day objects. 
+ * static getInstance() methods to obtain Day instances. 
  * <p>
  * The Calendar is forced to Locale.US to ensure constant week boundaries. 
- *
+ * <p>
+ * Day instances are immutable.
+ * 
  * @author    Philip M. Johnson
- * @version   $Id: Day.java,v 1.1.1.1 2005/10/20 23:56:44 johnson Exp $
  */
 public final class Day implements TimePeriod {
 
-  /** Used to canonicalize the internal date object to high noon on the passed day. */
+  /** Used to represent the day. */
   private Calendar cal = Calendar.getInstance(Locale.US);
-  /** The internal date object. */
-  private Date date;
   /** The hashcode used for comparisons. */
   private int hashCode = 0;
   /** The date format for the toString method. */
   private static SimpleDateFormat toStringFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.US);
   /** Simplified date format. */
   private static SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-
   /** The formats for the getting the day, month, and year fields as strings. */
   private static SimpleDateFormat monthStringFormat = new SimpleDateFormat("MM", Locale.US);
   /** The formats for the getting the day, month, and year fields as strings. */
@@ -54,11 +45,10 @@ public final class Day implements TimePeriod {
   
   /**
    * Returns a Day instance corresponding to today.
-   *  
    * @return A Day instance corresponding to today.
    */
   public static Day getInstance() {
-    return DayCache.getInstance().getDay(new Date().getTime());
+    return new Day();
   }
   
   /**
@@ -68,7 +58,7 @@ public final class Day implements TimePeriod {
    * @return A Day instance corresponding to timestamp.
    */
   public static Day getInstance(long timestamp) {
-    return DayCache.getInstance().getDay(timestamp);
+    return new Day(timestamp);
   }
 
   /**
@@ -78,7 +68,7 @@ public final class Day implements TimePeriod {
    * @return The Day instance corresponding to Date.
    */  
   public static Day getInstance(Date date) {
-    return DayCache.getInstance().getDay(date.getTime());
+    return new Day(date.getTime());
   }
   
   /**
@@ -96,7 +86,7 @@ public final class Day implements TimePeriod {
     cal.set(Calendar.YEAR, year);
     cal.set(Calendar.MONTH, month);
     cal.set(Calendar.DAY_OF_MONTH, day);
-    return DayCache.getInstance().getDay(cal.getTime().getTime());
+    return new Day(cal.getTime().getTime());
   }
   
   /**
@@ -110,7 +100,7 @@ public final class Day implements TimePeriod {
    */
   public static Day getInstance(String dayString) throws Exception {
     Date date = new SimpleDateFormat("dd-MMM-yyyy", Locale.US).parse(dayString);
-    return DayCache.getInstance().getDay(date.getTime());
+    return new Day(date.getTime());
   }
   
   /**
@@ -120,25 +110,22 @@ public final class Day implements TimePeriod {
    */
   public static Day getInstance(XMLGregorianCalendar xmlDay) {
     long millis = xmlDay.toGregorianCalendar().getTimeInMillis();
-    return DayCache.getInstance().getDay(millis);
+    return new Day(millis);
   }
 
   /** 
    * Create a new Day, initializing it to today.
-   *  
-   * Used by DayCache. 
    */
-  Day() {
+  private Day() {
     this(new Date());
   }
 
   /**
    * Creates a new Day instance, initializing it to the passed long UTC time.
-   * Used by DayCache.
    * 
    * @param timestamp A UTC value indicating a time. 
    */
-  Day(long timestamp) {
+  private Day(long timestamp) {
     this(new Date(timestamp));
   }
 
@@ -152,17 +139,15 @@ public final class Day implements TimePeriod {
    * @param date  A date.
    */
   private Day(Date date) {
-    // Rather than synchronize, we just get a new Calendar instance each month.
-    // Not sure whether instance creation or synchronization is the better approach.
     this.cal = Calendar.getInstance(Locale.US);
     this.cal.setTime(date);
     this.cal.set(Calendar.HOUR_OF_DAY, 00);
     this.cal.set(Calendar.MINUTE, 0);
     this.cal.set(Calendar.SECOND, 0);
     this.cal.set(Calendar.MILLISECOND, 0);
-    this.date = cal.getTime();
+    //this.date = cal.getTime();
   }
-
+  
   /**
    * Returns a Day instance corresponding to a day plus or minus increment days in the future 
    * or past. 
@@ -171,7 +156,9 @@ public final class Day implements TimePeriod {
    * @return           A Day corresponding to the increment from this day.
    */
   public Day inc(int increment) {
-    return DayCache.getInstance().getDay(this.date.getTime() + (millisInDay * increment));
+    Calendar newCal = (Calendar)this.cal.clone();
+    newCal.add(Calendar.DAY_OF_YEAR, increment);
+    return new Day(newCal.getTime());
   }
   
   /**
@@ -181,7 +168,7 @@ public final class Day implements TimePeriod {
    * @return A Date object corresponding to this day.
    */
   public Date getDate() {
-    return new Date(this.date.getTime());
+    return new Date(this.cal.getTimeInMillis());
   }
   
   /**
@@ -199,7 +186,8 @@ public final class Day implements TimePeriod {
    * @return The interval in days between day1 and day2.
    */
   public static int daysBetween(Day day1, Day day2) {
-    return Math.round((float)(day2.date.getTime() - day1.date.getTime()) / millisInDay);
+    return Math.round((float)(day2.cal.getTimeInMillis() - day1.cal.getTimeInMillis()) 
+        / millisInDay);
   }
 
   /**
@@ -209,17 +197,7 @@ public final class Day implements TimePeriod {
    * @return   The standard compareTo values.
    */
   public int compareTo(Object o) {
-    if (this.equals(o)) {
-      return 0;
-    }
-    long start = this.date.getTime();
-    long end = ((Day) o).date.getTime();
-    if (start < end) {
-      return -1;
-    }
-    else {
-      return 1;
-    }
+    return this.cal.compareTo(((Day)o).cal);
   }
   
   /**
@@ -229,7 +207,7 @@ public final class Day implements TimePeriod {
    * @return True if the passed day comes after this Day.
    */
   public boolean isBefore(Day day) {
-    return (this.compareTo(day) == -1);
+    return (this.cal.before(day.cal));
   }
   
   /**
@@ -243,12 +221,11 @@ public final class Day implements TimePeriod {
     if (!(obj instanceof Day)) {
       return false;
     }
-    // Due to caching, the instances might be identical, so do the quick test.
-    if (this == obj) {
-      return true;
-    }
-    // Otherwise check the internal millis value. 
-    return (this.date.getTime() == ((Day) obj).date.getTime());
+    Calendar thisCal = this.cal;
+    Calendar otherCal = ((Day)obj).cal;
+    return 
+    ((thisCal.get(Calendar.YEAR) == otherCal.get(Calendar.YEAR)) &&
+        (thisCal.get(Calendar.DAY_OF_YEAR) == otherCal.get(Calendar.DAY_OF_YEAR)));
   }
 
 
@@ -276,7 +253,7 @@ public final class Day implements TimePeriod {
   @Override
   public String toString() {
     synchronized (Day.toStringFormat) {
-      return Day.toStringFormat.format(this.date);
+      return Day.toStringFormat.format(new Date(this.cal.getTimeInMillis()));
     }
   }
 
@@ -287,7 +264,7 @@ public final class Day implements TimePeriod {
    */
   public String getSimpleDayString() {
     synchronized (Day.simpleFormat) {
-      return Day.simpleFormat.format(this.date);
+      return Day.simpleFormat.format(new Date(this.cal.getTimeInMillis()));
     }
   }
   
@@ -299,7 +276,7 @@ public final class Day implements TimePeriod {
    */
   public String getDayString() {
     synchronized (Day.dayStringFormat) {
-      return Day.dayStringFormat.format(this.date);
+      return Day.dayStringFormat.format(new Date(this.cal.getTimeInMillis()));
     }
   }
 
@@ -310,7 +287,7 @@ public final class Day implements TimePeriod {
    */
   public String getMonthString() {
     synchronized (Day.monthStringFormat) {
-      return Day.monthStringFormat.format(this.date);
+      return Day.monthStringFormat.format(new Date(this.cal.getTimeInMillis()));
     }
   }
 
@@ -322,7 +299,7 @@ public final class Day implements TimePeriod {
    */
   public String getMediumMonthString() {
     synchronized (Day.mediumMonthStringFormat) {
-      return Day.mediumMonthStringFormat.format(this.date);
+      return Day.mediumMonthStringFormat.format(new Date(this.cal.getTimeInMillis()));
     }
   }
 
@@ -333,7 +310,7 @@ public final class Day implements TimePeriod {
    */
   public String getYearString() {
     synchronized (Day.yearStringFormat) {
-      return Day.yearStringFormat.format(this.date);
+      return Day.yearStringFormat.format(new Date(this.cal.getTimeInMillis()));
     }
   }
 
@@ -343,13 +320,7 @@ public final class Day implements TimePeriod {
    * @return The first tick of the day in millis.
    */
   public long getFirstTickOfTheDay() {
-    Calendar cal = Calendar.getInstance(Locale.US);
-    cal.setTime(this.date);
-    cal.set(Calendar.HOUR_OF_DAY, cal.getActualMinimum(Calendar.HOUR_OF_DAY));
-    cal.set(Calendar.MINUTE, cal.getActualMinimum(Calendar.MINUTE));
-    cal.set(Calendar.SECOND, cal.getActualMinimum(Calendar.SECOND));
-    cal.set(Calendar.MILLISECOND, cal.getActualMinimum(Calendar.MILLISECOND));
-    return cal.getTime().getTime();  
+    return this.cal.getTimeInMillis();
   }
   
   /**
@@ -358,13 +329,13 @@ public final class Day implements TimePeriod {
    * @return The last tick of the day in millis.
    */
   public long getLastTickOfTheDay() {
-    Calendar cal = Calendar.getInstance(Locale.US);
-    cal.setTime(this.date);
-    cal.set(Calendar.HOUR_OF_DAY, cal.getActualMaximum(Calendar.HOUR_OF_DAY));
-    cal.set(Calendar.MINUTE, cal.getActualMaximum(Calendar.MINUTE));
-    cal.set(Calendar.SECOND, cal.getActualMaximum(Calendar.SECOND));
-    cal.set(Calendar.MILLISECOND, cal.getActualMaximum(Calendar.MILLISECOND));
-    return cal.getTime().getTime();
+    Calendar newCal = Calendar.getInstance(Locale.US);
+    newCal.setTimeInMillis(this.cal.getTimeInMillis());
+    newCal.set(Calendar.HOUR_OF_DAY, newCal.getActualMaximum(Calendar.HOUR_OF_DAY));
+    newCal.set(Calendar.MINUTE, newCal.getActualMaximum(Calendar.MINUTE));
+    newCal.set(Calendar.SECOND, newCal.getActualMaximum(Calendar.SECOND));
+    newCal.set(Calendar.MILLISECOND, newCal.getActualMaximum(Calendar.MILLISECOND));
+    return newCal.getTime().getTime();
   }
 }
 

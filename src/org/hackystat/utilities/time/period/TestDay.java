@@ -31,7 +31,6 @@ public class TestDay extends TestCase {
     Day day2 = Day.getInstance();
     Day day3 = Day.getInstance();
     assertEquals("Checking that two days in same day are equal", day2, day3);
-    assertSame("Checking that two days in same day are identical", day2, day3);
 
     Day day4 = day3.inc(1);
     assertTrue("Checking the comparison less", day3.compareTo(day4) < 0);
