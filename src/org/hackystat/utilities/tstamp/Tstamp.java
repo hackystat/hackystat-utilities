@@ -383,5 +383,41 @@ public class Tstamp {
     long millis2 = time2.toGregorianCalendar().getTimeInMillis();
     return millis2 - millis1;
   }
+  
+  /**
+   * Returns true if the passed timestamp indicates some time today or some time 
+   * in the future. 
+   * 
+   * @param timestamp The timestamp of interest.
+   * @return True if it's today or some day in the future. 
+   */
+  public static boolean isTodayOrLater(XMLGregorianCalendar timestamp) {
+    XMLGregorianCalendar today = Tstamp.makeTimestamp();
+    boolean isToday = (today.getYear() == timestamp.getYear()) && 
+                      (today.getMonth() == timestamp.getMonth()) && 
+                      (today.getDay() == timestamp.getDay());
+    boolean afterToday = today.toGregorianCalendar().getTimeInMillis() <
+                       timestamp.toGregorianCalendar().getTimeInMillis();
+    return (isToday || afterToday);
+  }
+  
+  /**
+   * Returns true if the passed timestamp indicates some time yesterday or some time 
+   * in the future. This is useful for the Commit/Churn DPDs, where the sensor typically
+   * sends data not from the current day, but from the day before. 
+   * 
+   * @param timestamp The timestamp of interest.
+   * @return True if it's today or some day in the future. 
+   */
+  public static boolean isYesterdayOrLater(XMLGregorianCalendar timestamp) {
+    XMLGregorianCalendar yesterday = Tstamp.incrementDays(Tstamp.makeTimestamp(), -1);
+
+    boolean isYesterday = (yesterday.getYear() == timestamp.getYear()) && 
+                          (yesterday.getMonth() == timestamp.getMonth()) && 
+                          (yesterday.getDay() == timestamp.getDay());
+    boolean afterYesterday = yesterday.toGregorianCalendar().getTimeInMillis() <
+                             timestamp.toGregorianCalendar().getTimeInMillis();
+    return (isYesterday || afterYesterday);
+  }
 
 }

@@ -61,5 +61,28 @@ public class TestTstamp {
     assertEquals("Test timespan 80200 ms", 80200, Tstamp.diff(date1, date2));
     assertEquals("Test timespan 200 ms", 200, Tstamp.diff(date2, date3));
   }
+  
+  /**
+   * Test to make sure that the is* methods work OK. 
+   * @throws Exception If problems occur. 
+   */
+  @Test public void testOrLater() throws Exception {
+    long millisInADay = 1000 * 60 * 60 * 24;
+    XMLGregorianCalendar today = Tstamp.makeTimestamp();
+    long todayInMillis = today.toGregorianCalendar().getTimeInMillis();
+    long yesterdayInMillis = todayInMillis - millisInADay;
+    XMLGregorianCalendar yesterday = Tstamp.makeTimestamp(yesterdayInMillis);
+    long tomorrowInMillis = todayInMillis + millisInADay;
+    XMLGregorianCalendar tomorrow = Tstamp.makeTimestamp(tomorrowInMillis);
+    long lastWeekInMillis = todayInMillis - (millisInADay * 7);
+    XMLGregorianCalendar lastWeek = Tstamp.makeTimestamp(lastWeekInMillis);
+    assertTrue("Testing todayOrLater 1", Tstamp.isTodayOrLater(today));
+    assertTrue("Testing todayOrLater 2", Tstamp.isTodayOrLater(tomorrow));
+    assertFalse("Testing todayOrLater 3", Tstamp.isTodayOrLater(yesterday));
+    assertTrue("Testing yesterdayOrLater 1", Tstamp.isYesterdayOrLater(today));
+    assertTrue("Testing yesterdayOrLater 2", Tstamp.isYesterdayOrLater(tomorrow));
+    assertTrue("Testing yesterdayOrLater 3", Tstamp.isYesterdayOrLater(yesterday));
+    assertFalse("Testing yesterdayOrLater 4", Tstamp.isYesterdayOrLater(lastWeek));
+  }
 
 }
