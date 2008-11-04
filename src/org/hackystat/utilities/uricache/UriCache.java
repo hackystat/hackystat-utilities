@@ -347,7 +347,7 @@ public class UriCache {
   }
  
   /**
-   * Removes everything in the default cache, but not any of the group caches.
+   * Removes everything in the specified group.
    * @param group The group name.  
    */
   public void clearGroup(String group) {

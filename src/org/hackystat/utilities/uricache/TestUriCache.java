@@ -72,18 +72,25 @@ public class TestUriCache {
     UriCache cache = new UriCache("GroupedKeyCache", testSubDir, 1D, 1000L);
     cache.clear();
     String group1 = "group1";
-    cache.putInGroup("one", group1, "1");
-    cache.putInGroup("two", group1, "2");
-    cache.putInGroup("three", "group2", "3");
-    assertEquals("Test simple group retrieval1", "1", cache.getFromGroup("one", group1));
-    assertEquals("Test simple group retrieval2", "2", cache.getFromGroup("two", group1));
-    assertEquals("Test simple group retrieval3", "3", cache.getFromGroup("three", "group2"));
-    assertNull("Test non-group retrieval won't get the element", cache.get("one"));
+    String group2 = "group2";
+    String one = "one";
+    String two = "two";
+    String three = "three";
+    cache.putInGroup(one, group1, "1");
+    cache.putInGroup(two, group1, "2");
+    cache.putInGroup(three, "group2", "3");
+    assertEquals("Test simple group retrieval1", "1", cache.getFromGroup(one, group1));
+    assertEquals("Test simple group retrieval2", "2", cache.getFromGroup(two, group1));
+    assertEquals("Test simple group retrieval3", "3", cache.getFromGroup(three, "group2"));
+    assertNull("Test non-group retrieval won't get the element", cache.get(one));
     assertEquals("Test group1 keyset", 2, cache.getGroupKeys(group1).size());
-    assertEquals("Test group2 keyset", 1, cache.getGroupKeys("group2").size());
-    cache.removeFromGroup("one", group1);
+    assertEquals("Test group2 keyset", 1, cache.getGroupKeys(group2).size());
+    cache.removeFromGroup(one, group1);
     assertEquals("Test new group1 keyset", 1, cache.getGroupKeys(group1).size());
-    assertTrue("Test group1 keyset element", cache.getGroupKeys(group1).contains("two"));
+    assertTrue("Test group1 keyset element", cache.getGroupKeys(group1).contains(two));
+    cache.clearGroup(group1);
+    assertEquals("Test clearGroup", 0, cache.getGroupKeys(group1).size());
+    assertNull("Test clearGroup 2", cache.getFromGroup(one, group1));
   }
   
  
