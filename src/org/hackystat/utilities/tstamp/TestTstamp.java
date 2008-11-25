@@ -84,5 +84,24 @@ public class TestTstamp {
     assertTrue("Testing yesterdayOrLater 3", Tstamp.isYesterdayOrLater(yesterday));
     assertFalse("Testing yesterdayOrLater 4", Tstamp.isYesterdayOrLater(lastWeek));
   }
+  
+  /**
+   * Test to make sure that the daysBetween method works correctly. 
+   * @throws Exception If problems occur. 
+   */
+  @Test public void testDaysBetween() throws Exception {
+    XMLGregorianCalendar today = Tstamp.makeTimestamp();
+    assertEquals("Test daysBetween 1", 0, Tstamp.daysBetween(today, today));
+    XMLGregorianCalendar tomorrow = Tstamp.incrementDays(today, 1);
+    assertEquals("Test daysBetween 2", 1, Tstamp.daysBetween(today, tomorrow));
+    XMLGregorianCalendar nextWeek = Tstamp.incrementDays(today, 7);
+    assertEquals("Test daysBetween 3", 7, Tstamp.daysBetween(today, nextWeek));
+    // Test a whole year, which might find DST issues.
+    for (int i = 1; i <= 365; i++) {
+      XMLGregorianCalendar newDay = Tstamp.incrementDays(today, i);
+      assertEquals("Test daysBetween 4", i, Tstamp.daysBetween(today, newDay));
+    }
+  }
+  
 
 }

@@ -1,5 +1,6 @@
 package org.hackystat.utilities.tstamp;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -15,6 +16,8 @@ import org.hackystat.utilities.time.period.Day;
 public class Tstamp {
 
   private static final String factoryErrorMsg = "Bad DataTypeFactory";
+  
+  private static long MILLISECS_PER_DAY = 24 * 60 * 60 * 1000;
   
 
   /**
@@ -327,6 +330,32 @@ public class Tstamp {
     long time2Millis = time2.toGregorianCalendar().getTimeInMillis();
     return (time1Millis > time2Millis);
   }
+  
+  /**
+   * Returns the number of days between time1 and time2.
+   * Returns a negative number if day1 is after day2.
+   * Takes into account daylight savings time issues. 
+   * @param day1 The first day.
+   * @param day2 The second day. 
+   * @return The number of days between the two days. 
+   */
+  public static int daysBetween(XMLGregorianCalendar day1, XMLGregorianCalendar day2) {
+    return (int) (getUnixDay(day2) - getUnixDay(day1));
+  }
+  
+  /**
+   * Returns a long representing the number of days since the Unix epoch to the passed day.
+   * @param day The day of interest.
+   * @return The number of days since the epoch.
+   */
+  private static long getUnixDay(XMLGregorianCalendar day) {
+    GregorianCalendar greg = day.toGregorianCalendar();
+    long offset = greg.get(Calendar.ZONE_OFFSET) + greg.get(Calendar.DST_OFFSET);
+    long daysSinceEpoch = (long)Math.floor((double)(greg.getTime().getTime() + offset ) / 
+        ((double)MILLISECS_PER_DAY) );
+    return daysSinceEpoch;
+}
+ 
 
   /**
    * Returns true if timeString1 > timeString2. Throws an unchecked
