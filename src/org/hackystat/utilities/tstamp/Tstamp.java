@@ -208,7 +208,7 @@ public class Tstamp {
    * @return A new XMLGregorianCalendar instance representing the inc'd time.
    */
   public static XMLGregorianCalendar incrementMilliseconds(XMLGregorianCalendar tstamp, 
-      int milliseconds) {
+      long milliseconds) {
     DatatypeFactory factory = null;
     try {
       factory = DatatypeFactory.newInstance();
