@@ -112,22 +112,19 @@ public class TestTstamp {
    */
   @Test public void testSorting() throws Exception {
     XMLGregorianCalendar tstamp1 = Tstamp.makeTimestamp();
-    Thread.sleep(10);
-    XMLGregorianCalendar tstamp2 = Tstamp.makeTimestamp();
-    Thread.sleep(10);
-    XMLGregorianCalendar tstamp3 = Tstamp.makeTimestamp();
-    Thread.sleep(10);
-    XMLGregorianCalendar tstamp4 = Tstamp.makeTimestamp();
+    XMLGregorianCalendar tstamp2 = Tstamp.incrementSeconds(tstamp1, 1);
+    XMLGregorianCalendar tstamp3 = Tstamp.incrementSeconds(tstamp1, 2);
+    XMLGregorianCalendar tstamp4 = Tstamp.incrementSeconds(tstamp1, 3);
     List<XMLGregorianCalendar> tstamps = new ArrayList<XMLGregorianCalendar>();
     tstamps.add(tstamp2);
     tstamps.add(tstamp1);
     tstamps.add(tstamp4);
     tstamps.add(tstamp3);
-    Tstamp.sort(tstamps);
-    assertEquals("Test sort1", tstamp1, tstamps.get(0));
-    assertEquals("Test sort2", tstamp2, tstamps.get(1));
-    assertEquals("Test sort3", tstamp3, tstamps.get(2));
-    assertEquals("Test sort4", tstamp4, tstamps.get(3));
+    List<XMLGregorianCalendar> sortedList = Tstamp.sort(tstamps);
+    assertEquals("Test sort1", tstamp1, sortedList.get(0));
+    assertEquals("Test sort2", tstamp2, sortedList.get(1));
+    assertEquals("Test sort3", tstamp3, sortedList.get(2));
+    assertEquals("Test sort4", tstamp4, sortedList.get(3));
   }
   
 

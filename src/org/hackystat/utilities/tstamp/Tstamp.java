@@ -454,9 +454,9 @@ public class Tstamp {
   }
   
   /**
-   * Returns the passed list of tstamps, sorted. 
+   * Returns a newly created sorted list of tstamps from the passed collection.
    * @param tstamps The timestamps to be sorted. 
-   * @return The list, now in sorted order. 
+   * @return A new list of tstamps, now in sorted order. 
    */
   public static List<XMLGregorianCalendar> sort(Collection<XMLGregorianCalendar> tstamps) {
     List<XMLGregorianCalendar> tstampList = new ArrayList<XMLGregorianCalendar>(tstamps);
