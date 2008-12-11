@@ -1,7 +1,11 @@
 package org.hackystat.utilities.tstamp;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -448,5 +452,15 @@ public class Tstamp {
                              timestamp.toGregorianCalendar().getTimeInMillis();
     return (isYesterday || afterYesterday);
   }
-
+  
+  /**
+   * Returns the passed list of tstamps, sorted. 
+   * @param tstamps The timestamps to be sorted. 
+   * @return The list, now in sorted order. 
+   */
+  public static List<XMLGregorianCalendar> sort(Collection<XMLGregorianCalendar> tstamps) {
+    List<XMLGregorianCalendar> tstampList = new ArrayList<XMLGregorianCalendar>(tstamps);
+    Collections.sort(tstampList, new TstampComparator());
+    return tstampList;
+  }
 }

@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Test;
@@ -101,6 +104,30 @@ public class TestTstamp {
       XMLGregorianCalendar newDay = Tstamp.incrementDays(today, i);
       assertEquals("Test daysBetween 4", i, Tstamp.daysBetween(today, newDay));
     }
+  }
+
+  /**
+   * Tests that the sort() method works. 
+   * @throws Exception If problems occur. 
+   */
+  @Test public void testSorting() throws Exception {
+    XMLGregorianCalendar tstamp1 = Tstamp.makeTimestamp();
+    Thread.sleep(10);
+    XMLGregorianCalendar tstamp2 = Tstamp.makeTimestamp();
+    Thread.sleep(10);
+    XMLGregorianCalendar tstamp3 = Tstamp.makeTimestamp();
+    Thread.sleep(10);
+    XMLGregorianCalendar tstamp4 = Tstamp.makeTimestamp();
+    List<XMLGregorianCalendar> tstamps = new ArrayList<XMLGregorianCalendar>();
+    tstamps.add(tstamp2);
+    tstamps.add(tstamp1);
+    tstamps.add(tstamp4);
+    tstamps.add(tstamp3);
+    Tstamp.sort(tstamps);
+    assertEquals("Test sort1", tstamp1, tstamps.get(0));
+    assertEquals("Test sort2", tstamp2, tstamps.get(1));
+    assertEquals("Test sort3", tstamp3, tstamps.get(2));
+    assertEquals("Test sort4", tstamp4, tstamps.get(3));
   }
   
 
