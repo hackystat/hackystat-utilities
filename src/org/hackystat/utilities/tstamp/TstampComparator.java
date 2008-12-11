@@ -1,5 +1,6 @@
 package org.hackystat.utilities.tstamp;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -8,7 +9,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * Implements a comparator for XMLGregorianCalendar instances consistent with the Tstamp operations.
  * @author Philip Johnson
  */
-public class TstampComparator implements Comparator<XMLGregorianCalendar> {
+public class TstampComparator implements Serializable, Comparator<XMLGregorianCalendar> {
+
+  /** For serialization. */
+  private static final long serialVersionUID = 1L;
 
   /**
    * Compares the two instances. 
