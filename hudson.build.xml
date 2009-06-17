@@ -11,13 +11,9 @@
   <property name="checkstyle.failOnViolation" value="true"/> 
   <property name="junit.haltonfailure" value="true"/>
   --> 
-  
-  <!-- Run this inline to ensure that Ivy is installed whenever Hudson is invoked. -->
-  <import file="ivy.build.xml"/>
-  <mkdir dir="${ivy.install.dir}"/>
-  <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar"
-         dest="${ivy.install.dir}/${ivy.jar.file}" usetimestamp="true"/>
 
+  <!-- Ensure that Ivy and library.versions.properties are installed. -->
+  <ant antfile="ivy.build.xml"/>
 
   <!-- Now import the target definitions. -->
   <import file="javadoc.build.xml"/>  
@@ -50,6 +46,6 @@
     depends="javancss.tool, javancss.sensor"  description="JavaNCSS plus sensor."/>
   
   <target name="hudson.daily.emma"  
-     depends="emma.tool, emma.report, emma.sensor"  description="Emma plus sensor."/>
+     depends="emma.tool, emma.sensor"  description="Emma plus sensor."/>
   
 </project>
