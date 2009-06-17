@@ -12,6 +12,12 @@
   <property name="junit.haltonfailure" value="true"/>
   --> 
   
+  <!-- Run this inline to ensure that Ivy is installed whenever Hudson is invoked. -->
+  <import file="ivy.build.xml"/>
+  <mkdir dir="${ivy.install.dir}"/>
+  <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.version}/ivy-${ivy.version}.jar"
+         dest="${ivy.install.dir}/${ivy.jar.file}" usetimestamp="true"/>
+
 
   <!-- Now import the target definitions. -->
   <import file="javadoc.build.xml"/>  
