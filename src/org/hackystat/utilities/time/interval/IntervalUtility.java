@@ -19,13 +19,13 @@ import org.hackystat.utilities.time.period.Week;
  */
 class IntervalUtility {
   /** Year options from 2000 to 2010. */
-  private TreeMap<String, String> yearOptions;
+  private TreeMap<String, String> yearOptions;  //NOPMD
   /** Three letters month map from Jan to Dec. */
-  private TreeMap<String, String> monthOptions;
+  private TreeMap<String, String> monthOptions;//NOPMD
   /** Day map from first day to last day of the month.*/
-  private TreeMap<String, String> dayOptions;
+  private TreeMap<String, String> dayOptions; //NOPMD
   /** Last half year's week map. */
-  private TreeMap<String, String> weekOptions;
+  private TreeMap<String, String> weekOptions; //NOPMD
 
   /**
    * Initializes interval utility object.
@@ -105,7 +105,7 @@ class IntervalUtility {
    * 
    * @return TreeMap of the year.
    */
-  public TreeMap<String, String> getYearOptions() {
+  public TreeMap<String, String> getYearOptions() { //NOPMD
     return this.yearOptions;
   }
   
@@ -114,7 +114,7 @@ class IntervalUtility {
    * 
    * @return TreeMap of the months.
    */
-  public TreeMap<String, String> getMonthOptions() {
+  public TreeMap<String, String> getMonthOptions() { //NOPMD
     return this.monthOptions;
   }
   
@@ -123,7 +123,7 @@ class IntervalUtility {
    * 
    * @return TreeMap of the past 26 weeks.
    */
-  public TreeMap<String, String> getWeekOptions() {
+  public TreeMap<String, String> getWeekOptions() { //NOPMD
     checkWeekUpdates();
     return this.weekOptions;
   }
@@ -147,7 +147,7 @@ class IntervalUtility {
    * 
    * @return TreeMap of the days in a month.
    */
-  public TreeMap<String, String> getDayOptions() {
+  public TreeMap<String, String> getDayOptions() { //NOPMD
     return this.dayOptions;
   }
   

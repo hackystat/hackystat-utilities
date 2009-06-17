@@ -12,7 +12,7 @@ import org.hackystat.utilities.time.period.Day;
  */
 public class DayIterator implements Iterator<Day> {
   /** End day of the day interval. */
-  private Day endDay;
+  private final Day endDay;
   /** Current day. */
   private Day currentDay;
   

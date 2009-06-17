@@ -12,7 +12,7 @@ import org.hackystat.utilities.time.period.Week;
  */
 public class WeekIterator implements Iterator<Week> {
   /** End week. */
-  private Week endWeek;
+  private final Week endWeek;
   /** Current week. */
   private Week currentWeek;
    

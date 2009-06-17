@@ -13,9 +13,9 @@ import org.hackystat.utilities.time.period.Month;
  */
 public class MonthInterval extends Interval implements Iterable<Month> {
   /** Start month. */
-  private Month startMonth;
+  private final Month startMonth;
   /** End month. */
-  private Month endMonth;
+  private final Month endMonth;
   
   /**
    * Creates a MonthInterval object with start month and end month.

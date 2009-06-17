@@ -17,7 +17,12 @@ import org.hackystat.utilities.time.period.Day;
  * are too many classes already named "Timestamp", thus the abbreviated name.
  * @author Philip Johnson
  */
-public class Tstamp {
+public final class Tstamp {
+  
+  /** Make this class noninstantiable. */
+  private Tstamp() {
+    // Do nothing.
+  }
 
   private static final String factoryErrorMsg = "Bad DataTypeFactory";
   

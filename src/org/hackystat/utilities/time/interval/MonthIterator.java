@@ -12,7 +12,7 @@ import org.hackystat.utilities.time.period.Month;
  */
 public class MonthIterator implements Iterator<Month> {
   /** End month. */
-  private Month endMonth;
+  private final Month endMonth;
   /** Current month. */
   private Month currentMonth;
    

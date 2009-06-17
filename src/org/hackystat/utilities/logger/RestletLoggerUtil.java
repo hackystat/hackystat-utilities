@@ -15,7 +15,12 @@ import org.hackystat.utilities.home.HackystatUserHome;
  * Provides a convenience method for Restlet logging that adjusts the output Handlers.
  * @author Philip Johnson
  */
-public class RestletLoggerUtil {
+public final class RestletLoggerUtil {
+  
+  /** Make this class noninstantiable. */
+  private RestletLoggerUtil() {
+    // Do nothing.
+  }
   
   /**
    * Adjusts the Restlet Loggers so that they send their output to a file, not the console. 

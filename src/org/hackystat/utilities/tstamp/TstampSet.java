@@ -14,7 +14,7 @@ import java.util.Set;
 public class TstampSet {
   
   /** Holds all of the tstamps previously passed to this set. */
-  private Set<Long> tstampSet;
+  private final Set<Long> tstampSet;
   
   /**
    * Create a new TstampSet, which is initialized with no knowledge of prior timestamps.

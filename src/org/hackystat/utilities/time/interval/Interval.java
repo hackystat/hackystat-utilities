@@ -9,7 +9,7 @@ import java.util.Iterator;
  */
 public abstract class Interval {
   /** Interval type. */
-  private String intervalType;
+  private final String intervalType;
 
   /**
    * Instantiates an interval object.

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -71,9 +72,11 @@ public class UriCache {
   /** The logger used for cache exception logging. */
   private Logger logger = null;
   /** Holds a list of already defined caches to help ensure uniqueness. */
-  private static ArrayList<String> cacheNames = new ArrayList<String>();
+  private static List<String> cacheNames = new ArrayList<String>();
   /** Default group name. No client should ever using the following string for a group. */
   private static final String DEFAULT_GROUP = "__Default_UriCache_Group__";
+  
+  private static final String failureMsg = "Failure to clear cache ";
   
   /** A thread that will ensure that all of these caches will be disposed of during shutdown. */ 
   private static Thread shutdownThread = new Thread() {
@@ -86,7 +89,7 @@ public class UriCache {
           JCS.getInstance(cacheName).dispose();
         }
         catch (Exception e) {
-          String msg = "Failure to clear cache " + cacheName + ":" + e.getMessage();
+          String msg = failureMsg + cacheName + ":" + e.getMessage();
           System.out.println(msg);
         }
       }
@@ -230,7 +233,7 @@ public class UriCache {
       JCS.getInstance(this.cacheName).clear();
     }
     catch (CacheException e) {
-      String msg = "Failure to clear cache " + this.cacheName + ":" + e.getMessage();
+      String msg = failureMsg + this.cacheName + ":" + e.getMessage();
       this.logger.warning(msg);
     }
   }
@@ -264,7 +267,7 @@ public class UriCache {
       JCS.getInstance(cacheName).dispose();
     }
     catch (CacheException e) {
-      String msg = "Failure to clear cache " + cacheName + ":" + e.getMessage();
+      String msg = failureMsg + cacheName + ":" + e.getMessage();
       System.out.println(msg);
     }
   }
@@ -358,7 +361,7 @@ public class UriCache {
       }
     }
     catch (CacheException e) {
-      String msg = "Failure to clear cache " + this.cacheName + ":" + e.getMessage();
+      String msg = failureMsg + this.cacheName + ":" + e.getMessage();
       this.logger.warning(msg);
     }
   }

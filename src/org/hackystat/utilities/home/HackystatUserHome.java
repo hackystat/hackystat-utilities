@@ -9,7 +9,12 @@ import java.io.File;
  * @author Philip Johnson
  *
  */
-public class HackystatUserHome {
+public final class HackystatUserHome {
+  
+  /** Make this class noninstantiable. */
+  private HackystatUserHome() {
+    // Do nothing.
+  }
   
   /**
    * Return a File instance representing the desired location of the .hackystat directory.

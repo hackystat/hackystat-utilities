@@ -2,6 +2,7 @@ package org.hackystat.utilities.email;
 
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +21,12 @@ import javax.mail.internet.InternetAddress;
  * @author Philip Johnson. 
  * @version 1.0 to do: check validity of & in first part of email address. Appears in practice.
  */
-public class ValidateEmailSyntax {
+public final class ValidateEmailSyntax {
+  
+  /** Make this class noninstantiable. */
+  private ValidateEmailSyntax() {
+    // Do nothing.
+  }
   
   /**
    * Returns true if the email appears to be valid.  
@@ -184,8 +190,8 @@ public class ValidateEmailSyntax {
    * @param list array of strings
    * @return HashSet you can use to test if a string is in the set.
    */
-  private static HashSet<String> hmaker(String[] list) {
-    HashSet<String> map = new HashSet<String>(Math.max((int) (list.length / .75f) + 1, 16));
+  private static Set<String> hmaker(String[] list) {
+    Set<String> map = new HashSet<String>(Math.max((int) (list.length / .75f) + 1, 16));
     for (int i = 0; i < list.length; i++) {
       map.add(list[i]);
     }
@@ -194,10 +200,10 @@ public class ValidateEmailSyntax {
 
   private static final String thisCountry = Locale.getDefault().getCountry().toLowerCase();
 
-  private static final HashSet<String> officialTLDs = hmaker(new String[] { "aero", "biz", "coop",
+  private static final Set<String> officialTLDs = hmaker(new String[] { "aero", "biz", "coop",
       "com", "edu", "gov", "info", "mil", "museum", "name", "net", "org", "pro", });
 
-  private static final HashSet<String> rareTLDs = hmaker(new String[] { "cam", "mp3", "agent",
+  private static final Set<String> rareTLDs = hmaker(new String[] { "cam", "mp3", "agent",
       "art", "arts", "asia", "auction", "aus", "bank", "cam", "chat", "church", "club", "corp",
       "dds", "design", "dns2go", "e", "email", "exp", "fam", "family", "faq", "fed", "film",
       "firm", "free", "fun", "g", "game", "games", "gay", "ger", "globe", "gmbh", "golf", "gov",
@@ -207,7 +213,7 @@ public class ValidateEmailSyntax {
       "sky", "soc", "space", "sport", "tech", "tour", "travel", "usvi", "video", "web", "wine",
       "wir", "wired", "zine", "zoo", });
 
-  private static final HashSet<String> nationalTLDs = hmaker(new String[] { "ac", "ad", "ae", "af",
+  private static final Set<String> nationalTLDs = hmaker(new String[] { "ac", "ad", "ae", "af",
       "ag", "ai", "al", "am", "an", "ao", "aq", "ar", "as", "at", "au", "aw", "az", "ba", "bb",
       "bd", "be", "bf", "bg", "bh", "bi", "bj", "bm", "bn", "bo", "br", "bs", "bt", "bv", "bw",
       "by", "bz", "ca", "cc", "cd", "cf", "cg", "ch", "ci", "ck", "cl", "cm", "cn", "co", "cr",
@@ -226,6 +232,6 @@ public class ValidateEmailSyntax {
       "uz", "va", "vc", "ve", "vg", "vi", "vn", "vu", "wf", "ws", "ye", "yt", "yu", "za", "zm",
       "zw", });
 
-  private static final HashSet<String> badTLDs = hmaker(new String[] { "invalid", "nowhere",
+  private static final Set<String> badTLDs = hmaker(new String[] { "invalid", "nowhere", 
       "noone", });
 }

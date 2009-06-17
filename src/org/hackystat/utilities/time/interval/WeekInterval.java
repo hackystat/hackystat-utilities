@@ -13,9 +13,9 @@ import org.hackystat.utilities.time.period.Week;
  */
 public class WeekInterval extends Interval implements Iterable<Week> {
   /** Start week. */
-  private Week startWeek;
+  private final Week startWeek;
   /** End week. */ 
-  private Week endWeek;
+  private final Week endWeek;
   
   /**
    * Creates a WeekInterval object with start and end information.
