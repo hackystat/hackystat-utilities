@@ -4,7 +4,6 @@
   </description>
 
   <!-- Always make environment variables available with the "env." prefix. -->
-  <property environment="env" />
 
   <!-- Make sure we're running a Java 5 or better. -->
   <condition property="java.5.available">
