@@ -3,7 +3,10 @@
   The basic build file for the system. 
   </description>
 
-  <!-- Always make environment variables available with the "env." prefix. -->
+  <!-- Basic directory structure. -->
+  <property name="src.dir" location="${basedir}/src" />
+  <property name="lib.dir" location="${basedir}/lib" />
+  <property name="build.dir" location="${basedir}/build" />
 
   <!-- Make sure we're running a Java 5 or better. -->
   <condition property="java.5.available">
@@ -22,7 +25,7 @@
 
   <!-- Make sure Ivy is installed. -->
   <import file="ivy.build.xml"/>
-  <available file="${ivy.install.dir}/${ivy.jar.file}" type="file" property="ivy.available" />
+  <available file="${lib.dir}/ivy/ivy.jar" type="file" property="ivy.available" />
   <fail message="This package requires Ivy.  To install, invoke 'ant -f ivy.build.xml'." unless="ivy.available" />
   <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 
@@ -70,11 +73,7 @@
     <istrue value="${hackystat.enable}"/>
   </condition>
 
-  <!-- Basic directory structure. -->
-  <property name="src.dir" location="${basedir}/src" />
-  <property name="lib.dir" location="${basedir}/lib" />
-  <property name="build.dir" location="${basedir}/build" />
-
+ 
 
   <!-- The compile classpath  -->
   <path id="compile.classpath">
