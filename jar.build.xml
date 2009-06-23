@@ -130,7 +130,7 @@
   <target name="jar-validate-email" depends="compile" description="Create validate.email.lib.jar, containing the email validation code.">
      <!-- Define the directories and distribution name -->
      <mkdir dir="${tmp.lib.dir}" />
-    <mkdir dir="${build.jar.dir}"/>
+     <mkdir dir="${build.jar.dir}"/>
      <copy todir="${tmp.lib.dir}">
        <fileset dir="${basedir}/build/classes/">
          <include name="org/hackystat/utilities/email/**" />
