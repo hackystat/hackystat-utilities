@@ -1,0 +1,18 @@
+<ivy-module version="2.0">
+  <info organisation="org.hackystat" module="hackystat-utilities"/>
+  <publications>
+    <artifact name="hackystatlogger.lib" />
+    <artifact name="hackystatuserhome.lib" />
+    <artifact name="stacktrace.lib" />
+    <artifact name="time.lib" />
+    <artifact name="tstamp.lib" />
+    <artifact name="uricache.lib" />
+    <artifact name="validate.email.lib" />
+  </publications>
+  <dependencies>
+    <dependency org="org.junit" name="junit" rev="${junit.version}" />
+    <dependency org="edu.oswego.cs" name="concurrent" rev="${concurrent.version}" />
+    <dependency org="org.apache.commons" name="commons-logging" rev="${commons-logging.version}" />
+    <dependency org="org.apache.jcs" name="jcs" rev="${jcs.version}" />
+  </dependencies>
+</ivy-module>
