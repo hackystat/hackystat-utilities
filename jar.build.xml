@@ -160,5 +160,9 @@
     </tstamp>
     <ivy:publish artifactspattern="${build.jar.dir}/[artifact].[ext]" resolver="local-repository" pubrevision="${publication-revision}" update="true"/>
   </target>  
+  
+  <target name="publish-all" description="Publish this and all dependent projects." depends="publish">
+    <!-- No dependent projects. -->
+  </target>
 </project>
 
