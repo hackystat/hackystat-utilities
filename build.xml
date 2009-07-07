@@ -1,6 +1,6 @@
 <project name="build" default="compile" xmlns:ivy="antlib:org.apache.ivy.ant">
   <description>
-  The basic build file for the system. 
+  The basic build file for the hackystat-utilities system. 
   </description>
 
   <!-- Basic directory structure. -->
