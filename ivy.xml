@@ -8,6 +8,8 @@
     <artifact name="tstamp.lib" />
     <artifact name="uricache.lib" />
     <artifact name="validate.email.lib" />
+    <artifact name="hackystat-utilities-javadoc" ext="zip" type="javadoc"/>
+    <artifact name="hackystat-utilities-source" ext="zip" type="source"/>
   </publications>
   <dependencies>
     <dependency org="org.junit" name="junit" rev="${junit.version}" />
