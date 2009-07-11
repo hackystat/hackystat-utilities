@@ -31,8 +31,10 @@ public final class RestletLoggerUtil {
     //System.out.println("In useFileHandler");
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements() ;) {
       String logName = en.nextElement();
-      //System.out.println("logName is: " + logName);
-      if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet")) 
+      //System.out.println("logName is: '" + logName + "'");
+      if ((logName.startsWith("com.noelios") || 
+           logName.startsWith("org.restlet") || 
+           "global".equals(logName)) 
           &&
           (logManager.getLogger(logName) != null)) {
         // First, get rid of current Handlers
