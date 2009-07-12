@@ -48,8 +48,9 @@ public final class RestletLoggerUtil {
           logger.removeHandler(handler);
         }
         //System.out.println("Removed handlers.");
-        // Define a file handler that writes to the ~/.hackystat/<service>/logs directory
-        File logDir = new File(HackystatUserHome.getHome(), ".hackystat/" + serviceDir + "/logs/");
+        // Define a handler that writes to the ~/.hackystat/<service>/logs directory
+        File logDir = new File(HackystatUserHome.getHome(), 
+            ".hackystat/" + serviceDir + "/logs/");
         boolean dirsOk = logDir.mkdirs();
         if (!dirsOk && !logDir.exists()) {
           throw new RuntimeException("mkdirs() failed");
@@ -63,7 +64,8 @@ public final class RestletLoggerUtil {
           logger.addHandler(fileHandler);
         }
         catch (IOException e) {
-          //throw new RuntimeException("Could not open the log file for this Hackystat service.", e);
+          //throw new RuntimeException
+          // ("Could not open the log file for this Hackystat service.", e);
           System.out.println("Could not open log file, logging disabled: " + fileName);
           System.out.println("Error is: " + StackTrace.toString(e));
         }
