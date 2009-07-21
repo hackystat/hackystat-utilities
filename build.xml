@@ -45,6 +45,7 @@
   </target>
   
   <target name="cleanlocalrepository" depends="compile" description="Cleans the ivy local Hackystat repository of all old publications.">
+    <echo message="build/classes is: ${build.dir}/classes"/>
     <java classname="org.hackystat.utilities.ivy.CleanLocalRepository" fork="yes">
       <classpath>
         <pathelement location="${build.dir}/classes" />
