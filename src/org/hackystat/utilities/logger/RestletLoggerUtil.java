@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import org.hackystat.utilities.home.HackystatUserHome;
-import org.hackystat.utilities.stacktrace.StackTrace;
 
 /**
  * Provides a convenience method for Restlet logging that adjusts the output Handlers.
@@ -59,15 +58,14 @@ public final class RestletLoggerUtil {
         String fileName = logDir + "/" + logName + ".%u.log";
         FileHandler fileHandler;
         try {
-          fileHandler = new FileHandler(fileName, 500000, 1, true);
+          fileHandler = new FileHandler(fileName, 500000, 10, true);
           fileHandler.setFormatter(new SimpleFormatter());
           logger.addHandler(fileHandler);
         }
         catch (IOException e) {
           //throw new RuntimeException
           // ("Could not open the log file for this Hackystat service.", e);
-          System.out.println("Could not open log file, logging disabled: " + fileName);
-          System.out.println("Error is: " + StackTrace.toString(e));
+          System.out.println("Could not open log file: " + fileName + " " + e.getMessage());
         }
       }
     }

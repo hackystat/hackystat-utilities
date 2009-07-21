@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="lib/concurrent/concurrent.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging/commons-logging.jar"/>
 	<classpathentry kind="lib" path="lib/jcs/jcs.jar"/>
+	<classpathentry kind="lib" path="lib/javamail/mail.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

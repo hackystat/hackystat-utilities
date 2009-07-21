@@ -42,7 +42,7 @@ public final class HackystatLogger {
     String fileName = logDir + "/" + loggerName + ".%u.log";
     FileHandler fileHandler;
     try {
-      fileHandler = new FileHandler(fileName, 500000, 1, true);
+      fileHandler = new FileHandler(fileName, 500000, 10, true);
       fileHandler.setFormatter(new OneLineFormatter());
       logger.addHandler(fileHandler);
     }

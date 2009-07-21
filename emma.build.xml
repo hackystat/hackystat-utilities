@@ -10,25 +10,18 @@
   <property name="emma.dir" location="${build.dir}/emma" />
   <property name="junit.dir" location="${build.dir}/junit" />
   
-  <!-- Make sure Emma is installed (using Ivy) and the local "echo" file is downloaded. -->
-  <ivy:retrieve module="emma" organisation="com.vladium" revision="${emma.version}" pattern="${lib.dir}/emma/[artifact].[ext]" sync="true" inline="true" log="download-only" transitive="false" type="jar"/>
-  <available file="${emma.echo.file}" type="file" property="emma.echo.available" />
-
-  <target name="emma.install.echo.file" unless="emma.echo.available">
-    <get src="${configfiles.url}/hackystat.emma.xsl"
-         dest="${emma.echo.file}" usetimestamp="true"/>
-  </target>
+  <target name="install-emma" depends="install-ivy">
+    <ivy:retrieve module="emma" organisation="com.vladium" revision="${emma.version}" pattern="${lib.dir}/emma/[artifact].[ext]" sync="true" inline="true" log="download-only" transitive="false" type="jar"/>
+  </target> 
 
   <target name="emma" depends="emma.tool, emma.echo, emma.sensor" description="Runs Emma." />
 
-  <target name="emma.tool" depends="clean, compile" description="Cleans, compiles, instruments byte codes, runs unit tests, generates Emma report.">
-
+  <target name="emma.tool" depends="install-emma, clean, compile" description="Cleans, compiles, instruments byte codes, runs unit tests, generates Emma report.">
     <path id="emma.lib.dir">
       <pathelement location="${emma.install.dir}/emma.jar" />
       <pathelement location="${emma.install.dir}/emma_ant.jar" />
     </path>
     <taskdef resource="emma_ant.properties" classpathref="emma.lib.dir" />
-
     <!-- Instrument the .class files. -->
     <mkdir dir="${emma.dir}" />
     <emma enabled="true">
@@ -37,13 +30,13 @@
         <filter excludes="org.hackystat.*.jaxb.*" />
       </instr>
     </emma>
-
     <!-- Run JUnit with the instrumented class files. -->
     <mkdir dir="${junit.dir}" />
-    <junit printsummary="withOutAndErr" fork="yes">
-      <classpath path="${build.dir}/classes;${java.class.path}">
-        <path refid="emma.lib.dir" />
-        <path refid="compile.classpath" />
+    <junit maxmemory="512M" printsummary="withOutAndErr" fork="yes">
+      <classpath>
+        <pathelement location="${build.dir}/classes" />
+        <path refid="compile.classpath"/>
+        <path refid="emma.lib.dir"/>
       </classpath>
       <sysproperty key="user.dir" value="${basedir}" />
       <sysproperty key="emma.coverage.out.file" value="${build.dir}/emma/coverage.emma" />
@@ -52,13 +45,13 @@
       <batchtest todir="${junit.dir}">
         <fileset dir="${src.dir}">
           <include name="**/Test*.java" />
+          <exclude name="**/jaxb/**" />
         </fileset>
       </batchtest>
     </junit>
-
     <!-- Generate Emma reports. -->
     <emma enabled="true">
-      <report sourcepath="${src.dir}" sort="+name" metrics="method:80,block:80,line:80,class:80">
+      <report sourcepath="${src.dir}" sort="+name" metrics="method:100,block:100,line:100,class:100">
         <fileset dir="${emma.dir}">
           <include name="*.emma" />
         </fileset>
@@ -66,7 +59,6 @@
         <html outfile="${emma.dir}/coverage.html" depth="method" columns="name,class,method,block,line" />
       </report>
     </emma>
-
     <!-- Now delete the instrumented .class files. -->
     <delete dir="${build.dir}/classes" />
   </target>
@@ -85,12 +77,13 @@
     </concat>
   </target>
   
-  <target name="emma.sensor" description="Sends Emma coverage data to Hackystat using the Emma sensor.">
-    <ivy:retrieve module="hackystat" organisation="org.hackystat" revision="${hackystat.version}" pattern="${lib.dir}/hackystat/[artifact].[ext]" sync="true" inline="true" log="download-only" conf="ant" transitive="false" type="jar"/>
-    <taskdef resource="antlib.xml" classpath="${lib.dir}/hackystat/antsensors.jar" />
-
-     <!-- Send Coverage data to Hackystat using the Emma sensor. -->
-     <hacky-emma verbose="${hackystat.verbose.mode}" failOnError="true">
+  <target name="emma.install.echo.file" unless="emma.echo.available">
+     <get src="${configfiles.url}/hackystat.emma.xsl"
+          dest="${emma.echo.file}" usetimestamp="true"/>
+   </target>
+  
+  <target name="emma.sensor" depends="define-sensors" if="hackystat.enabled"  description="Sends Emma coverage data to Hackystat using the Emma sensor.">
+    <hacky-emma verbose="${hackystat.verbose.mode}" failOnError="true">
        <datafiles>
          <fileset file="${emma.dir}/coverage.xml"/>
        </datafiles>
