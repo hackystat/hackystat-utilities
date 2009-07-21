@@ -83,11 +83,11 @@ public class CleanLocalRepository {  //NOPMD (Avoid singleton warning)
     for (File pubFile : pubDir.listFiles()) {
       if (pubFile.isFile()) {
         String deleteSuccess = pubFile.delete() ? "OK" : "not OK";
-        System.out.println("    Deleting file: " + pubFile + "was " + deleteSuccess);
+        System.out.println("    Deleting file: " + pubFile + " was " + deleteSuccess);
       }
     }
     String deleteSuccess = pubDir.delete() ? "OK" : "not OK";
-    System.out.println("   Deleting directory: " + pubDir + "was " + deleteSuccess);
+    System.out.println("   Deleting directory: " + pubDir + " was " + deleteSuccess);
   }
   
   /**
