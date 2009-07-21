@@ -28,7 +28,7 @@ import java.util.List;
  * @author Philip Johnson
  *
  */
-public class CleanLocalRepository {
+public class CleanLocalRepository {  //NOPMD (Avoid singleton warning)
   
   /** The location of the Hackystat Ivy local repository. */
   private static File repo =
