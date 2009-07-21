@@ -26,23 +26,4 @@
       <fail message="FindBugs reported warnings." if="findbugs.warningsfound"/>
   </target>
   
-  <target name="verify-all" description="Runs (almost) all Ant targets, including sensor targets, to make sure build system is working properly.">
-    <!-- Using antcall instead of depends parameter to work around emma's need to create fresh class files and instrument
-  			 them, which hoses any other tasks coming after that -->
-    <!-- Call Emma first to get its weirdness out of the way first -->
-    <ant antfile="emma.build.xml" />
-    <antcall target="clean" />
-    <antcall target="compile" />
-    <ant antfile="checkstyle.build.xml" />
-    <ant antfile="dependencyfinder.build.xml" />
-    <ant antfile="junit.build.xml" />
-    <ant antfile="pmd.build.xml" />
-    <ant antfile="findbugs.build.xml" />
-    <ant antfile="javadoc.build.xml" />
-    <ant antfile="javancss.build.xml" />
-    <ant antfile="sclc.build.xml" />
-    <ant antfile="dist.build.xml" />
-    <fail message="FindBugs reported warnings." if="findbugs.warningsfound" />
-  </target>
-  
 </project>
