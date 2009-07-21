@@ -82,14 +82,18 @@ public class CleanLocalRepository {
     System.out.println("  Deleting contents of directory: " + pubDir);
     for (File pubFile : pubDir.listFiles()) {
       if (pubFile.isFile()) {
-        System.out.println("    Deleting file: " + pubFile);
-        pubFile.delete();
+        String deleteSuccess = pubFile.delete() ? "OK" : "not OK";
+        System.out.println("    Deleting file: " + pubFile + "was " + deleteSuccess);
       }
     }
-    System.out.println("  Now deleting directory: " + pubDir);
-    pubDir.delete();
+    String deleteSuccess = pubDir.delete() ? "OK" : "not OK";
+    System.out.println("   Deleting directory: " + pubDir + "was " + deleteSuccess);
   }
   
+  /**
+   * Runs the program.
+   * @param args Ignored. 
+   */
   public static void main(String[] args) {
     if (repo.exists()) {
       processRepository(repo);
