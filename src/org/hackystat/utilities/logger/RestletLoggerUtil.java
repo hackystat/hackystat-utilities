@@ -55,7 +55,7 @@ public final class RestletLoggerUtil {
           throw new RuntimeException("mkdirs() failed");
         }
         //System.out.println("Made this directory: " + logDir);
-        String fileName = logDir + "/" + logName + ".%u.log";
+        String fileName = logDir + "/" + logName + ".%g.%u.log";
         FileHandler fileHandler;
         try {
           fileHandler = new FileHandler(fileName, 500000, 10, true);

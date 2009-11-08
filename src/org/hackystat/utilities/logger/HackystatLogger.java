@@ -39,7 +39,7 @@ public final class HackystatLogger {
     if (!dirsOk && !logDir.exists()) {
       throw new RuntimeException("mkdirs() failed");
     }
-    String fileName = logDir + "/" + loggerName + ".%u.log";
+    String fileName = logDir + "/" + loggerName + ".%g.%u.log";
     FileHandler fileHandler;
     try {
       fileHandler = new FileHandler(fileName, 500000, 10, true);
@@ -106,7 +106,7 @@ public final class HackystatLogger {
    * <li> The logger creates a File logger. 
    * <li> The File logger is written out to the ~/.hackystat/[subDir]/logs/ directory, creating 
    * this if it is not found.
-   * <li> The File log name is {name}.%u.log.
+   * <li> The File log name is {name}.%g.%u.log.
    * <li> There is also a ConsoleHandler (if hasConsole is true).
    * </ul> 
    * @param loggerName The name of this HackystatLogger.
