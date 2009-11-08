@@ -23,6 +23,21 @@ public final class RestletLoggerUtil {
   }
   
   /**
+   * Returns true if logName is a Restlet logger in logManager.
+   * @param logName The logger name.
+   * @return True if it's a Restlet Logger.
+   */
+  private static boolean isRestletLoggerName(String logName) {
+    LogManager logManager = LogManager.getLogManager();
+    return 
+    ((logName.startsWith("com.noelios") || 
+      logName.startsWith("org.restlet") || 
+        "global".equals(logName)) 
+        &&
+       (logManager.getLogger(logName) != null));
+  }
+  
+  /**
    * Adjusts the Restlet Loggers so that they send their output to a file, not the console. 
    * @param serviceDir The directory within .hackystat that this data will be sent to.
    */
@@ -32,11 +47,7 @@ public final class RestletLoggerUtil {
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements() ;) {
       String logName = en.nextElement();
       //System.out.println("logName is: '" + logName + "'");
-      if ((logName.startsWith("com.noelios") || 
-           logName.startsWith("org.restlet") || 
-           "global".equals(logName)) 
-          &&
-          (logManager.getLogger(logName) != null)) {
+      if (isRestletLoggerName(logName)) {
         // First, get rid of current Handlers
         Logger logger = logManager.getLogger(logName);
         //System.out.println("logger is: " + logger);
@@ -66,6 +77,24 @@ public final class RestletLoggerUtil {
           //throw new RuntimeException
           // ("Could not open the log file for this Hackystat service.", e);
           System.out.println("Could not open log file: " + fileName + " " + e.getMessage());
+        }
+      }
+    }
+  }
+  
+  /**
+   * Disables all Restlet-based loggers.
+   */
+  public static void disableLogging() {
+    LogManager logManager = LogManager.getLogManager();
+    for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements() ;) {
+      String logName = en.nextElement();
+      if (isRestletLoggerName(logName)) {
+        Logger logger = logManager.getLogger(logName);
+        logger = logger.getParent();
+        Handler[] handlers = logger.getHandlers();
+        for (Handler handler : handlers) {
+          logger.removeHandler(handler);
         }
       }
     }
