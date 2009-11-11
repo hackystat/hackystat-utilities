@@ -38,9 +38,11 @@ public final class RestletLoggerUtil {
   }
   
   /**
-   * Adjusts the Restlet Loggers so that they send their output to a file, not the console. 
+   * Adjusts the Restlet Loggers so that they send their output to a file, not the console.
+   * Deprecated because this leads to a zillion lock errors.  
    * @param serviceDir The directory within .hackystat that this data will be sent to.
    */
+  @Deprecated
   public static void useFileHandler(String serviceDir) {
     LogManager logManager = LogManager.getLogManager();
     //System.out.println("In useFileHandler");
@@ -83,9 +85,14 @@ public final class RestletLoggerUtil {
   }
   
   /**
-   * Disables all Restlet-based loggers.
+   * Disables all Restlet-based loggers unless the property dont.disable.restlet.loggers
+   * has the value "true".
    */
   public static void disableLogging() {
+    // Disable the disable if there's a system property telling us not to disable.
+    if ("true".equals(System.getProperty("dont.disable.restlet.loggers"))) {
+      return;
+    }
     LogManager logManager = LogManager.getLogManager();
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements() ;) {
       String logName = en.nextElement();
