@@ -257,21 +257,24 @@ public final class Tstamp {
   }
 
   /**
-   * Returns an XMLGregorianCalendar corresponding to today's date.
-   * @return A timestamp representing today's date. 
+   * Returns the start time for the Default project, which is 2000-01-01. 
+   * @return A timestamp representing 2000-01-01.
    */
   public static XMLGregorianCalendar getDefaultProjectStartTime() {
     XMLGregorianCalendar tstamp = Tstamp.makeTimestamp();
-    tstamp.setTime(0, 0, 0);
+    tstamp.setYear(2000);
+    tstamp.setMonth(1);
+    tstamp.setDay(1);
     return tstamp;
   }
 
   /**
-   * Returns an XMLGregorianCalendar corresponding to one year after the default start time.
-   * @return The timestamp.
+   * Returns the end time for the Default project, which is five years after today.
+   * Note that this is updated every time the server starts up. 
+   * @return The timestamp for the Default project end time. 
    */
   public static XMLGregorianCalendar getDefaultProjectEndTime() {
-    return Tstamp.incrementDays(Tstamp.getDefaultProjectStartTime(), 365);
+    return Tstamp.incrementDays(Tstamp.makeTimestamp(), (365 * 5));
   }
 
   
