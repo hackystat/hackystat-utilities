@@ -257,44 +257,23 @@ public final class Tstamp {
   }
 
   /**
-   * Returns an XMLGregorianCalendar corresponding to 01-Jan-2000.
-   * @return The timestamp.
+   * Returns an XMLGregorianCalendar corresponding to today's date.
+   * @return A timestamp representing today's date. 
    */
   public static XMLGregorianCalendar getDefaultProjectStartTime() {
-    try {
-      DatatypeFactory factory = DatatypeFactory.newInstance();
-      XMLGregorianCalendar startTime = factory.newXMLGregorianCalendar();
-      startTime.setDay(1);
-      startTime.setMonth(1);
-      startTime.setYear(2000);
-      startTime.setTime(0, 0, 0);
-      startTime.setMillisecond(000); // NOPMD
-      return Tstamp.makeTimestamp(startTime.toGregorianCalendar().getTimeInMillis());
-    }
-    catch (Exception e) {
-      throw new RuntimeException(factoryErrorMsg, e);
-    }
+    XMLGregorianCalendar tstamp = Tstamp.makeTimestamp();
+    tstamp.setTime(0, 0, 0);
+    return tstamp;
   }
 
   /**
-   * Returns an XMLGregorianCalendar corresponding to 01-Jan-2010.
+   * Returns an XMLGregorianCalendar corresponding to one year after the default start time.
    * @return The timestamp.
    */
   public static XMLGregorianCalendar getDefaultProjectEndTime() {
-    try {
-      DatatypeFactory factory = DatatypeFactory.newInstance();
-      XMLGregorianCalendar endTime = factory.newXMLGregorianCalendar();
-      endTime.setDay(1);
-      endTime.setMonth(1);
-      endTime.setYear(2010);
-      endTime.setTime(23, 59, 59);
-      endTime.setMillisecond(999);
-      return Tstamp.makeTimestamp(endTime.toGregorianCalendar().getTimeInMillis());
-    }
-    catch (Exception e) {
-      throw new RuntimeException(factoryErrorMsg, e);
-    }
+    return Tstamp.incrementDays(Tstamp.getDefaultProjectStartTime(), 365);
   }
+
   
   /**
    * In the early days of Hackystat, default project start times were 1000-01-01.

@@ -18,7 +18,7 @@ import org.hackystat.utilities.time.period.Week;
  * @author Hongbing Kou, Philip Johnson
  */
 class IntervalUtility {
-  /** Year options from 2000 to 2010. */
+  /** Year options from 2000 to 2020. */
   private TreeMap<String, String> yearOptions;  //NOPMD
   /** Three letters month map from Jan to Dec. */
   private TreeMap<String, String> monthOptions;//NOPMD
@@ -51,7 +51,7 @@ class IntervalUtility {
     
     // Year options
     this.yearOptions = new TreeMap<String, String>();
-    for (int i = 2000; i < 2010; i++) {
+    for (int i = 2000; i < 2020; i++) {
       String year = String.valueOf(i);
       yearOptions.put(year, year);
     }

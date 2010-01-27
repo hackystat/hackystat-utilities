@@ -45,9 +45,9 @@ public class TestIntervalUtility extends TestCase {
     IntervalUtility instance = IntervalUtility.getInstance();
     TreeMap<String, String> yearOptions = instance.getYearOptions();
 
-    assertEquals("Checking the number of years", 10, yearOptions.size());
+    assertEquals("Checking the number of years", 20, yearOptions.size());
     assertEquals("Checking the first year", "2000", yearOptions.firstKey());
-    assertEquals("Checking the last year", "2009", yearOptions.lastKey());
+    assertEquals("Checking the last year", "2019", yearOptions.lastKey());
   }
 
   /**
